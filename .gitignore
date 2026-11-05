@@ -1,0 +1,47 @@
+# Java / Maven
+target/
+*.class
+*.jar
+!.mvn/wrapper/*.jar
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+*.egg-info/
+
+# Secrets and local config
+.env
+*.local.yml
+*.local.yaml
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated data (regenerate with data/generate.py --seed)
+data/generated/
+
+# Models downloaded by policy-mcp
+mcp-servers/policy-mcp/.model-cache/
+
+# k6 and eval outputs that are not committed on purpose
+performance/results/
+evals/out/
+
+# Private planning document
+PORTFOLIO-PROJECT.md
