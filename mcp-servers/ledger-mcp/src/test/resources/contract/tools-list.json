@@ -1,0 +1,191 @@
+[ {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : false,
+    "readOnlyHint" : true,
+    "title" : "Get authorisations"
+  },
+  "description" : "List authorisation attempts on one card, newest first, including declines: entry mode, 3-D Secure result, CVV result, PIN verification and the fraud flag. Filter by authorisation id, date range, merchant and response. At most 50 per page.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "auth_id" : {
+        "description" : "Only this authorisation, for example AUTH-004305 (the auth_id of a transaction).",
+        "type" : "string"
+      },
+      "card_id" : {
+        "description" : "Card id, for example CRD-000123.",
+        "type" : "string"
+      },
+      "from_date" : {
+        "description" : "Earliest request date to include (inclusive), YYYY-MM-DD.",
+        "format" : "date",
+        "type" : "string"
+      },
+      "merchant_id" : {
+        "description" : "Only authorisations at this merchant, for example MER-000042.",
+        "type" : "string"
+      },
+      "page_size" : {
+        "description" : "Results per page, 1 to 50. Defaults to 20.",
+        "type" : "integer"
+      },
+      "page_token" : {
+        "description" : "The next_page_token from a previous response, to fetch the next page.",
+        "type" : "string"
+      },
+      "response" : {
+        "description" : "Only approved or only declined attempts.",
+        "enum" : [ "APPROVED", "DECLINED" ],
+        "type" : "string"
+      },
+      "to_date" : {
+        "description" : "Latest request date to include (inclusive), YYYY-MM-DD.",
+        "format" : "date",
+        "type" : "string"
+      }
+    },
+    "required" : [ "card_id" ],
+    "type" : "object"
+  },
+  "name" : "get_authorisations",
+  "title" : "Get authorisations"
+}, {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : false,
+    "readOnlyHint" : true,
+    "title" : "Get card"
+  },
+  "description" : "Get a card by id: owning cardholder, product, status, issue date, expiry and the last four digits. Full card numbers are never returned.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "card_id" : {
+        "description" : "Card id, for example CRD-000123.",
+        "type" : "string"
+      }
+    },
+    "required" : [ "card_id" ],
+    "type" : "object"
+  },
+  "name" : "get_card",
+  "title" : "Get card"
+}, {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : false,
+    "readOnlyHint" : true,
+    "title" : "Get cardholder"
+  },
+  "description" : "Get a cardholder's profile: name, home city and country, and customer-since date.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "cardholder_id" : {
+        "description" : "Cardholder id, for example CH-000017.",
+        "type" : "string"
+      }
+    },
+    "required" : [ "cardholder_id" ],
+    "type" : "object"
+  },
+  "name" : "get_cardholder",
+  "title" : "Get cardholder"
+}, {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : false,
+    "readOnlyHint" : true,
+    "title" : "Get merchant"
+  },
+  "description" : "Get a merchant by id: name, category, city, country, statement descriptor, and whether it sells online and bills on a recurring basis.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "merchant_id" : {
+        "description" : "Merchant id, for example MER-000042.",
+        "type" : "string"
+      }
+    },
+    "required" : [ "merchant_id" ],
+    "type" : "object"
+  },
+  "name" : "get_merchant",
+  "title" : "Get merchant"
+}, {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : false,
+    "readOnlyHint" : true,
+    "title" : "Get transaction"
+  },
+  "description" : "Get one transaction by id, including its authorisation id and, for a refund, the transaction it refunds.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "transaction_id" : {
+        "description" : "Transaction id, for example TXN-004211.",
+        "type" : "string"
+      }
+    },
+    "required" : [ "transaction_id" ],
+    "type" : "object"
+  },
+  "name" : "get_transaction",
+  "title" : "Get transaction"
+}, {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : false,
+    "readOnlyHint" : true,
+    "title" : "Search transactions"
+  },
+  "description" : "List posted transactions (purchases and refunds) on one card, newest first. Filter by date range, merchant and kind. At most 50 per page; pass next_page_token to continue. Amounts are in minor units (cents) of EUR.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "card_id" : {
+        "description" : "Card id, for example CRD-000123.",
+        "type" : "string"
+      },
+      "from_date" : {
+        "description" : "Earliest transaction date to include (inclusive), YYYY-MM-DD.",
+        "format" : "date",
+        "type" : "string"
+      },
+      "kind" : {
+        "description" : "Only transactions of this kind.",
+        "enum" : [ "PURCHASE", "REFUND" ],
+        "type" : "string"
+      },
+      "merchant_id" : {
+        "description" : "Only transactions at this merchant, for example MER-000042.",
+        "type" : "string"
+      },
+      "page_size" : {
+        "description" : "Results per page, 1 to 50. Defaults to 20.",
+        "type" : "integer"
+      },
+      "page_token" : {
+        "description" : "The next_page_token from a previous response, to fetch the next page.",
+        "type" : "string"
+      },
+      "to_date" : {
+        "description" : "Latest transaction date to include (inclusive), YYYY-MM-DD.",
+        "format" : "date",
+        "type" : "string"
+      }
+    },
+    "required" : [ "card_id" ],
+    "type" : "object"
+  },
+  "name" : "search_transactions",
+  "title" : "Search transactions"
+} ]

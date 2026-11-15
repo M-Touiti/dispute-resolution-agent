@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: ledger-mcp
+
+server:
+  port: ${PORT:8081}
+
+ledger-mcp:
+  version: '@project.version@'
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true

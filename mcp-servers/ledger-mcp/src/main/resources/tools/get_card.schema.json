@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "card_id": {
+      "type": "string",
+      "description": "Card id, for example CRD-000123."
+    }
+  },
+  "required": ["card_id"],
+  "additionalProperties": false
+}
