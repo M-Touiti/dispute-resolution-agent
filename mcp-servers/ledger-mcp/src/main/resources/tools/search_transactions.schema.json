@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "card_id": {
+      "type": "string",
+      "description": "Card id, for example CRD-000123."
+    },
+    "from_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Earliest transaction date to include (inclusive), YYYY-MM-DD."
+    },
+    "to_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Latest transaction date to include (inclusive), YYYY-MM-DD."
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "Only transactions at this merchant, for example MER-000042."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["PURCHASE", "REFUND"],
+      "description": "Only transactions of this kind."
+    },
+    "page_size": {
+      "type": "integer",
+      "description": "Results per page, 1 to 50. Defaults to 20."
+    },
+    "page_token": {
+      "type": "string",
+      "description": "The next_page_token from a previous response, to fetch the next page."
+    }
+  },
+  "required": ["card_id"],
+  "additionalProperties": false
+}

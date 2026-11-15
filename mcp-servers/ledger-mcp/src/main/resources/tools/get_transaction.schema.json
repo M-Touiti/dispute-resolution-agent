@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "Transaction id, for example TXN-004211."
+    }
+  },
+  "required": ["transaction_id"],
+  "additionalProperties": false
+}

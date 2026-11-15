@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "cardholder_id": {
+      "type": "string",
+      "description": "Cardholder id, for example CH-000017."
+    }
+  },
+  "required": ["cardholder_id"],
+  "additionalProperties": false
+}
