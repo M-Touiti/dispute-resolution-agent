@@ -1,0 +1,111 @@
+[ {
+  "annotations" : {
+    "destructiveHint" : true,
+    "idempotentHint" : false,
+    "openWorldHint" : false,
+    "readOnlyHint" : false,
+    "title" : "Close dispute"
+  },
+  "description" : "Close a dispute as declined, with the reason and the policy sections that support it. The cardholder is notified. Requires an approval_token for exactly this dispute and these arguments.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "approval_token" : {
+        "description" : "Signed, single-use token from the human approval gate, bound to this dispute, this tool and these exact arguments. Use only a token you were given; never construct or reuse one.",
+        "type" : "string"
+      },
+      "dispute_id" : {
+        "description" : "Dispute id, for example DSP-000123.",
+        "type" : "string"
+      },
+      "policy_section_ids" : {
+        "description" : "Ids of the policy sections that support the decline, as returned by policy-mcp. At least one.",
+        "items" : {
+          "type" : "string"
+        },
+        "type" : "array"
+      },
+      "reason" : {
+        "description" : "Why the dispute is declined, in one or two sentences the cardholder can read.",
+        "type" : "string"
+      }
+    },
+    "required" : [ "dispute_id", "reason", "policy_section_ids", "approval_token" ],
+    "type" : "object"
+  },
+  "name" : "close_dispute",
+  "title" : "Close dispute"
+}, {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : false,
+    "openWorldHint" : false,
+    "readOnlyHint" : false,
+    "title" : "Issue provisional credit"
+  },
+  "description" : "Credit the cardholder's account provisionally for the disputed amount while the dispute is resolved. Amounts are in minor units (cents) of EUR and may not exceed the disputed amount. Requires an approval_token for exactly this dispute and these arguments.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "amount_minor" : {
+        "description" : "Amount to credit in minor units (cents). Positive, and not more than the disputed amount.",
+        "type" : "integer"
+      },
+      "approval_token" : {
+        "description" : "Signed, single-use token from the human approval gate, bound to this dispute, this tool and these exact arguments. Use only a token you were given; never construct or reuse one.",
+        "type" : "string"
+      },
+      "currency" : {
+        "description" : "ISO 4217 currency of the amount. Only EUR is supported.",
+        "enum" : [ "EUR" ],
+        "type" : "string"
+      },
+      "dispute_id" : {
+        "description" : "Dispute id, for example DSP-000123.",
+        "type" : "string"
+      }
+    },
+    "required" : [ "dispute_id", "amount_minor", "currency", "approval_token" ],
+    "type" : "object"
+  },
+  "name" : "issue_provisional_credit",
+  "title" : "Issue provisional credit"
+}, {
+  "annotations" : {
+    "destructiveHint" : false,
+    "idempotentHint" : false,
+    "openWorldHint" : false,
+    "readOnlyHint" : false,
+    "title" : "Request merchant evidence"
+  },
+  "description" : "Ask the merchant, through the card scheme, for the listed evidence about the disputed transaction. Requires an approval_token for exactly this dispute and these arguments.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "approval_token" : {
+        "description" : "Signed, single-use token from the human approval gate, bound to this dispute, this tool and these exact arguments. Use only a token you were given; never construct or reuse one.",
+        "type" : "string"
+      },
+      "dispute_id" : {
+        "description" : "Dispute id, for example DSP-000123.",
+        "type" : "string"
+      },
+      "evidence" : {
+        "description" : "The evidence the merchant is asked to provide. At least one item, no duplicates.",
+        "items" : {
+          "enum" : [ "RECEIPT", "PROOF_OF_DELIVERY", "SIGNED_AUTHORISATION", "CANCELLATION_POLICY", "REFUND_RECORD" ],
+          "type" : "string"
+        },
+        "type" : "array"
+      },
+      "note" : {
+        "description" : "What the evidence should show, in one or two sentences addressed to the merchant.",
+        "type" : "string"
+      }
+    },
+    "required" : [ "dispute_id", "evidence", "note", "approval_token" ],
+    "type" : "object"
+  },
+  "name" : "request_merchant_evidence",
+  "title" : "Request merchant evidence"
+} ]

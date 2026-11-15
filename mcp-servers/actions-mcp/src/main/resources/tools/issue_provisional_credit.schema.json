@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "dispute_id": {
+      "type": "string",
+      "description": "Dispute id, for example DSP-000123."
+    },
+    "amount_minor": {
+      "type": "integer",
+      "description": "Amount to credit in minor units (cents). Positive, and not more than the disputed amount."
+    },
+    "currency": {
+      "type": "string",
+      "enum": ["EUR"],
+      "description": "ISO 4217 currency of the amount. Only EUR is supported."
+    },
+    "approval_token": {
+      "type": "string",
+      "description": "Signed, single-use token from the human approval gate, bound to this dispute, this tool and these exact arguments. Use only a token you were given; never construct or reuse one."
+    }
+  },
+  "required": ["dispute_id", "amount_minor", "currency", "approval_token"],
+  "additionalProperties": false
+}
