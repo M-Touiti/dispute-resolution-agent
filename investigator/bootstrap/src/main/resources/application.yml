@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: investigator
+
+# Model ids, effort and max tokens live here and in the environment, never in code (ADR 0001).
+# Bound to configuration properties when the anthropic adapter lands (M1).
+investigator:
+  llm:
+    adapter: ${LLM_ADAPTER:replay}
+    investigator:
+      model: ${INVESTIGATOR_MODEL:}
+      effort: ${INVESTIGATOR_EFFORT:medium}
+      max-tokens: 16000
+    triage:
+      model: ${TRIAGE_MODEL:}
+  mcp:
+    ledger-url: ${LEDGER_MCP_URL:http://localhost:8081/mcp}
+    policy-url: ${POLICY_MCP_URL:http://localhost:8082/mcp}
+    actions-url: ${ACTIONS_MCP_URL:http://localhost:8083/mcp}

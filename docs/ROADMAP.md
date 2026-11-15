@@ -47,7 +47,7 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 | 0.2 | Repository hygiene: `.gitignore`, `.gitattributes`, `.env.example`, `LICENSE`, `SECURITY.md` | root | done |
 | 0.3 | ADR 0001 scope and provider port | `docs/adr/0001-*.md` | done |
 | 0.4 | Directory layout per spec section 3, with a README per top-level folder | all folders | done |
-| 0.5 | Maven multi-module skeleton for `investigator` (domain, application, adapters, bootstrap) with `LlmPort` and `McpToolPort` interfaces, no implementations | `investigator/` | |
+| 0.5 | Maven multi-module skeleton for `investigator` (domain, application, adapters, bootstrap) with `LlmPort` and `McpToolPort` interfaces, no implementations | `investigator/` | done |
 | 0.6 | Synthetic data generator (Python, seeded): cardholders, cards, merchants, transactions, authorisations, disputes with ground truth; writes CSV + SQL seed; unit tests check determinism for a seed | `data/` | |
 | 0.7 | `ledger-mcp` (Java): Spring Boot + `mcp-core` servlet Streamable HTTP; six tools registered with JSON schemas, stub handlers; contract test on `tools/list` | `mcp-servers/ledger-mcp/` | |
 | 0.8 | `actions-mcp` (Java): same shape; three tools, each with required `approval_token`; handlers reject until M2 | `mcp-servers/actions-mcp/` | |
