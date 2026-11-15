@@ -1,0 +1,12 @@
+package dev.disputeagent.actions;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ActionsMcpApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ActionsMcpApplication.class, args);
+    }
+}

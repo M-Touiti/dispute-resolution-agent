@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "dispute_id": {
+      "type": "string",
+      "description": "Dispute id, for example DSP-000123."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["RECEIPT", "PROOF_OF_DELIVERY", "SIGNED_AUTHORISATION", "CANCELLATION_POLICY", "REFUND_RECORD"]
+      },
+      "description": "The evidence the merchant is asked to provide. At least one item, no duplicates."
+    },
+    "note": {
+      "type": "string",
+      "description": "What the evidence should show, in one or two sentences addressed to the merchant."
+    },
+    "approval_token": {
+      "type": "string",
+      "description": "Signed, single-use token from the human approval gate, bound to this dispute, this tool and these exact arguments. Use only a token you were given; never construct or reuse one."
+    }
+  },
+  "required": ["dispute_id", "evidence", "note", "approval_token"],
+  "additionalProperties": false
+}
