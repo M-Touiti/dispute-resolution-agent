@@ -8,7 +8,7 @@ When a milestone closes, its Status cell records the completion date.
 
 | Milestone | Done means | Status |
 |---|---|---|
-| M0 Skeleton | Repository public, ADR 0001, module layout, seeded synthetic data generator, three MCP servers answering `tools/list`, CI green (build, unit, CodeQL) | in progress |
+| M0 Skeleton | Repository public, ADR 0001, module layout, seeded synthetic data generator, three MCP servers answering `tools/list`, CI green (build, unit, CodeQL) | done 16 Nov 2026 |
 | M1 Loop | One category end to end (Kafka in, triage, investigate via `ledger-mcp` + `policy-mcp`, structured decision, guard, audit rows, decision event out); recording and replay adapters; 30 golden cases; deterministic graders in CI | |
 | M2 Production half | Approval gate + `actions-mcp` token verification; Resilience4j around the model; DLQ, replay, outbox; traces, metrics, dashboard; k6 and failure-injection first report; Kustomize manifests apply on a local cluster | |
 | M3 Evidence | All categories incl. two adversarial; 150+ golden cases; live eval; `evals/REPORT.md`; six ADRs; README results table first; tag `v0.1.0` | |
@@ -54,9 +54,9 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 | 0.8 | `actions-mcp` (Java): same shape; three tools, each with required `approval_token`; handlers reject until M2 | `mcp-servers/actions-mcp/` | done |
 | 0.9 | `policy-mcp` (Python): `mcp` 2.3.0 + FastAPI, Streamable HTTP; two tools, stub handlers; pytest contract test on `tools/list` | `mcp-servers/policy-mcp/` | done |
 | 0.10 | `docker-compose.yml` with PostgreSQL (pgvector image), Kafka (KRaft), the three servers | `deploy/compose/` | done |
-| 0.11 | CI: `ci.yml` (Maven build + unit, Python lint + pytest, CodeQL Java and Python), Dependabot config | `.github/` | done; CI green. CodeQL is skipped while the repository is private and runs from 0.13 |
-| 0.12 | README with pitch, status, layout, how to run, ADR index | `README.md` | |
-| 0.13 | Create the public GitHub repository, push, confirm CI green | GitHub | repository exists (private); make it public, enable code scanning, confirm CodeQL green |
+| 0.11 | CI: `ci.yml` (Maven build + unit, Python lint + pytest, CodeQL Java and Python), Dependabot config | `.github/` | done |
+| 0.12 | README with pitch, status, layout, how to run, ADR index | `README.md` | done |
+| 0.13 | Create the public GitHub repository, push, confirm CI green | GitHub | done: public, CI, CodeQL and Dependabot green |
 
 ## Architecture decisions fixed at M0
 
