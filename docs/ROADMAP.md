@@ -9,7 +9,7 @@ When a milestone closes, its Status cell records the completion date.
 | Milestone | Done means | Status |
 |---|---|---|
 | M0 Skeleton | Repository public, ADR 0001, module layout, seeded synthetic data generator, three MCP servers answering `tools/list`, CI green (build, unit, CodeQL) | done 16 Nov 2026 |
-| M1 Loop | One category end to end (Kafka in, triage, investigate via `ledger-mcp` + `policy-mcp`, structured decision, guard, audit rows, decision event out); recording and replay adapters; 30 golden cases; deterministic graders in CI | |
+| M1 Loop | One category end to end (Kafka in, triage, investigate via `ledger-mcp` + `policy-mcp`, structured decision, guard, audit rows, decision event out); recording and replay adapters; 30 golden cases; deterministic graders in CI | in progress since 16 Nov 2026 |
 | M2 Production half | Approval gate + `actions-mcp` token verification; Resilience4j around the model; DLQ, replay, outbox; traces, metrics, dashboard; k6 and failure-injection first report; Kustomize manifests apply on a local cluster | |
 | M3 Evidence | All categories incl. two adversarial; 150+ golden cases; live eval; `evals/REPORT.md`; six ADRs; README results table first; tag `v0.1.0` | |
 | M4 Voice | Public write-up: what the evals found, the two hardest failures, what the approval gate caught | |
@@ -40,6 +40,14 @@ report, approval gate, recorded fixtures, ADRs.
 Re-verify this table on the first day of each milestone. Dependabot raises weekly pull requests; a bump of the
 MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the deterministic eval suite.
 
+**Re-verified 16 Nov 2026 (M1 kick-off).** Drift since 1 Nov: `anthropic-java` 3.3.0 → 3.8.0, `mcp-bom` 2.1.0 →
+2.2.0, `fastapi` 0.162.0 → 0.163.1, `sentence-transformers` 6.2.0 → 6.3.0; Spring Boot 4.2.0 is still at RC2.
+Task 1.1 bumps the first three (the Anthropic adapter does not exist yet, so the bump costs no re-baseline; the
+MCP bump must pass the three contract tests) and updates the cells above. Libraries M1 adds, to pin in 1.1: a JSON
+Schema validator for Java that works with Jackson 3 (`com.networknt:json-schema-validator` is at 3.0.9),
+`testcontainers` for Python (4.15.0), `psycopg` (3.3.9), and the embedding runtime chosen in ADR 0004
+(`sentence-transformers` 6.3.0 with CPU torch, `fastembed` 0.9.1 on ONNX, or `model2vec` 0.10.0 static).
+
 ## M0 task breakdown
 
 | # | Task | Output | Status |
@@ -57,6 +65,52 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 | 0.11 | CI: `ci.yml` (Maven build + unit, Python lint + pytest, CodeQL Java and Python), Dependabot config | `.github/` | done |
 | 0.12 | README with pitch, status, layout, how to run, ADR index | `README.md` | done |
 | 0.13 | Create the public GitHub repository, push, confirm CI green | GitHub | done: public, CI, CodeQL and Dependabot green |
+
+## M1 task breakdown
+
+Done means: a `disputes.opened` event for an unauthorised-transaction dispute goes through triage, investigation
+with `ledger-mcp` and `policy-mcp`, a validated structured decision, the policy guard and the audit log, and comes
+out as a `disputes.decided` event; the 30 golden cases replay from recorded fixtures in CI with the deterministic
+graders green; ADRs 0002, 0003, 0004 and 0006 accepted. Branches are named `m1/<task>`.
+
+| # | Task | Output | Status |
+|---|---|---|---|
+| 1.1 | Re-baseline pins: `anthropic-java` 3.8.0, `mcp-bom` 2.2.0 (contract tests must pass), `fastapi` 0.163.1; choose and pin the Java JSON Schema validator, Python `testcontainers` and `psycopg`; measure the three embedding runtimes (install size, cold start, CI time) for ADR 0004 | this file, POMs, `pyproject.toml` | |
+| 1.2 | ADR 0002 manual loop versus the SDK tool runner; ADR 0003 self-hosted MCP servers and own client versus the Messages API MCP connector (and the raw SDK versus Spring AI); ADR 0004 local embedding model behind a port, with the runtime chosen from the 1.1 measurements | `docs/adr/0002`-`0004`, index | |
+| 1.3 | Policy corpus: plain-English Markdown, one file per reason category plus general sections (time limits, provisional credit, evidence rules, actions), stable section ids and the categories each section applies to; a test in `data/` checks that every number in the corpus matches `datagen/policy.py` | `data/policy-corpus/` | |
+| 1.4 | Golden set v1: 30 unauthorised-transaction cases (6 per scenario) selected deterministically from the generated ground truth and committed with expected decision, required evidence ids, allowed and forbidden actions; a selector script so M3 can grow it | `evals/golden/` | |
+| 1.5 | `ledger-mcp` handlers over the `ledger` schema: bounded, paginated queries with the id and page-size rules the descriptions promise; Testcontainers PostgreSQL test that loads `data/generated/seed.sql` and fails (never skips) if the seed is missing; CI generates the seed before the Java jobs | `mcp-servers/ledger-mcp/` | |
+| 1.6 | `policy-mcp` handlers: corpus ingestion into PostgreSQL (full text plus pgvector), an embedding port with the local-model adapter and a deterministic test double, reciprocal-rank fusion, `get_policy_section`; pytest with Testcontainers; scope cut on record: full text only | `mcp-servers/policy-mcp/` | |
+| 1.7 | Investigator domain: case state machine for the M1 states (received, triaged, investigating, decided, escalated), `Decision` and its JSON schema (decision, confidence, rationale, cited evidence ids, cited policy sections, proposed actions), `PolicyGuard` (credit never above the disputed amount, time limit, cited evidence belongs to the case, cited sections exist, action allowed for the category), loop caps | `investigator/domain` | |
+| 1.8 | Investigator application: triage (strict-schema tool call on the cheap model, deterministic fallback when it disagrees with the event) and investigate use cases over `LlmPort` and `McpToolPort`; stable system prompt with the cache breakpoint; tool results delimited and labelled untrusted; parallel tool calls answered in one message; schema failure retried once with the errors, then escalate; refusal and every cap escalate with the reason; audit records; tests with fake ports | `investigator/application` | |
+| 1.9 | Skills: `load_skill` tool, skill index in the system prompt, `SKILL.md` for the unauthorised-transaction evidence checklist and for reading an authorisation trail | `skills/`, application | |
+| 1.10 | `AnthropicAdapter`: request and response mapping (adaptive thinking by default, `output_config` effort and format, strict tools, cache control on the system block, non-streaming, `max_tokens` from configuration), usage and cost from a versioned price table in configuration, typed exception mapping; mapping tests offline, one live smoke test behind an environment variable | `investigator/adapters` (anthropic) | |
+| 1.11 | `RecordingAdapter` and `ReplayAdapter`: canonical request hash (sorted tools, no timestamps), fixture format in `evals/fixtures/`, a replay miss fails; ADR 0006 recorded fixtures for CI and nightly live evaluation | adapters, `evals/fixtures/`, `docs/adr/0006` | |
+| 1.12 | MCP client adapter: tool discovery at start-up from the ledger and policy servers, MCP schema to strict `ToolDefinition`, routing by tool name, per-server allowlist (no actions server in M1), timeouts; test against an in-process server built with the same SDK | `investigator/adapters` (mcp-client) | |
+| 1.13 | Kafka and JPA adapters: `disputes.opened` consumer idempotent on dispute id with manual acknowledgement after persist; `cases` and `audit` tables managed by Flyway; `disputes.decided` published after commit (the outbox arrives in M2); Testcontainers Kafka and PostgreSQL test of one case end to end with the replay adapter | adapters, bootstrap | |
+| 1.14 | Investigator in compose with its Dockerfile; `smoke.sh` publishes one `disputes.opened` and waits for `disputes.decided` | `deploy/compose/` | |
+| 1.15 | Eval runner: an `eval` run mode of the investigator (replay adapter, one results file per golden case) and Python deterministic graders (decision matches, cited evidence exists and belongs to the case, cited sections exist, no forbidden action, cost and tool calls within budget, schema valid first try); a committed baseline and the regression rule | `evals/runner/` | |
+| 1.16 | Recording session: one live run of the 30 cases through `RecordingAdapter`; fixtures and baseline committed; needs `ANTHROPIC_API_KEY` and a go-ahead on the estimated spend | `evals/fixtures/`, `evals/golden/baseline` | |
+| 1.17 | CI eval job (compose, eval run, graders) required on `main`; README status and the first per-category numbers; sequence diagram of the loop; close M1 | `.github/`, `README.md`, `docs/diagrams/` | |
+
+Order: 1.1 to 1.4 first (they fix the inputs); 1.5 and 1.6 can run alongside 1.7 to 1.9, which need no server;
+1.10 to 1.13 need 1.8; 1.14 and 1.15 need 1.12 and 1.13; 1.16 needs everything; 1.17 closes.
+
+## Decisions fixed at M1 kick-off
+
+1. **The category is unauthorised transaction.** Its five scenarios exercise the most guard rules (time limit,
+   credit limit, 3-D Secure, chip and PIN, fraud flag) and all three outcomes including escalate, and need no
+   dispute documents. The other four categories and the adversarial ones arrive in M3.
+2. **Replay first.** Everything in CI runs on fixtures. The only live calls in M1 are the recording session
+   (1.16) and the opt-in adapter smoke test; both need an explicit go-ahead and the Console spend cap.
+3. **The eval runner is split.** The investigator runs the cases (one loop, one code path); Python grades them,
+   next to the data tooling. No second implementation of the loop for evaluation.
+4. **Resilience, outbox, dead-letter and replay topics wait for M2.** M1 acknowledges after persist and publishes
+   after commit; the M2 outbox replaces the publish, not the consumer.
+5. **Spring Boot stays at 4.1.2** until 4.2 is GA. The SDK bumps in 1.1 are the last free ones: from 1.16 on,
+   any SDK, prompt, tool schema or model change re-records the fixtures in the same pull request (ADR 0001).
+6. **The embedding runtime is a measured choice, not a default** (ADR 0004). If none fits the CI budget, the
+   recorded scope cut applies: `policy-mcp` keeps full-text search only.
 
 ## Architecture decisions fixed at M0
 
