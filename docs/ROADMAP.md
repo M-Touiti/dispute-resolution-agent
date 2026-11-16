@@ -35,6 +35,7 @@ report, approval gate, recorded fixtures, ADRs.
 | Testing | `org.testcontainers:testcontainers-bom` | 2.0.5 | Kafka (KRaft) and PostgreSQL modules |
 | Observability | `io.opentelemetry.javaagent:opentelemetry-javaagent` | 2.33.1 | Plus manual spans for model and tool calls |
 | Kafka | managed by Spring Boot 4.1.2 (`spring-kafka` 4.1.x) | | KRaft broker in compose |
+| Container images (verified on Docker Hub 16 Nov 2026) | `pgvector/pgvector`, `apache/kafka`, `eclipse-temurin`, `python`, `ghcr.io/astral-sh/uv` | `0.8.7-pg18-trixie`, `4.2.2`, `21-jdk-noble`/`21-jre-noble`, `3.13.18-slim-trixie`, `0.11.33` | Broker matches the `kafka-clients` 4.2.2 that Boot manages; 4.4.0 is the newest GA |
 
 Re-verify this table on the first day of each milestone. Dependabot raises weekly pull requests; a bump of the
 MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the deterministic eval suite.
@@ -52,7 +53,7 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 | 0.7 | `ledger-mcp` (Java): Spring Boot + `mcp-core` servlet Streamable HTTP; six tools registered with JSON schemas, stub handlers; contract test on `tools/list` | `mcp-servers/ledger-mcp/` | done |
 | 0.8 | `actions-mcp` (Java): same shape; three tools, each with required `approval_token`; handlers reject until M2 | `mcp-servers/actions-mcp/` | done |
 | 0.9 | `policy-mcp` (Python): `mcp` 2.3.0 + FastAPI, Streamable HTTP; two tools, stub handlers; pytest contract test on `tools/list` | `mcp-servers/policy-mcp/` | done |
-| 0.10 | `docker-compose.yml` with PostgreSQL (pgvector image), Kafka (KRaft), the three servers | `deploy/compose/` | |
+| 0.10 | `docker-compose.yml` with PostgreSQL (pgvector image), Kafka (KRaft), the three servers | `deploy/compose/` | done |
 | 0.11 | CI: `ci.yml` (Maven build + unit, Python lint + pytest, CodeQL Java and Python), Dependabot config | `.github/` | |
 | 0.12 | README with pitch, status, layout, how to run, ADR index | `README.md` | |
 | 0.13 | Create the public GitHub repository, push, confirm CI green | GitHub | needs `gh` CLI and your account |
