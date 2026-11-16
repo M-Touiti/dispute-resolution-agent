@@ -54,7 +54,7 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 | 0.8 | `actions-mcp` (Java): same shape; three tools, each with required `approval_token`; handlers reject until M2 | `mcp-servers/actions-mcp/` | done |
 | 0.9 | `policy-mcp` (Python): `mcp` 2.3.0 + FastAPI, Streamable HTTP; two tools, stub handlers; pytest contract test on `tools/list` | `mcp-servers/policy-mcp/` | done |
 | 0.10 | `docker-compose.yml` with PostgreSQL (pgvector image), Kafka (KRaft), the three servers | `deploy/compose/` | done |
-| 0.11 | CI: `ci.yml` (Maven build + unit, Python lint + pytest, CodeQL Java and Python), Dependabot config | `.github/` | |
+| 0.11 | CI: `ci.yml` (Maven build + unit, Python lint + pytest, CodeQL Java and Python), Dependabot config | `.github/` | done; green on GitHub pending the first pull request run |
 | 0.12 | README with pitch, status, layout, how to run, ADR index | `README.md` | |
 | 0.13 | Create the public GitHub repository, push, confirm CI green | GitHub | needs `gh` CLI and your account |
 

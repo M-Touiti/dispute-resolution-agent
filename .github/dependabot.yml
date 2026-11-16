@@ -1,0 +1,51 @@
+# Weekly update pull requests. Minor and patch bumps are grouped per ecosystem; majors arrive one per pull request.
+# A bump of the MCP SDK or the Anthropic SDK must pass the tools/list contract tests (docs/ROADMAP.md).
+version: 2
+
+updates:
+  - package-ecosystem: maven
+    directories:
+      - /investigator
+      - /mcp-servers/ledger-mcp
+      - /mcp-servers/actions-mcp
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      maven-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: uv
+    directories:
+      - /data
+      - /mcp-servers/policy-mcp
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      python-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker
+    directories:
+      - /mcp-servers/ledger-mcp
+      - /mcp-servers/actions-mcp
+      - /mcp-servers/policy-mcp
+    schedule:
+      interval: weekly
+      day: monday
+
+  - package-ecosystem: docker-compose
+    directory: /deploy/compose
+    schedule:
+      interval: weekly
+      day: monday
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
