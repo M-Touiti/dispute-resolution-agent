@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "section_id": {
+      "type": "string",
+      "description": "Section id as returned by search_policy, for example time-limits."
+    }
+  },
+  "required": ["section_id"],
+  "additionalProperties": false
+}

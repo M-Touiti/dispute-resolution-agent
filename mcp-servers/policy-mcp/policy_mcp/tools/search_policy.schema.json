@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "What to look for, in plain words, for example \"time limit for opening a dispute\"."
+    },
+    "category": {
+      "type": "string",
+      "enum": ["AMOUNT_MISMATCH", "CANCELLED_RECURRING", "DUPLICATE_CHARGE", "GOODS_NOT_RECEIVED", "UNAUTHORISED_TRANSACTION"],
+      "description": "Only return sections that apply to this dispute category. Omit to search all sections."
+    },
+    "max_results": {
+      "type": "integer",
+      "description": "How many sections to return, 1 to 10. Omit for 5."
+    }
+  },
+  "required": ["query"],
+  "additionalProperties": false
+}

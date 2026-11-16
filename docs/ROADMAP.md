@@ -51,7 +51,7 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 | 0.6 | Synthetic data generator (Python, seeded): cardholders, cards, merchants, transactions, authorisations, disputes with ground truth; writes CSV + SQL seed; unit tests check determinism for a seed | `data/` | done |
 | 0.7 | `ledger-mcp` (Java): Spring Boot + `mcp-core` servlet Streamable HTTP; six tools registered with JSON schemas, stub handlers; contract test on `tools/list` | `mcp-servers/ledger-mcp/` | done |
 | 0.8 | `actions-mcp` (Java): same shape; three tools, each with required `approval_token`; handlers reject until M2 | `mcp-servers/actions-mcp/` | done |
-| 0.9 | `policy-mcp` (Python): `mcp` 2.3.0 + FastAPI, Streamable HTTP; two tools, stub handlers; pytest contract test on `tools/list` | `mcp-servers/policy-mcp/` | |
+| 0.9 | `policy-mcp` (Python): `mcp` 2.3.0 + FastAPI, Streamable HTTP; two tools, stub handlers; pytest contract test on `tools/list` | `mcp-servers/policy-mcp/` | done |
 | 0.10 | `docker-compose.yml` with PostgreSQL (pgvector image), Kafka (KRaft), the three servers | `deploy/compose/` | |
 | 0.11 | CI: `ci.yml` (Maven build + unit, Python lint + pytest, CodeQL Java and Python), Dependabot config | `.github/` | |
 | 0.12 | README with pitch, status, layout, how to run, ADR index | `README.md` | |
