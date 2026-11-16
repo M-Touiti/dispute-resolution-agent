@@ -22,4 +22,5 @@ open a public issue for a vulnerability.
 
 ## Automated checks
 
-CodeQL (Java and Python), Dependabot, and container image scanning run in CI.
+CodeQL (Java, Python and the GitHub Actions workflows) and Dependabot (Maven, uv, Docker, compose and Actions)
+run on every pull request and weekly. Container image scanning is added in M2.
