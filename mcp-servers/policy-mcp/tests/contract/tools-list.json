@@ -1,0 +1,67 @@
+[
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+      "title": "Get policy section"
+    },
+    "description": "Get the full text of one policy section by id, with its title, version and the dispute categories it applies to.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "section_id": {
+          "description": "Section id as returned by search_policy, for example time-limits.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "section_id"
+      ],
+      "type": "object"
+    },
+    "name": "get_policy_section",
+    "title": "Get policy section"
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+      "title": "Search policy"
+    },
+    "description": "Search the card dispute policy for the sections relevant to a question, best match first. Combines keyword and semantic search. Each hit has a section id, title, the matching passage and the categories it applies to. Cite section ids in decisions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "description": "Only return sections that apply to this dispute category. Omit to search all sections.",
+          "enum": [
+            "AMOUNT_MISMATCH",
+            "CANCELLED_RECURRING",
+            "DUPLICATE_CHARGE",
+            "GOODS_NOT_RECEIVED",
+            "UNAUTHORISED_TRANSACTION"
+          ],
+          "type": "string"
+        },
+        "max_results": {
+          "description": "How many sections to return, 1 to 10. Omit for 5.",
+          "type": "integer"
+        },
+        "query": {
+          "description": "What to look for, in plain words, for example \"time limit for opening a dispute\".",
+          "type": "string"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
+    },
+    "name": "search_policy",
+    "title": "Search policy"
+  }
+]
