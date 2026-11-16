@@ -21,7 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
+      actions: read # analyze reads the workflow run (GET /actions/runs/{id}) when uploading results
       contents: read
+      packages: read # CodeQL query packs are downloaded from the GitHub package registry
       security-events: write
     strategy:
       fail-fast: false
