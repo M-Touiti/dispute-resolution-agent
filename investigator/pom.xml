@@ -29,7 +29,7 @@
         <java.version>21</java.version>
         <!-- Pins verified in docs/ROADMAP.md. An SDK bump must pass the tools/list contract tests and the
              deterministic eval suite; an Anthropic SDK major bump re-records fixtures (ADR 0001). -->
-        <anthropic-java.version>3.3.0</anthropic-java.version>
+        <anthropic-java.version>3.8.0</anthropic-java.version>
         <mcp.version>2.1.0</mcp.version>
         <resilience4j.version>2.4.0</resilience4j.version>
         <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
