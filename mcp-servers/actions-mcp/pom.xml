@@ -20,7 +20,7 @@
     <properties>
         <java.version>21</java.version>
         <!-- Pinned in docs/ROADMAP.md. A bump must pass ToolsListContractTest. -->
-        <mcp.version>2.1.0</mcp.version>
+        <mcp.version>2.2.0</mcp.version>
     </properties>
 
     <dependencyManagement>

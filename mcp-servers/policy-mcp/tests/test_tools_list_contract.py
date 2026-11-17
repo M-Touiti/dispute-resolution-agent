@@ -1,7 +1,7 @@
 """Pins the ``tools/list`` output over real Streamable HTTP.
 
 The contract is taken over the legacy initialize handshake, which is what the investigator's Java client
-(MCP Java SDK 2.1.0, protocol 2025-11-25) uses. For an intended change run
+(MCP Java SDK 2.2.0, protocol 2025-11-25) uses. For an intended change run
 ``CONTRACT_UPDATE=1 uv run pytest tests/test_tools_list_contract.py``, review the diff of
 ``tests/contract/tools-list.json`` and commit it with the change.
 """

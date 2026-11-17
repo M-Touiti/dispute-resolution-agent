@@ -6,8 +6,9 @@ requires-python = ">=3.13"
 # mcp and fastapi are pinned in docs/ROADMAP.md; a bump must pass tests/test_tools_list_contract.py.
 dependencies = [
     "mcp==2.3.0",
-    "fastapi==0.162.0",
+    "fastapi==0.163.1",
     "jsonschema>=4.26.0",
+    "psycopg[binary]==3.3.9",
     "uvicorn>=0.54.0",
 ]
 
@@ -28,5 +29,6 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "testcontainers==4.15.0",
     "ruff>=0.17.5",
 ]

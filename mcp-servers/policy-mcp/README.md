@@ -1,6 +1,6 @@
 # policy-mcp
 
-Read-only MCP server over the card dispute policy corpus. Python 3.13, `mcp` 2.3.0, FastAPI 0.162.0, uv. The
+Read-only MCP server over the card dispute policy corpus. Python 3.13, `mcp` 2.3.0, FastAPI 0.163.1, uv. The
 SDK's low-level `Server` serves explicit tool definitions over Streamable HTTP at `/mcp`, mounted in a FastAPI app
 that also serves `/health`. Port 8082.
 
