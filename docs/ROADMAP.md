@@ -18,21 +18,22 @@ Scope cuts if time runs short, in order: reviewer page becomes a CLI; Kubernetes
 `policy-mcp` loses pgvector and keeps full-text; adversarial categories shrink to one. Never cut: evaluation
 report, approval gate, recorded fixtures, ADRs.
 
-## Pinned versions (verified against Maven Central and PyPI on 1 Nov 2026)
+## Pinned versions (verified against Maven Central and PyPI on 1 Nov 2026, re-baselined 16 Nov 2026)
 
 | Concern | Artifact | Pin | Note |
 |---|---|---|---|
 | JDK | Temurin / Oracle | 21 (LTS) | Spring Boot 4 baseline is 17; 21 for virtual threads and records patterns |
-| Orchestrator | `org.springframework.boot:spring-boot-starter-parent` | 4.1.2 | Latest GA line (4.2.0 is at RC1). Jackson 3, Servlet 6.1 |
-| Model access | `com.anthropic:anthropic-java` | 3.3.0 | 3.0.0 (21 Oct 2026) moved to API version 2026-10-21; ships `OutputConfig`, `JsonOutputFormat`, `Tool.strict`, `CacheControlEphemeral` |
-| MCP (Java) | `io.modelcontextprotocol.sdk:mcp-bom` | 2.1.0 | Latest GA (2.2.0-M1 is a milestone). Use the `mcp` bundle = `mcp-core` + `mcp-json-jackson3` |
+| Orchestrator | `org.springframework.boot:spring-boot-starter-parent` | 4.1.2 | Latest GA line (4.2.0 is at RC2 on 16 Nov). Jackson 3, Servlet 6.1 |
+| Model access | `com.anthropic:anthropic-java` | 3.8.0 | 3.0.0 (21 Oct 2026) moved to API version 2026-10-21; ships `OutputConfig`, `JsonOutputFormat`, `Tool.strict`, `CacheControlEphemeral` |
+| MCP (Java) | `io.modelcontextprotocol.sdk:mcp-bom` | 2.2.0 | Latest GA. Use the `mcp` bundle = `mcp-core` + `mcp-json-jackson3`. 2.1.0 → 2.2.0 left all three `tools/list` contracts unchanged |
 | MCP server transport | `HttpServletStreamableServerTransportProvider` in `mcp-core` | n/a | The `mcp-spring-webmvc` and `server-servlet` artifacts stopped at 0.18.x; in 2.x the Spring transports live in Spring AI. We register the servlet transport in Spring Boot via `ServletRegistrationBean` and do not depend on Spring AI |
 | MCP client transport | `HttpClientStreamableHttpTransport` in `mcp-core` | n/a | JDK `HttpClient` based, Streamable HTTP |
 | MCP (Python) | `mcp` | 2.3.0 | v2 line; v1.x is maintenance only |
 | Python runtime | CPython | 3.13 | `mcp` requires >= 3.10 |
-| Retrieval | `fastapi` 0.162.0, `pgvector` 0.5.1, `sentence-transformers` 6.2.0 | | Local embedding model behind a port (ADR 0004) |
+| Retrieval | `fastapi`, `pgvector`, `psycopg[binary]` | 0.163.1, 0.5.1, 3.3.9 | Embedding runtime chosen in ADR 0004 from the measurements below |
+| JSON Schema (Java) | `com.networknt:json-schema-validator` | 3.0.8 | The version `mcp-json-jackson3` 2.2.0 uses for server-side input validation; the investigator pins the same one so client and servers validate alike. 3.0.9 exists; bump with the MCP SDK |
 | Resilience | `io.github.resilience4j:resilience4j-spring-boot4` | 2.4.0 | The `-spring-boot4` module exists from 2.4.0 |
-| Testing | `org.testcontainers:testcontainers-bom` | 2.0.5 | Kafka (KRaft) and PostgreSQL modules |
+| Testing | `org.testcontainers:testcontainers-bom`; Python `testcontainers` | 2.0.5; 4.15.0 | Kafka (KRaft) and PostgreSQL modules. In Python 4.15 the PostgreSQL module is `testcontainers.community.postgres` (the old path is deprecated) |
 | Observability | `io.opentelemetry.javaagent:opentelemetry-javaagent` | 2.33.1 | Plus manual spans for model and tool calls |
 | Kafka | managed by Spring Boot 4.1.2 (`spring-kafka` 4.1.x) | | KRaft broker in compose |
 | Container images (verified on Docker Hub 16 Nov 2026) | `pgvector/pgvector`, `apache/kafka`, `eclipse-temurin`, `python`, `ghcr.io/astral-sh/uv` | `0.8.7-pg18-trixie`, `4.2.2`, `21-jdk-noble`/`21-jre-noble`, `3.13.18-slim-trixie`, `0.11.33` | Broker matches the `kafka-clients` 4.2.2 that Boot manages; 4.4.0 is the newest GA |
@@ -42,11 +43,27 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 
 **Re-verified 16 Nov 2026 (M1 kick-off).** Drift since 1 Nov: `anthropic-java` 3.3.0 → 3.8.0, `mcp-bom` 2.1.0 →
 2.2.0, `fastapi` 0.162.0 → 0.163.1, `sentence-transformers` 6.2.0 → 6.3.0; Spring Boot 4.2.0 is still at RC2.
-Task 1.1 bumps the first three (the Anthropic adapter does not exist yet, so the bump costs no re-baseline; the
-MCP bump must pass the three contract tests) and updates the cells above. Libraries M1 adds, to pin in 1.1: a JSON
-Schema validator for Java that works with Jackson 3 (`com.networknt:json-schema-validator` is at 3.0.9),
-`testcontainers` for Python (4.15.0), `psycopg` (3.3.9), and the embedding runtime chosen in ADR 0004
-(`sentence-transformers` 6.3.0 with CPU torch, `fastembed` 0.9.1 on ONNX, or `model2vec` 0.10.0 static).
+Task 1.1 applied the bumps above: all builds and the three `tools/list` contract tests pass unchanged. The
+Anthropic SDK bump cost no re-baseline because no adapter or fixture exists yet.
+
+### Embedding runtimes measured for ADR 0004 (16 Nov 2026)
+
+Measured in a fresh `python:3.13.18-slim-trixie` container (the `policy-mcp` base image; Docker Desktop, 16 CPUs),
+one new venv and model cache per runtime. The retrieval probe is 16 self-written policy passages and 16
+paraphrased questions: a sanity check that the runtime retrieves sensibly, not a quality benchmark. Retrieval
+quality is measured on the real corpus in 1.6.
+
+| Runtime | Model | Install | venv | Model files | Cold load | 512 passages | Dim | Recall@1 / @3 | MRR |
+|---|---|---|---|---|---|---|---|---|---|
+| `sentence-transformers` 6.3.0 + CPU `torch` | `all-MiniLM-L6-v2` | 23 s | 1,112 MB | 88 MB | 4.5 s | 0.96 s | 384 | 0.56 / 0.88 | 0.71 |
+| `fastembed` 0.9.1 (ONNX Runtime) | `all-MiniLM-L6-v2` | 7 s | 187 MB | 88 MB | 0.6 s | 1.00 s | 384 | 0.56 / 0.88 | 0.71 |
+| `model2vec` 0.10.0 (static) | `potion-base-8M` | 5 s | 92 MB | 30 MB | 0.8 s | 0.01 s | 256 | 0.50 / 0.88 | 0.69 |
+
+Reading: `fastembed` runs the same model as the `sentence-transformers` reference with identical rankings at a
+sixth of the install size and a seventh of the cold load; it is the recommendation for ADR 0004. `model2vec` is
+smaller and about a hundred times faster to embed, one probe question behind (not a significant difference on 16
+questions); it is the fallback if the real-corpus quality check in 1.6 allows it. `sentence-transformers` brings
+torch for no measured gain.
 
 ## M0 task breakdown
 
@@ -75,7 +92,7 @@ graders green; ADRs 0002, 0003, 0004 and 0006 accepted. Branches are named `m1/<
 
 | # | Task | Output | Status |
 |---|---|---|---|
-| 1.1 | Re-baseline pins: `anthropic-java` 3.8.0, `mcp-bom` 2.2.0 (contract tests must pass), `fastapi` 0.163.1; choose and pin the Java JSON Schema validator, Python `testcontainers` and `psycopg`; measure the three embedding runtimes (install size, cold start, CI time) for ADR 0004 | this file, POMs, `pyproject.toml` | |
+| 1.1 | Re-baseline pins: `anthropic-java` 3.8.0, `mcp-bom` 2.2.0 (contract tests must pass), `fastapi` 0.163.1; choose and pin the Java JSON Schema validator, Python `testcontainers` and `psycopg`; measure the three embedding runtimes (install size, cold start, CI time) for ADR 0004 | this file, POMs, `pyproject.toml` | done |
 | 1.2 | ADR 0002 manual loop versus the SDK tool runner; ADR 0003 self-hosted MCP servers and own client versus the Messages API MCP connector (and the raw SDK versus Spring AI); ADR 0004 local embedding model behind a port, with the runtime chosen from the 1.1 measurements | `docs/adr/0002`-`0004`, index | |
 | 1.3 | Policy corpus: plain-English Markdown, one file per reason category plus general sections (time limits, provisional credit, evidence rules, actions), stable section ids and the categories each section applies to; a test in `data/` checks that every number in the corpus matches `datagen/policy.py` | `data/policy-corpus/` | |
 | 1.4 | Golden set v1: 30 unauthorised-transaction cases (6 per scenario) selected deterministically from the generated ground truth and committed with expected decision, required evidence ids, allowed and forbidden actions; a selector script so M3 can grow it | `evals/golden/` | |

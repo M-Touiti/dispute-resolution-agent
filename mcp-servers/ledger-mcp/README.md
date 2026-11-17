@@ -1,6 +1,6 @@
 # ledger-mcp
 
-Read-only MCP server over the synthetic card ledger. Java 21, Spring Boot 4.1.2, MCP Java SDK 2.1.0 (`mcp-core` +
+Read-only MCP server over the synthetic card ledger. Java 21, Spring Boot 4.1.2, MCP Java SDK 2.2.0 (`mcp-core` +
 `mcp-json-jackson3`), no Spring AI: the SDK's `HttpServletStreamableServerTransportProvider` is registered at `/mcp`
 through a `ServletRegistrationBean`.
 
