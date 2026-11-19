@@ -71,11 +71,9 @@ public enum ActionTools {
     }
 
     public Tool tool(McpJsonMapper jsonMapper) {
-        return Tool.builder()
-                .name(toolName)
+        return Tool.builder(toolName, jsonMapper, inputSchemaJson())
                 .title(title)
                 .description(description)
-                .inputSchema(jsonMapper, inputSchemaJson())
                 .annotations(ToolAnnotations.builder()
                         .title(title)
                         .readOnlyHint(false)

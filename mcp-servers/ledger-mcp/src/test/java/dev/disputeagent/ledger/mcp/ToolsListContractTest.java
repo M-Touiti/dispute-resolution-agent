@@ -99,7 +99,7 @@ class ToolsListContractTest {
     @Test
     void inputsAreValidatedAgainstTheSchemaBeforeAnyHandlerRuns() {
         // No database in this test: an unknown property must be rejected by the SDK's schema validation.
-        CallToolResult result = client.callTool(new CallToolRequest("get_card", Map.of("card", "CRD-000001")));
+        CallToolResult result = client.callTool(call("get_card", Map.of("card", "CRD-000001")));
 
         assertThat(result.isError()).isTrue();
         assertThat(((TextContent) result.content().getFirst()).text())
@@ -111,5 +111,10 @@ class ToolsListContractTest {
     private String canonical(List<Tool> tools) throws Exception {
         Object tree = CANONICAL.readValue(mcpJsonMapper.writeValueAsString(tools), Object.class);
         return CANONICAL.writeValueAsString(tree).replace("\r\n", "\n") + "\n";
+    }
+
+    /** {@code tools/call} with the SDK 2.2 builder (the two-argument constructor is deprecated). */
+    private static CallToolRequest call(String tool, Map<String, Object> arguments) {
+        return CallToolRequest.builder(tool).arguments(arguments).build();
     }
 }

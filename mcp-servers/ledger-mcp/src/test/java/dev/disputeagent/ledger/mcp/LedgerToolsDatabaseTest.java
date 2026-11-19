@@ -121,18 +121,8 @@ class LedgerToolsDatabaseTest {
 
         JsonNode result = ok("get_transaction", Map.of("transaction_id", refund.get("transaction_id")));
 
-        long expectedAmountMinor;
-        try {
-            expectedAmountMinor = Long.parseLong(refund.get("amount_minor"));
-        } catch (NumberFormatException e) {
-            throw new AssertionError(
-                    "Invalid amount_minor in test fixture for transaction_id=" + refund.get("transaction_id") + ": "
-                            + refund.get("amount_minor"),
-                    e);
-        }
-
         assertThat(result.get("related_transaction_id").asString()).isEqualTo(refund.get("related_transaction_id"));
-        assertThat(result.get("amount_minor").asLong()).isEqualTo(expectedAmountMinor);
+        assertThat(result.get("amount_minor").asLong()).isEqualTo(Long.parseLong(refund.get("amount_minor")));
         assertThat(result.get("transaction_at").asString()).isEqualTo(refund.get("transaction_at"));
         assertThat(result.get("posted_on").asString()).isEqualTo(refund.get("posted_on"));
         assertThat(result.get("auth_id").isNull()).isTrue();
@@ -233,8 +223,7 @@ class LedgerToolsDatabaseTest {
     @ParameterizedTest
     @MethodSource("invalidCalls")
     void badArgumentsReturnAToolErrorTheModelCanCorrect(String tool, Map<String, Object> args, String prefix) {
-        CallToolRequest request = new CallToolRequest(tool, args);
-        CallToolResult result = client.callTool(request);
+        CallToolResult result = client.callTool(call(tool, args));
 
         assertThat(result.isError()).isTrue();
         assertThat(text(result)).startsWith(prefix);
@@ -273,8 +262,7 @@ class LedgerToolsDatabaseTest {
     // Helpers ----------------------------------------------------------------------------------------------------
 
     private JsonNode ok(String tool, Map<String, Object> args) {
-        CallToolRequest request = CallToolRequest.newBuilder().name(tool).arguments(args).build();
-        CallToolResult result = client.callTool(request);
+        CallToolResult result = client.callTool(call(tool, args));
         assertThat(result.isError()).as(text(result)).isNotEqualTo(Boolean.TRUE);
         return JSON.readTree(text(result));
     }
@@ -342,5 +330,10 @@ class LedgerToolsDatabaseTest {
         }
         out.add(current.toString());
         return out;
+    }
+
+    /** {@code tools/call} with the SDK 2.2 builder (the two-argument constructor is deprecated). */
+    private static CallToolRequest call(String tool, Map<String, Object> arguments) {
+        return CallToolRequest.builder(tool).arguments(arguments).build();
     }
 }

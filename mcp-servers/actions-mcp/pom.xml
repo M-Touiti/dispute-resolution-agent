@@ -19,6 +19,8 @@
 
     <properties>
         <java.version>21</java.version>
+        <!-- Report deprecated API use on every build; SDK bumps deprecate things (MCP SDK 2.2.0 did). -->
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <!-- Pinned in docs/ROADMAP.md. A bump must pass ToolsListContractTest. -->
         <mcp.version>2.2.0</mcp.version>
     </properties>
