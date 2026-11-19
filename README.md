@@ -79,7 +79,7 @@ and never calls the API.
 ```
 investigator/        Java 21, Spring Boot 4: domain, application (ports, use cases), adapters, bootstrap
 mcp-servers/         ledger-mcp (Java), policy-mcp (Python), actions-mcp (Java); each has its own README
-data/                seeded synthetic data generator; policy corpus (M1)
+data/                seeded synthetic data generator; policy corpus (Markdown, 24 sections)
 evals/               golden set, graders, recorded fixtures, REPORT.md (M1 to M3)
 skills/              Agent Skills loaded on demand (M1)
 performance/         k6 scripts and failure injection (M2)
