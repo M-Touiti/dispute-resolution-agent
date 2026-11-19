@@ -127,4 +127,6 @@ class GroundTruth:
     required_evidence_ids: tuple[str, ...]
     allowed_actions: tuple[str, ...]
     forbidden_actions: tuple[str, ...]
+    deciding_section: str
+    """The policy-corpus section id that decides the case; a correct decision cites it."""
     rationale: str

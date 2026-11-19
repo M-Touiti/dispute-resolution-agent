@@ -346,6 +346,7 @@ class _Generator:
                 required_evidence_ids=tuple(sorted(evidence)),
                 allowed_actions=policy.allowed_actions(decision),
                 forbidden_actions=policy.forbidden_actions(decision),
+                deciding_section=policy.DECIDING_SECTION[scenario],
                 rationale=rationale,
             )
         )

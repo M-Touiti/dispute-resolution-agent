@@ -1,3 +1,3 @@
 """Seeded synthetic data for the dispute-resolution agent. Same seed and options, same bytes."""
 
-GENERATOR_VERSION = 1
+GENERATOR_VERSION = 2
