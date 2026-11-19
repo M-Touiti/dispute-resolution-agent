@@ -233,7 +233,7 @@ class LedgerToolsDatabaseTest {
     @ParameterizedTest
     @MethodSource("invalidCalls")
     void badArgumentsReturnAToolErrorTheModelCanCorrect(String tool, Map<String, Object> args, String prefix) {
-        CallToolRequest request = CallToolRequest.builder().name(tool).arguments(args).build();
+        CallToolRequest request = new CallToolRequest(tool, args);
         CallToolResult result = client.callTool(request);
 
         assertThat(result.isError()).isTrue();
