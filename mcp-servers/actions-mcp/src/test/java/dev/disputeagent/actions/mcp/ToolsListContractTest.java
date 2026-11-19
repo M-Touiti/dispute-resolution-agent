@@ -100,7 +100,7 @@ class ToolsListContractTest {
 
     @Test
     void aWellFormedCallWithATokenIsStillRejectedUntilM2() {
-        CallToolResult result = client.callTool(new CallToolRequest("issue_provisional_credit", Map.of(
+        CallToolResult result = client.callTool(call("issue_provisional_credit", Map.of(
                 "dispute_id", "DSP-000001",
                 "amount_minor", 4250,
                 "currency", "EUR",
@@ -112,7 +112,7 @@ class ToolsListContractTest {
 
     @Test
     void aCallWithoutAnApprovalTokenFailsSchemaValidation() {
-        CallToolResult result = client.callTool(new CallToolRequest("close_dispute", Map.of(
+        CallToolResult result = client.callTool(call("close_dispute", Map.of(
                 "dispute_id", "DSP-000001",
                 "reason", "Opened after the time limit.",
                 "policy_section_ids", List.of("time-limits"))));
@@ -123,7 +123,7 @@ class ToolsListContractTest {
 
     @Test
     void anEvidenceKindOutsideTheEnumFailsSchemaValidation() {
-        CallToolResult result = client.callTool(new CallToolRequest("request_merchant_evidence", Map.of(
+        CallToolResult result = client.callTool(call("request_merchant_evidence", Map.of(
                 "dispute_id", "DSP-000001",
                 "evidence", List.of("SELFIE"),
                 "note", "Show delivery.",
@@ -141,5 +141,10 @@ class ToolsListContractTest {
     private String canonical(List<Tool> tools) throws Exception {
         Object tree = CANONICAL.readValue(mcpJsonMapper.writeValueAsString(tools), Object.class);
         return CANONICAL.writeValueAsString(tree).replace("\r\n", "\n") + "\n";
+    }
+
+    /** {@code tools/call} with the SDK 2.2 builder (the two-argument constructor is deprecated). */
+    private static CallToolRequest call(String tool, Map<String, Object> arguments) {
+        return CallToolRequest.builder(tool).arguments(arguments).build();
     }
 }

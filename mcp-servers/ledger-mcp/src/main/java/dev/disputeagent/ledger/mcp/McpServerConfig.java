@@ -47,6 +47,7 @@ class McpServerConfig {
     McpSyncServer mcpServer(
             HttpServletStreamableServerTransportProvider transport,
             McpJsonMapper jsonMapper,
+            LedgerToolHandlers handlers,
             @Value("${ledger-mcp.version}") String version) {
         return McpServer.sync(transport)
                 .serverInfo("ledger-mcp", version)
@@ -54,7 +55,7 @@ class McpServerConfig {
                         + "transactions and authorisations. Results are bounded and paginated.")
                 .capabilities(ServerCapabilities.builder().tools(false).build())
                 .validateToolInputs(true)
-                .tools(LedgerTools.specifications(jsonMapper))
+                .tools(LedgerTools.specifications(jsonMapper, handlers))
                 .build();
     }
 }

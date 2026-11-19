@@ -39,7 +39,7 @@ flowchart LR
 |---|---|---|
 | `investigator/` | Hexagonal Maven skeleton. `LlmPort` and `McpToolPort` are defined; there are no adapters yet. Enforcer rules keep `domain` free of dependencies and `application` dependent on `domain` only | 10 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation. Same seed, same bytes | 21 |
-| `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP; `tools/list` pinned by a contract test; handlers are stubs | 18 |
+| `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI); contract test on both protocol versions; handlers are stubs | 17 |
 | `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token`; every call is rejected until token verification lands in M2 | 16 |
 | `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.2 (KRaft), the three servers; `smoke.sh` checks all of them | smoke |

@@ -16,7 +16,7 @@ Prometheus and Grafana join in M1 and M2.
 ```sh
 (cd ../../data && uv run python generate.py)   # once; PostgreSQL loads data/generated/seed.sql on first start
 docker compose up -d --build --wait            # builds the three servers, waits until everything is healthy
-./smoke.sh                                     # seed loaded, Kafka round trip, MCP handshake and tools/list
+./smoke.sh                                     # seed loaded, Kafka round trip, MCP handshake, tools/list, a ledger read
 docker compose down                            # stop; add -v to drop the database volume
 ```
 
@@ -24,6 +24,9 @@ docker compose down                            # stop; add -v to drop the databa
   if the file is missing. After regenerating the data, run `docker compose down -v` and start again. The
   healthcheck uses TCP, so `postgres` reports healthy only after the seed has loaded. `ground_truth.csv` is mounted
   read-only with the rest of `data/generated/` but never loaded.
+- **Roles:** `postgres/initdb/20-ledger-reader.sh` creates `ledger_reader`, which `ledger-mcp` uses: `SELECT` on
+  the `ledger` schema only, read-only transactions. Its password defaults to `ledger_reader`; override it with
+  `LEDGER_READER_PASSWORD`. `ledger-mcp` starts after `postgres` is healthy and its readiness includes the database.
 - **Kafka:** topic auto-creation is off; topics are created explicitly from M1.
 - **policy-mcp:** DNS rebinding protection is on, so `POLICY_MCP_ALLOWED_HOSTS` lists the service name as well as
   localhost.

@@ -97,24 +97,24 @@ class ToolsListContractTest {
     }
 
     @Test
-    void stubHandlersReportAnErrorUntilM1() {
-        CallToolResult result = client.callTool(new CallToolRequest("get_card", Map.of("card_id", "CRD-000001")));
+    void inputsAreValidatedAgainstTheSchemaBeforeAnyHandlerRuns() {
+        // No database in this test: an unknown property must be rejected by the SDK's schema validation.
+        CallToolResult result = client.callTool(call("get_card", Map.of("card", "CRD-000001")));
 
         assertThat(result.isError()).isTrue();
-        assertThat(((TextContent) result.content().getFirst()).text()).isEqualTo(LedgerTools.NOT_IMPLEMENTED);
-    }
-
-    @Test
-    void inputsAreValidatedAgainstTheSchema() {
-        CallToolResult result = client.callTool(new CallToolRequest("get_card", Map.of("card", "CRD-000001")));
-
-        assertThat(result.isError()).isTrue();
-        assertThat(((TextContent) result.content().getFirst()).text()).isNotEqualTo(LedgerTools.NOT_IMPLEMENTED);
+        assertThat(((TextContent) result.content().getFirst()).text())
+                .doesNotStartWith("INVALID_ARGUMENT")
+                .doesNotStartWith("UNAVAILABLE");
     }
 
     /** Key-sorted, indented, LF line endings, trailing newline: stable across JVMs and operating systems. */
     private String canonical(List<Tool> tools) throws Exception {
         Object tree = CANONICAL.readValue(mcpJsonMapper.writeValueAsString(tools), Object.class);
         return CANONICAL.writeValueAsString(tree).replace("\r\n", "\n") + "\n";
+    }
+
+    /** {@code tools/call} with the SDK 2.2 builder (the two-argument constructor is deprecated). */
+    private static CallToolRequest call(String tool, Map<String, Object> arguments) {
+        return CallToolRequest.builder(tool).arguments(arguments).build();
     }
 }
