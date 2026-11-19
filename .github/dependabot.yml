@@ -18,6 +18,7 @@ updates:
   - package-ecosystem: uv
     directories:
       - /data
+      - /evals
       - /mcp-servers/policy-mcp
     schedule:
       interval: weekly

@@ -29,7 +29,7 @@ Plain `python generate.py` works too: there are no runtime dependencies. Python 
 | `authorisations.csv` | Every authorisation, including declines: entry mode, 3-D Secure, CVV, PIN, fraud flag | `ledger.*` |
 | `transactions.csv` | Purchases and refunds, 180 days of history per card plus the disputed charges | `ledger.*` |
 | `disputes.csv`, `dispute_documents.csv` | What the cardholder submits: statement, claimed amount, attached documents | `intake.*` |
-| `ground_truth.csv` | Expected decision, required evidence ids, allowed and forbidden actions, difficulty, rationale | **never** |
+| `ground_truth.csv` | Expected decision, required evidence ids, allowed and forbidden actions, the deciding policy section, difficulty, rationale | **never** |
 | `seed.sql` | PostgreSQL DDL and inserts for the tables above, in one transaction | |
 | `manifest.json` | Config, row counts and the SHA-256 of every file | |
 

@@ -53,7 +53,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [data, mcp-servers/policy-mcp]
+        project: [data, evals, mcp-servers/policy-mcp]
     defaults:
       run:
         working-directory: ${{ matrix.project }}
@@ -67,6 +67,10 @@ jobs:
           cache-dependency-glob: ${{ matrix.project }}/uv.lock
       - name: Install (Python from .python-version, dependencies from uv.lock)
         run: uv sync --locked
+      - name: Generate the dataset (the golden set is checked against it)
+        if: matrix.project == 'evals'
+        working-directory: data
+        run: uv run --locked python generate.py
       - name: Lint
         run: uv run ruff check . && uv run ruff format --check .
       - name: Test

@@ -1,0 +1,608 @@
+{
+  "golden_set": "unauthorised-v1",
+  "description": "M1 golden set: 6 cases per unauthorised-transaction scenario (approve, escalate above the credit limit, chip and PIN, 3-D Secure, out of time).",
+  "selection": {
+    "categories": [
+      "UNAUTHORISED_TRANSACTION"
+    ],
+    "per_scenario": 6,
+    "salt": "golden-v1"
+  },
+  "dataset": {
+    "seed": 20261101,
+    "as_of": "2026-11-01",
+    "generator_version": 2,
+    "ground_truth_sha256": "409f3e51fc4dc891c98b2791278f82fd84adfa011537100258c72fd7d4d848f1",
+    "seed_sql_sha256": "8ca003ee44c924b73285caa2d192f5265145ced53e7151e18fc8243474229aa4"
+  },
+  "cases": [
+    {
+      "dispute_id": "DSP-000002",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_high_value_escalate",
+      "difficulty": "MEDIUM",
+      "expected_decision": "ESCALATE",
+      "required_evidence_ids": [
+        "AUTH-008050",
+        "TXN-007835"
+      ],
+      "allowed_actions": [],
+      "forbidden_actions": [
+        "close_dispute",
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "provisional-credit",
+      "rationale": "Meets the unauthorised-transaction criteria but exceeds the provisional credit limit; a human decides."
+    },
+    {
+      "dispute_id": "DSP-000003",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_chip_pin_card_present",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008053",
+        "TXN-007838"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-chip-and-pin",
+      "rationale": "Card present with chip and PIN verified, no fraud flag, and the cardholder has paid this merchant before."
+    },
+    {
+      "dispute_id": "DSP-000004",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_3ds_authenticated",
+      "difficulty": "HARD",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008054",
+        "TXN-007839"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-3ds-authenticated",
+      "rationale": "The cardholder authenticated the payment with 3-D Secure and the CVV matched; no fraud flag."
+    },
+    {
+      "dispute_id": "DSP-000018",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_cnp_no_3ds_fraud_flag",
+      "difficulty": "EASY",
+      "expected_decision": "APPROVE_PROVISIONAL_CREDIT",
+      "required_evidence_ids": [
+        "AUTH-008078",
+        "TXN-007866"
+      ],
+      "allowed_actions": [
+        "issue_provisional_credit"
+      ],
+      "forbidden_actions": [
+        "close_dispute",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-card-not-present",
+      "rationale": "Card not present, no 3-D Secure, fraud flag set, within the time limit and under the provisional credit limit."
+    },
+    {
+      "dispute_id": "DSP-000036",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_high_value_escalate",
+      "difficulty": "MEDIUM",
+      "expected_decision": "ESCALATE",
+      "required_evidence_ids": [
+        "AUTH-008108",
+        "TXN-007899"
+      ],
+      "allowed_actions": [],
+      "forbidden_actions": [
+        "close_dispute",
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "provisional-credit",
+      "rationale": "Meets the unauthorised-transaction criteria but exceeds the provisional credit limit; a human decides."
+    },
+    {
+      "dispute_id": "DSP-000037",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_chip_pin_card_present",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008111",
+        "TXN-007902"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-chip-and-pin",
+      "rationale": "Card present with chip and PIN verified, no fraud flag, and the cardholder has paid this merchant before."
+    },
+    {
+      "dispute_id": "DSP-000039",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_out_of_time",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "TXN-007904"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "time-limits",
+      "rationale": "Opened after the time limit; the fraud indicators do not change that."
+    },
+    {
+      "dispute_id": "DSP-000054",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_chip_pin_card_present",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008140",
+        "TXN-007934"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-chip-and-pin",
+      "rationale": "Card present with chip and PIN verified, no fraud flag, and the cardholder has paid this merchant before."
+    },
+    {
+      "dispute_id": "DSP-000055",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_3ds_authenticated",
+      "difficulty": "HARD",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008141",
+        "TXN-007935"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-3ds-authenticated",
+      "rationale": "The cardholder authenticated the payment with 3-D Secure and the CVV matched; no fraud flag."
+    },
+    {
+      "dispute_id": "DSP-000056",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_out_of_time",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "TXN-007936"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "time-limits",
+      "rationale": "Opened after the time limit; the fraud indicators do not change that."
+    },
+    {
+      "dispute_id": "DSP-000069",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_cnp_no_3ds_fraud_flag",
+      "difficulty": "EASY",
+      "expected_decision": "APPROVE_PROVISIONAL_CREDIT",
+      "required_evidence_ids": [
+        "AUTH-008165",
+        "TXN-007962"
+      ],
+      "allowed_actions": [
+        "issue_provisional_credit"
+      ],
+      "forbidden_actions": [
+        "close_dispute",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-card-not-present",
+      "rationale": "Card not present, no 3-D Secure, fraud flag set, within the time limit and under the provisional credit limit."
+    },
+    {
+      "dispute_id": "DSP-000070",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_high_value_escalate",
+      "difficulty": "MEDIUM",
+      "expected_decision": "ESCALATE",
+      "required_evidence_ids": [
+        "AUTH-008166",
+        "TXN-007963"
+      ],
+      "allowed_actions": [],
+      "forbidden_actions": [
+        "close_dispute",
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "provisional-credit",
+      "rationale": "Meets the unauthorised-transaction criteria but exceeds the provisional credit limit; a human decides."
+    },
+    {
+      "dispute_id": "DSP-000072",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_3ds_authenticated",
+      "difficulty": "HARD",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008170",
+        "TXN-007967"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-3ds-authenticated",
+      "rationale": "The cardholder authenticated the payment with 3-D Secure and the CVV matched; no fraud flag."
+    },
+    {
+      "dispute_id": "DSP-000073",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_out_of_time",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "TXN-007968"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "time-limits",
+      "rationale": "Opened after the time limit; the fraud indicators do not change that."
+    },
+    {
+      "dispute_id": "DSP-000086",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_cnp_no_3ds_fraud_flag",
+      "difficulty": "EASY",
+      "expected_decision": "APPROVE_PROVISIONAL_CREDIT",
+      "required_evidence_ids": [
+        "AUTH-008194",
+        "TXN-007994"
+      ],
+      "allowed_actions": [
+        "issue_provisional_credit"
+      ],
+      "forbidden_actions": [
+        "close_dispute",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-card-not-present",
+      "rationale": "Card not present, no 3-D Secure, fraud flag set, within the time limit and under the provisional credit limit."
+    },
+    {
+      "dispute_id": "DSP-000087",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_high_value_escalate",
+      "difficulty": "MEDIUM",
+      "expected_decision": "ESCALATE",
+      "required_evidence_ids": [
+        "AUTH-008195",
+        "TXN-007995"
+      ],
+      "allowed_actions": [],
+      "forbidden_actions": [
+        "close_dispute",
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "provisional-credit",
+      "rationale": "Meets the unauthorised-transaction criteria but exceeds the provisional credit limit; a human decides."
+    },
+    {
+      "dispute_id": "DSP-000089",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_3ds_authenticated",
+      "difficulty": "HARD",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008199",
+        "TXN-007999"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-3ds-authenticated",
+      "rationale": "The cardholder authenticated the payment with 3-D Secure and the CVV matched; no fraud flag."
+    },
+    {
+      "dispute_id": "DSP-000090",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_out_of_time",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "TXN-008000"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "time-limits",
+      "rationale": "Opened after the time limit; the fraud indicators do not change that."
+    },
+    {
+      "dispute_id": "DSP-000105",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_chip_pin_card_present",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008227",
+        "TXN-008030"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-chip-and-pin",
+      "rationale": "Card present with chip and PIN verified, no fraud flag, and the cardholder has paid this merchant before."
+    },
+    {
+      "dispute_id": "DSP-000106",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_3ds_authenticated",
+      "difficulty": "HARD",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008228",
+        "TXN-008031"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-3ds-authenticated",
+      "rationale": "The cardholder authenticated the payment with 3-D Secure and the CVV matched; no fraud flag."
+    },
+    {
+      "dispute_id": "DSP-000107",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_out_of_time",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "TXN-008032"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "time-limits",
+      "rationale": "Opened after the time limit; the fraud indicators do not change that."
+    },
+    {
+      "dispute_id": "DSP-000120",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_cnp_no_3ds_fraud_flag",
+      "difficulty": "EASY",
+      "expected_decision": "APPROVE_PROVISIONAL_CREDIT",
+      "required_evidence_ids": [
+        "AUTH-008252",
+        "TXN-008058"
+      ],
+      "allowed_actions": [
+        "issue_provisional_credit"
+      ],
+      "forbidden_actions": [
+        "close_dispute",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-card-not-present",
+      "rationale": "Card not present, no 3-D Secure, fraud flag set, within the time limit and under the provisional credit limit."
+    },
+    {
+      "dispute_id": "DSP-000121",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_high_value_escalate",
+      "difficulty": "MEDIUM",
+      "expected_decision": "ESCALATE",
+      "required_evidence_ids": [
+        "AUTH-008253",
+        "TXN-008059"
+      ],
+      "allowed_actions": [],
+      "forbidden_actions": [
+        "close_dispute",
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "provisional-credit",
+      "rationale": "Meets the unauthorised-transaction criteria but exceeds the provisional credit limit; a human decides."
+    },
+    {
+      "dispute_id": "DSP-000124",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_out_of_time",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "TXN-008064"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "time-limits",
+      "rationale": "Opened after the time limit; the fraud indicators do not change that."
+    },
+    {
+      "dispute_id": "DSP-000137",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_cnp_no_3ds_fraud_flag",
+      "difficulty": "EASY",
+      "expected_decision": "APPROVE_PROVISIONAL_CREDIT",
+      "required_evidence_ids": [
+        "AUTH-008281",
+        "TXN-008090"
+      ],
+      "allowed_actions": [
+        "issue_provisional_credit"
+      ],
+      "forbidden_actions": [
+        "close_dispute",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-card-not-present",
+      "rationale": "Card not present, no 3-D Secure, fraud flag set, within the time limit and under the provisional credit limit."
+    },
+    {
+      "dispute_id": "DSP-000138",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_high_value_escalate",
+      "difficulty": "MEDIUM",
+      "expected_decision": "ESCALATE",
+      "required_evidence_ids": [
+        "AUTH-008282",
+        "TXN-008091"
+      ],
+      "allowed_actions": [],
+      "forbidden_actions": [
+        "close_dispute",
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "provisional-credit",
+      "rationale": "Meets the unauthorised-transaction criteria but exceeds the provisional credit limit; a human decides."
+    },
+    {
+      "dispute_id": "DSP-000139",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_chip_pin_card_present",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008285",
+        "TXN-008094"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-chip-and-pin",
+      "rationale": "Card present with chip and PIN verified, no fraud flag, and the cardholder has paid this merchant before."
+    },
+    {
+      "dispute_id": "DSP-000154",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_cnp_no_3ds_fraud_flag",
+      "difficulty": "EASY",
+      "expected_decision": "APPROVE_PROVISIONAL_CREDIT",
+      "required_evidence_ids": [
+        "AUTH-008310",
+        "TXN-008122"
+      ],
+      "allowed_actions": [
+        "issue_provisional_credit"
+      ],
+      "forbidden_actions": [
+        "close_dispute",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-card-not-present",
+      "rationale": "Card not present, no 3-D Secure, fraud flag set, within the time limit and under the provisional credit limit."
+    },
+    {
+      "dispute_id": "DSP-000156",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_chip_pin_card_present",
+      "difficulty": "MEDIUM",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008314",
+        "TXN-008126"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-chip-and-pin",
+      "rationale": "Card present with chip and PIN verified, no fraud flag, and the cardholder has paid this merchant before."
+    },
+    {
+      "dispute_id": "DSP-000157",
+      "category": "UNAUTHORISED_TRANSACTION",
+      "scenario": "u_3ds_authenticated",
+      "difficulty": "HARD",
+      "expected_decision": "DECLINE",
+      "required_evidence_ids": [
+        "AUTH-008315",
+        "TXN-008127"
+      ],
+      "allowed_actions": [
+        "close_dispute"
+      ],
+      "forbidden_actions": [
+        "issue_provisional_credit",
+        "request_merchant_evidence"
+      ],
+      "deciding_section": "unauthorised-3ds-authenticated",
+      "rationale": "The cardholder authenticated the payment with 3-D Secure and the CVV matched; no fraud flag."
+    }
+  ]
+}
