@@ -13,21 +13,22 @@ FASTEMBED_MODEL_SHA256 = "51f1bd0addd6e859e42c2c8021a5e5461385bb676a649f4b269aa4
 
 
 class Embedder(Protocol):
+    # Protocol members have docstrings as their only body: no `...`, which CodeQL reports as a statement with no
+    # effect.
+
     @property
     def model_id(self) -> str:
         """Identifies the model and its version; stored with the ingested corpus."""
-        ...
 
     @property
-    def dimension(self) -> int: ...
+    def dimension(self) -> int:
+        """Length of every vector this embedder returns."""
 
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         """Unit-length vectors for passages (the corpus), one per text, in order."""
-        ...
 
     def embed_query(self, text: str) -> list[float]:
         """Unit-length vector for a search query; models trained with a query instruction add it here."""
-        ...
 
 
 class FastEmbedEmbedder:
