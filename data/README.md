@@ -72,6 +72,12 @@ The two adversarial categories (prompt injection in merchant data, over-generous
 
 ## Policy corpus
 
-`policy-corpus/` (M1): self-written plain-English dispute policy, one Markdown file per reason category plus
-general sections. Modelled on the public structure of card-network rules; no network text or codes. It must state
-the same rules and numbers as `datagen/policy.py`; change both together and regenerate.
+`policy-corpus/`: self-written plain-English dispute policy, 24 sections in six Markdown files (general rules
+plus one file per reason category), each with a stable section id, a version and the categories it applies to.
+Modelled on the public structure of card-network rules; no network text or codes. Format and rules:
+[policy-corpus/README.md](policy-corpus/README.md).
+
+`tests/test_policy_corpus.py` keeps the corpus and `datagen/policy.py` in step: every number in the corpus must
+be a policy value and every policy value must be stated, the actions named must be exactly `policy.ACTIONS`, and
+every generated scenario must have a deciding section (`policy.DECIDING_SECTION`) that applies to its category.
+Change both together, regenerate, and re-record the evaluation fixtures.
