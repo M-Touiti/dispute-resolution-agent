@@ -37,7 +37,7 @@ flowchart LR
 
 | Part | State | Tests |
 |---|---|---|
-| `investigator/` | Hexagonal Maven skeleton. `LlmPort` and `McpToolPort` are defined; there are no adapters yet. Enforcer rules keep `domain` free of dependencies and `application` dependent on `domain` only | 10 |
+| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard` (credit limits, time limit, citations, allowed actions), the case state machine and loop caps. `application`: `LlmPort` and `McpToolPort`. No adapters yet. Enforcer rules keep `domain` free of dependencies | 49 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation. Same seed, same bytes | 21 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
