@@ -92,9 +92,9 @@ docs/                roadmap, architecture decision records, diagrams
 | ADR | Decision | Status |
 |---|---|---|
 | [0001](docs/adr/0001-scope-and-provider-port.md) | Scope, and an `LlmPort` with live, recording and replay adapters, so CI replays fixtures and model ids live in configuration | accepted |
-| 0002 | A hand-written agent loop over the Messages API rather than the SDK tool runner, so every tool call is gated and audited | planned (M1) |
-| 0003 | Self-hosted MCP servers and the raw MCP Java SDK rather than the Messages API MCP connector or Spring AI | planned (M1) |
-| 0004 | A local sentence-embedding model behind a port: one API key, deterministic retrieval | planned (M1) |
+| [0002](docs/adr/0002-manual-agent-loop.md) | A hand-written agent loop rather than the SDK tool runner, so the model call stays behind the replayable `LlmPort` and tools can be discovered at runtime | accepted |
+| [0003](docs/adr/0003-self-hosted-mcp-servers-and-client.md) | Self-hosted MCP servers and our own client on the raw MCP Java SDK, rather than the Messages API MCP connector or Spring AI: private servers, every call gated before it runs | accepted |
+| [0004](docs/adr/0004-local-embedding-model.md) | A local embedding model (`fastembed`, measured against two alternatives) behind a port: one API key, no network in replay | accepted |
 | 0005 | Approval tokens verified inside the write server, not only in the client | planned (M2) |
 | 0006 | Recorded fixtures for CI and a nightly live evaluation slice with a spend cap | planned (M1 / M3) |
 
