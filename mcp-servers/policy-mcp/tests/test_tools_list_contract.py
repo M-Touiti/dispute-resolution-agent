@@ -18,7 +18,6 @@ from mcp import Client
 from mcp_types import CallToolResult, TextContent, Tool
 
 from policy_mcp import __version__
-from policy_mcp.tools import NOT_IMPLEMENTED
 
 CONTRACT = Path(__file__).parent / "contract" / "tools-list.json"
 
@@ -80,12 +79,12 @@ async def test_every_tool_is_read_only(mcp_url: str) -> None:
 
 
 @pytest.mark.anyio
-async def test_stub_handlers_report_an_error_until_m1(mcp_url: str) -> None:
+async def test_search_answers_over_real_http(mcp_url: str) -> None:
     async with Client(mcp_url, mode="legacy") as client:
         result = await client.call_tool("search_policy", {"query": "time limit", "category": "DUPLICATE_CHARGE"})
 
-    assert result.is_error
-    assert _text(result) == NOT_IMPLEMENTED
+    assert not result.is_error, _text(result)
+    assert json.loads(_text(result))["results"]
 
 
 @pytest.mark.anyio
@@ -110,7 +109,10 @@ async def test_inputs_are_validated_against_the_schema(
 
 def test_health(base_url: str) -> None:
     with urllib.request.urlopen(base_url + "/health", timeout=5) as response:
-        assert json.load(response) == {"status": "UP"}
+        health = json.load(response)
+    assert health["status"] == "UP"
+    assert health["sections"] > 0
+    assert health["embedding_model"].startswith("hash-bag-of-words/")
 
 
 def test_a_foreign_host_header_is_rejected(base_url: str) -> None:

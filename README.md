@@ -40,7 +40,7 @@ flowchart LR
 | `investigator/` | Hexagonal Maven skeleton. `LlmPort` and `McpToolPort` are defined; there are no adapters yet. Enforcer rules keep `domain` free of dependencies and `application` dependent on `domain` only | 10 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation. Same seed, same bytes | 21 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
-| `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI); contract test on both protocol versions; handlers are stubs | 17 |
+| `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
 | `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token`; every call is rejected until token verification lands in M2 | 16 |
 | `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.2 (KRaft), the three servers; `smoke.sh` checks all of them | smoke |
 | CI | Build and tests per module, lint, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
@@ -94,9 +94,10 @@ docs/                roadmap, architecture decision records, diagrams
 | [0001](docs/adr/0001-scope-and-provider-port.md) | Scope, and an `LlmPort` with live, recording and replay adapters, so CI replays fixtures and model ids live in configuration | accepted |
 | [0002](docs/adr/0002-manual-agent-loop.md) | A hand-written agent loop rather than the SDK tool runner, so the model call stays behind the replayable `LlmPort` and tools can be discovered at runtime | accepted |
 | [0003](docs/adr/0003-self-hosted-mcp-servers-and-client.md) | Self-hosted MCP servers and our own client on the raw MCP Java SDK, rather than the Messages API MCP connector or Spring AI: private servers, every call gated before it runs | accepted |
-| [0004](docs/adr/0004-local-embedding-model.md) | A local embedding model (`fastembed`, measured against two alternatives) behind a port: one API key, no network in replay | accepted |
+| [0004](docs/adr/0004-local-embedding-model.md) | A local embedding model behind a port, baked into the image: one API key, no network in replay | accepted |
 | 0005 | Approval tokens verified inside the write server, not only in the client | planned (M2) |
 | 0006 | Recorded fixtures for CI and a nightly live evaluation slice with a spend cap | planned (M1 / M3) |
+| [0007](docs/adr/0007-embedding-model-and-fusion-measured-on-the-corpus.md) | `bge-small-en-v1.5` and hybrid retrieval with full text at half weight, chosen by measuring 45 questions on the real corpus; supersedes 0004's model | accepted |
 
 The index with full titles is in [docs/adr](docs/adr/README.md); pinned versions are in the
 [roadmap](docs/ROADMAP.md#pinned-versions-verified-against-maven-central-and-pypi-on-1-nov-2026).
