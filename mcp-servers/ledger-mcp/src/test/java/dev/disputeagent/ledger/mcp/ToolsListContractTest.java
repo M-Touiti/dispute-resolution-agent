@@ -97,19 +97,14 @@ class ToolsListContractTest {
     }
 
     @Test
-    void stubHandlersReportAnErrorUntilM1() {
-        CallToolResult result = client.callTool(new CallToolRequest("get_card", Map.of("card_id", "CRD-000001")));
-
-        assertThat(result.isError()).isTrue();
-        assertThat(((TextContent) result.content().getFirst()).text()).isEqualTo(LedgerTools.NOT_IMPLEMENTED);
-    }
-
-    @Test
-    void inputsAreValidatedAgainstTheSchema() {
+    void inputsAreValidatedAgainstTheSchemaBeforeAnyHandlerRuns() {
+        // No database in this test: an unknown property must be rejected by the SDK's schema validation.
         CallToolResult result = client.callTool(new CallToolRequest("get_card", Map.of("card", "CRD-000001")));
 
         assertThat(result.isError()).isTrue();
-        assertThat(((TextContent) result.content().getFirst()).text()).isNotEqualTo(LedgerTools.NOT_IMPLEMENTED);
+        assertThat(((TextContent) result.content().getFirst()).text())
+                .doesNotStartWith("INVALID_ARGUMENT")
+                .doesNotStartWith("UNAVAILABLE");
     }
 
     /** Key-sorted, indented, LF line endings, trailing newline: stable across JVMs and operating systems. */

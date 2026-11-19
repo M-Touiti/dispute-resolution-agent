@@ -1,6 +1,15 @@
 spring:
   application:
     name: ledger-mcp
+  # Read-only role on the ledger schema (deploy/compose/postgres/initdb/20-ledger-reader.sh).
+  datasource:
+    url: ${LEDGER_DB_URL:jdbc:postgresql://localhost:5432/disputes}
+    username: ${LEDGER_DB_USER:ledger_reader}
+    password: ${LEDGER_DB_PASSWORD:ledger_reader}
+    hikari:
+      read-only: true
+      maximum-pool-size: 5
+      connection-timeout: 5000
 
 server:
   port: ${PORT:8081}
@@ -17,3 +26,6 @@ management:
     health:
       probes:
         enabled: true
+      group:
+        readiness:
+          include: readinessState,db

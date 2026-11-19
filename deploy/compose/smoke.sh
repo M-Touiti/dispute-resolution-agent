@@ -25,9 +25,10 @@ docker compose exec -T kafka sh -c '
     || fail "kafka: could not create and describe a topic"
 echo "ok   kafka        topic round trip on kafka:19092"
 
-# MCP servers: initialize (protocol 2025-11-25, as the investigator's Java client), then tools/list.
+# MCP servers: initialize (protocol 2025-11-25, as the investigator's Java client), then tools/list. With a
+# fourth and fifth argument, also call a tool (params JSON) and require a substring in the answer.
 check_mcp() {
-    local name=$1 port=$2 expected=$3
+    local name=$1 port=$2 expected=$3 call=${4:-} want=${5:-}
     local url="http://localhost:$port/mcp"
     local accept='Accept: application/json, text/event-stream'
     local headers session tools
@@ -49,9 +50,26 @@ check_mcp() {
         || fail "$name: tools/list failed"
     [[ "$tools" == "$expected" ]] || fail "$name: tools are '$tools', expected '$expected'"
     echo "ok   $(printf '%-12s' "$name") $tools"
+
+    if [[ -n "$call" ]]; then
+        local answer
+        answer=$(curl -fsS -X POST "$url" -H 'Content-Type: application/json' -H "$accept" \
+            -H "Mcp-Session-Id: $session" -H 'MCP-Protocol-Version: 2025-11-25' \
+            -d "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":$call}") \
+            || fail "$name: tools/call failed"
+        if grep -q '"isError":true' <<<"$answer"; then fail "$name: tool error: $answer"; fi
+        grep -qF "$want" <<<"$answer" || fail "$name: answer lacks '$want': $answer"
+        echo "ok   $(printf '%-12s' "$name") tools/call answered from the database"
+    fi
 }
 
-check_mcp ledger-mcp 8081 "get_authorisations get_card get_cardholder get_merchant get_transaction search_transactions"
+# A real ledger read: the first card in the generated data, with its last four digits.
+card=$(sed -n 2p ../../data/generated/cards.csv | cut -d, -f1)
+last4=$(sed -n 2p ../../data/generated/cards.csv | cut -d, -f3)
+
+# The tool's JSON answer is a string inside the JSON-RPC response, so its quotes arrive escaped.
+check_mcp ledger-mcp 8081 "get_authorisations get_card get_cardholder get_merchant get_transaction search_transactions" \
+    "{\"name\":\"get_card\",\"arguments\":{\"card_id\":\"$card\"}}" "pan_last4\\\":\\\"$last4"
 check_mcp policy-mcp 8082 "get_policy_section search_policy"
 check_mcp actions-mcp 8083 "close_dispute issue_provisional_credit request_merchant_evidence"
 

@@ -13,6 +13,7 @@ services:
       POSTGRES_DB: disputes
       POSTGRES_USER: ${POSTGRES_USER:-disputes}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-disputes}
+      LEDGER_READER_PASSWORD: ${LEDGER_READER_PASSWORD:-ledger_reader}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
@@ -62,6 +63,14 @@ services:
   ledger-mcp:
     build: ../../mcp-servers/ledger-mcp
     image: dispute-agent/ledger-mcp:dev
+    environment:
+      # Read-only role with SELECT on the ledger schema only (postgres/initdb/20-ledger-reader.sh).
+      LEDGER_DB_URL: jdbc:postgresql://postgres:5432/disputes
+      LEDGER_DB_USER: ledger_reader
+      LEDGER_DB_PASSWORD: ${LEDGER_READER_PASSWORD:-ledger_reader}
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "127.0.0.1:8081:8081"
     healthcheck:

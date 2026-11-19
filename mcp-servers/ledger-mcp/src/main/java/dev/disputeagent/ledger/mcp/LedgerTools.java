@@ -12,6 +12,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The six read-only ledger tools. Input schemas live in {@code src/main/resources/tools/<name>.schema.json} and are
@@ -41,8 +46,6 @@ public enum LedgerTools {
             "List authorisation attempts on one card, newest first, including declines: entry mode, 3-D Secure "
                     + "result, CVV result, PIN verification and the fraud flag. Filter by authorisation id, date "
                     + "range, merchant and response. At most 50 per page.");
-
-    static final String NOT_IMPLEMENTED = "NOT_IMPLEMENTED: ledger-mcp tools are stubs until milestone M1.";
 
     private final String toolName;
     private final String title;
@@ -87,17 +90,41 @@ public enum LedgerTools {
                 .build();
     }
 
-    /** Tool specifications sorted by name, each with a stub handler that reports an error until M1. */
-    static List<SyncToolSpecification> specifications(McpJsonMapper jsonMapper) {
+    private static final Logger log = LoggerFactory.getLogger(LedgerTools.class);
+
+    /** Tool results: snake_case fields, ISO-8601 dates and instants. Not a bean, so Boot keeps its own mapper. */
+    static final JsonMapper RESULT_JSON = JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .build();
+
+    /**
+     * Tool specifications sorted by name. A result is the JSON of the handler's answer as text content; a
+     * {@link ToolError} becomes {@code isError: true} with its code; a database failure becomes {@code UNAVAILABLE}
+     * without details, which go to the log.
+     */
+    static List<SyncToolSpecification> specifications(McpJsonMapper jsonMapper, LedgerToolHandlers handlers) {
         return Arrays.stream(values())
                 .sorted(Comparator.comparing(LedgerTools::toolName))
                 .map(t -> SyncToolSpecification.builder()
                         .tool(t.tool(jsonMapper))
-                        .callHandler((exchange, request) -> CallToolResult.builder()
-                                .addTextContent(NOT_IMPLEMENTED)
-                                .isError(true)
-                                .build())
+                        .callHandler((exchange, request) -> {
+                            try {
+                                Object result = handlers.handle(t, request.arguments());
+                                return CallToolResult.builder()
+                                        .addTextContent(RESULT_JSON.writeValueAsString(result))
+                                        .build();
+                            } catch (ToolError e) {
+                                return error(e.text());
+                            } catch (DataAccessException e) {
+                                log.error("{} failed", t.toolName(), e);
+                                return error("UNAVAILABLE: the ledger could not be read; try again later");
+                            }
+                        })
                         .build())
                 .toList();
+    }
+
+    private static CallToolResult error(String text) {
+        return CallToolResult.builder().addTextContent(text).isError(true).build();
     }
 }
