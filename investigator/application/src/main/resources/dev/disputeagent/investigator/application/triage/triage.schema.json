@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": ["UNAUTHORISED_TRANSACTION", "DUPLICATE_CHARGE", "GOODS_NOT_RECEIVED", "CANCELLED_RECURRING", "AMOUNT_MISMATCH"],
+      "description": "The reason category the cardholder's statement describes."
+    },
+    "reason": {
+      "type": "string",
+      "description": "One sentence: what in the statement points to this category."
+    }
+  },
+  "required": ["category", "reason"],
+  "additionalProperties": false
+}
