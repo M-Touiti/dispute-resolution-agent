@@ -16,7 +16,7 @@ Prometheus and Grafana join in M1 and M2.
 ```sh
 (cd ../../data && uv run python generate.py)   # once; PostgreSQL loads data/generated/seed.sql on first start
 docker compose up -d --build --wait            # builds the three servers, waits until everything is healthy
-./smoke.sh                                     # seed loaded, Kafka round trip, MCP handshake, tools/list, a ledger read
+./smoke.sh                                     # seed, Kafka round trip, MCP handshakes, a ledger read, a policy search
 docker compose down                            # stop; add -v to drop the database volume
 ```
 
@@ -27,6 +27,9 @@ docker compose down                            # stop; add -v to drop the databa
 - **Roles:** `postgres/initdb/20-ledger-reader.sh` creates `ledger_reader`, which `ledger-mcp` uses: `SELECT` on
   the `ledger` schema only, read-only transactions. Its password defaults to `ledger_reader`; override it with
   `LEDGER_READER_PASSWORD`. `ledger-mcp` starts after `postgres` is healthy and its readiness includes the database.
+  `30-policy-service.sh` creates `policy_service`, which owns the `policy` schema only; `policy-mcp` ingests the
+  corpus there at start-up (mounted read-only from `data/policy-corpus`). Its password defaults to
+  `policy_service`; override it with `POLICY_SERVICE_PASSWORD`.
 - **Kafka:** topic auto-creation is off; topics are created explicitly from M1.
 - **policy-mcp:** DNS rebinding protection is on, so `POLICY_MCP_ALLOWED_HOSTS` lists the service name as well as
   localhost.

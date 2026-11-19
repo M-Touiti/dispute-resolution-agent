@@ -7,8 +7,12 @@ WORKDIR /app
 COPY pyproject.toml uv.lock .python-version ./
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked --no-dev
 COPY policy_mcp/ policy_mcp/
+ENV PATH=/app/.venv/bin:$PATH FASTEMBED_CACHE_PATH=/app/models
+# The embedding model is part of the image: downloaded once here, checked against the pinned digest (ADR 0007).
+RUN python -m policy_mcp.embedding --bake /app/models
 RUN useradd --system --uid 10001 --no-create-home app
 USER app
-ENV PATH=/app/.venv/bin:$PATH
+# No model download at run time; the corpus is mounted at /corpus (see deploy/compose/docker-compose.yml).
+ENV HF_HUB_OFFLINE=1 POLICY_CORPUS_DIR=/corpus
 EXPOSE 8082
-CMD ["uvicorn", "policy_mcp.app:app", "--host", "0.0.0.0", "--port", "8082"]
+CMD ["uvicorn", "--factory", "policy_mcp.app:create_app", "--host", "0.0.0.0", "--port", "8082"]

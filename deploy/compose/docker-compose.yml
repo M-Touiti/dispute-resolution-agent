@@ -14,6 +14,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-disputes}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-disputes}
       LEDGER_READER_PASSWORD: ${LEDGER_READER_PASSWORD:-ledger_reader}
+      POLICY_SERVICE_PASSWORD: ${POLICY_SERVICE_PASSWORD:-policy_service}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
@@ -86,6 +87,13 @@ services:
     environment:
       # DNS rebinding protection: the service name is how other containers reach it.
       POLICY_MCP_ALLOWED_HOSTS: "127.0.0.1:*,localhost:*,[::1]:*,policy-mcp:*"
+      # Owns the policy schema only (postgres/initdb/30-policy-service.sh); ingests the corpus at start-up.
+      POLICY_DB_URL: postgresql://policy_service:${POLICY_SERVICE_PASSWORD:-policy_service}@postgres:5432/disputes
+    volumes:
+      - ../../data/policy-corpus:/corpus:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "127.0.0.1:8082:8082"
     healthcheck:
@@ -93,7 +101,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 30
-      start_period: 10s
+      start_period: 20s
 
   actions-mcp:
     build: ../../mcp-servers/actions-mcp

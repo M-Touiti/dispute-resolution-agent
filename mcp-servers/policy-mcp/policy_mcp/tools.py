@@ -14,8 +14,6 @@ from typing import Any
 
 from mcp_types import Tool, ToolAnnotations
 
-NOT_IMPLEMENTED = "NOT_IMPLEMENTED: policy-mcp tools are stubs until milestone M1."
-
 
 @dataclass(frozen=True, slots=True)
 class PolicyTool:

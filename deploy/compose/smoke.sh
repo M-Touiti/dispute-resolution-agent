@@ -59,7 +59,7 @@ check_mcp() {
             || fail "$name: tools/call failed"
         if grep -q '"isError":true' <<<"$answer"; then fail "$name: tool error: $answer"; fi
         grep -qF "$want" <<<"$answer" || fail "$name: answer lacks '$want': $answer"
-        echo "ok   $(printf '%-12s' "$name") tools/call answered from the database"
+        echo "ok   $(printf '%-12s' "$name") tools/call answered from its data"
     fi
 }
 
@@ -70,7 +70,12 @@ last4=$(sed -n 2p ../../data/generated/cards.csv | cut -d, -f3)
 # The tool's JSON answer is a string inside the JSON-RPC response, so its quotes arrive escaped.
 check_mcp ledger-mcp 8081 "get_authorisations get_card get_cardholder get_merchant get_transaction search_transactions" \
     "{\"name\":\"get_card\",\"arguments\":{\"card_id\":\"$card\"}}" "pan_last4\\\":\\\"$last4"
-check_mcp policy-mcp 8082 "get_policy_section search_policy"
+
+# A real policy search over the ingested corpus: the time-limit section must be among the first three.
+check_mcp policy-mcp 8082 "get_policy_section search_policy" \
+    '{"name":"search_policy","arguments":{"query":"time limit for opening a dispute","max_results":3}}' \
+    'time-limits'
+
 check_mcp actions-mcp 8083 "close_dispute issue_provisional_credit request_merchant_evidence"
 
 echo "smoke: all checks passed"

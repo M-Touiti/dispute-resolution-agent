@@ -77,6 +77,13 @@ jobs:
           cache-dependency-glob: ${{ matrix.project }}/uv.lock
       - name: Install (Python from .python-version, dependencies from uv.lock)
         run: uv sync --locked
+      # policy-mcp's retrieval-quality test runs the production embedding model (ADR 0007); keep it between runs.
+      - name: Cache the embedding model
+        if: matrix.project == 'mcp-servers/policy-mcp'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/fastembed
+          key: fastembed-bge-small-en-v1.5-51f1bd0a
       - name: Generate the dataset (the golden set is checked against it)
         if: matrix.project == 'evals'
         working-directory: data
@@ -85,6 +92,8 @@ jobs:
         run: uv run ruff check . && uv run ruff format --check .
       - name: Test
         run: uv run pytest
+        env:
+          FASTEMBED_CACHE_PATH: ${{ runner.temp }}/fastembed
 
   compose:
     name: Compose smoke test

@@ -8,7 +8,8 @@ dependencies = [
     "mcp==2.3.0",
     "fastapi==0.163.1",
     "jsonschema>=4.26.0",
-    "psycopg[binary]==3.3.9",
+    "psycopg[binary,pool]==3.3.9",
+    "fastembed==0.9.1",
     "uvicorn>=0.54.0",
 ]
 
