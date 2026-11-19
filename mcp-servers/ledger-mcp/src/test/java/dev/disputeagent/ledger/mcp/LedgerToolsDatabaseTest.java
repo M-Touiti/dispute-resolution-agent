@@ -262,7 +262,8 @@ class LedgerToolsDatabaseTest {
     // Helpers ----------------------------------------------------------------------------------------------------
 
     private JsonNode ok(String tool, Map<String, Object> args) {
-        CallToolResult result = client.callTool(new CallToolRequest(tool, args));
+        CallToolRequest request = CallToolRequest.builder().name(tool).arguments(args).build();
+        CallToolResult result = client.callTool(request);
         assertThat(result.isError()).as(text(result)).isNotEqualTo(Boolean.TRUE);
         return JSON.readTree(text(result));
     }
