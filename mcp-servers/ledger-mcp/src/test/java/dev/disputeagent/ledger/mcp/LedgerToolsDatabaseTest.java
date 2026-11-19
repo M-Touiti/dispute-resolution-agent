@@ -121,8 +121,18 @@ class LedgerToolsDatabaseTest {
 
         JsonNode result = ok("get_transaction", Map.of("transaction_id", refund.get("transaction_id")));
 
+        long expectedAmountMinor;
+        try {
+            expectedAmountMinor = Long.parseLong(refund.get("amount_minor"));
+        } catch (NumberFormatException e) {
+            throw new AssertionError(
+                    "Invalid amount_minor in test fixture for transaction_id=" + refund.get("transaction_id") + ": "
+                            + refund.get("amount_minor"),
+                    e);
+        }
+
         assertThat(result.get("related_transaction_id").asString()).isEqualTo(refund.get("related_transaction_id"));
-        assertThat(result.get("amount_minor").asLong()).isEqualTo(Long.parseLong(refund.get("amount_minor")));
+        assertThat(result.get("amount_minor").asLong()).isEqualTo(expectedAmountMinor);
         assertThat(result.get("transaction_at").asString()).isEqualTo(refund.get("transaction_at"));
         assertThat(result.get("posted_on").asString()).isEqualTo(refund.get("posted_on"));
         assertThat(result.get("auth_id").isNull()).isTrue();
