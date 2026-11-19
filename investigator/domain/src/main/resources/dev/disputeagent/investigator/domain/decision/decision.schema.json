@@ -1,0 +1,80 @@
+{
+  "type": "object",
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": ["APPROVE_PROVISIONAL_CREDIT", "REQUEST_MERCHANT_EVIDENCE", "DECLINE", "ESCALATE"],
+      "description": "The decision for the case."
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH"],
+      "description": "How sure you are that the records and the policy support this outcome."
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Why, in a few sentences: the facts from the records and the policy rule that decides the case. For an escalation, what is missing or in conflict."
+    },
+    "cited_evidence_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Ids of the transactions, authorisations and documents the decision relies on, exactly as the tools returned them."
+    },
+    "cited_policy_sections": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Ids of the policy sections that decide the case, exactly as search_policy returned them."
+    },
+    "proposed_actions": {
+      "type": "array",
+      "description": "The action the outcome allows, at most one: issue_provisional_credit for an approval, request_merchant_evidence for an evidence request, close_dispute for a decline, none for an escalation. Nothing is executed without a person's approval.",
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "action": {"type": "string", "const": "issue_provisional_credit"},
+              "amount_minor": {"type": "integer", "description": "Amount to credit in minor units (cents) of EUR, never more than the disputed amount."},
+              "currency": {"type": "string", "enum": ["EUR"]}
+            },
+            "required": ["action", "amount_minor", "currency"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "action": {"type": "string", "const": "request_merchant_evidence"},
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["RECEIPT", "PROOF_OF_DELIVERY", "SIGNED_AUTHORISATION", "CANCELLATION_POLICY", "REFUND_RECORD"]
+                },
+                "description": "What the merchant must provide."
+              },
+              "note": {"type": "string", "description": "What the evidence should show, addressed to the merchant."}
+            },
+            "required": ["action", "evidence", "note"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "action": {"type": "string", "const": "close_dispute"},
+              "reason": {"type": "string", "description": "Why the dispute is declined, for the cardholder."},
+              "policy_section_ids": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "The policy sections that support the decline."
+              }
+            },
+            "required": ["action", "reason", "policy_section_ids"],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "required": ["outcome", "confidence", "rationale", "cited_evidence_ids", "cited_policy_sections", "proposed_actions"],
+  "additionalProperties": false
+}
