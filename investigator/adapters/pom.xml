@@ -26,6 +26,11 @@
             <groupId>com.anthropic</groupId>
             <artifactId>anthropic-java</artifactId>
         </dependency>
+        <!-- mcp client adapter: the MCP Java SDK bundle (mcp-core + mcp-json-jackson3), version from the mcp-bom -->
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+        </dependency>
         <!-- json adapter: Jackson 3 (managed by Spring Boot) and the validator the MCP SDK uses (pinned in the parent) -->
         <dependency>
             <groupId>tools.jackson.core</groupId>
@@ -43,6 +48,12 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Test only: an in-process MCP server on the SDK's servlet transport, as ledger-mcp runs it -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

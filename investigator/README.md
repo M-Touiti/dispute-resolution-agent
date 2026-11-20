@@ -74,10 +74,18 @@ authentication); retries live in the SDK (`max-retries`) until Resilience4j take
 around the live adapter; `ReplayAdapter` serves them with no client and fails with `FIXTURE_MISSING` on a miss.
 `InvestigationReplayTest` records a whole investigation and replays it with fresh instances.
 
+`adapters/mcpclient/McpClientAdapter` implements `McpToolPort` on the MCP Java SDK's Streamable HTTP client
+(ADR 0003): one client per configured server, connected on first use; `tools/list` read once, every page; every
+discovered schema checked against the strict subset (a server that drifts fails discovery, not the model call);
+request timeout and maximum response size; a transport failure drops the client so the next call reconnects. Only
+the servers it is constructed with exist: the bootstrap gives it the ledger and policy servers, never actions.
+`McpClientAdapterTest` runs against an in-process server on the SDK's servlet transport; `McpStackTest`
+(`MCP_STACK_TEST=1`, compose stack running) checks the client against ledger-mcp and the Python policy-mcp.
+
 Live check (off by default, never in CI, under one cent):
 `ANTHROPIC_LIVE_TEST=1 ANTHROPIC_API_KEY=... ./mvnw -pl adapters test -Dtest=AnthropicLiveTest`
 
 ## Status
 
-M1 in progress: domain (1.7), use cases (1.8), skills (1.9), the Anthropic adapter (1.10) and record and replay
-(1.11) done; the MCP client (1.12) and Kafka and JPA (1.13) follow.
+M1 in progress: domain (1.7), use cases (1.8), skills (1.9), the Anthropic adapter (1.10), record and replay
+(1.11) and the MCP client (1.12) done; Kafka, JPA and the bootstrap wiring (1.13) follow.
