@@ -12,6 +12,7 @@ import java.util.Objects;
  * @param content         content blocks in order; thinking blocks must be passed back unchanged on the next turn
  * @param usage           token usage including cache reads and writes
  * @param refusalCategory provider category when {@code stopReason} is {@link StopReason#REFUSAL}, else {@code null}
+ * @param cost            what the call cost, from the adapter's price table
  */
 public record LlmResponse(
         String id,
@@ -19,13 +20,15 @@ public record LlmResponse(
         StopReason stopReason,
         List<ContentBlock> content,
         Usage usage,
-        String refusalCategory) {
+        String refusalCategory,
+        LlmCost cost) {
 
     public LlmResponse {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(model, "model");
         Objects.requireNonNull(stopReason, "stopReason");
         Objects.requireNonNull(usage, "usage");
+        Objects.requireNonNull(cost, "cost");
         content = List.copyOf(content);
     }
 

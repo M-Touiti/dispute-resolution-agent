@@ -69,7 +69,7 @@ public final class TriageDispute {
             return fallBack(dispute, "the triage model could not be reached");
         }
         audit.record(new AuditEvent.ModelCalled(dispute.disputeId(), start, Stage.TRIAGE, settings.triageModel(),
-                response.model(), response.id(), response.stopReason(), response.usage(),
+                response.model(), response.id(), response.stopReason(), response.usage(), response.cost(),
                 Duration.between(start, clock.instant())));
         if (response.stopReason() != StopReason.END_TURN) {
             return fallBack(dispute, "stop_reason " + response.stopReason());

@@ -63,7 +63,7 @@ class LlmRequestTest {
         var second = new ContentBlock.ToolUse("t2", "get_transactions", "{}");
         var response = new LlmResponse("msg_1", "model-that-answered", StopReason.TOOL_USE,
                 List.of(new ContentBlock.Thinking("", "sig"), first, new ContentBlock.Text("x"), second),
-                new Usage(10, 5, 0, 0), null);
+                new Usage(10, 5, 0, 0), null, new LlmCost(0, "test"));
 
         assertThat(response.toolUses()).containsExactly(first, second);
         assertThat(response.asAssistantMessage().content()).isEqualTo(response.content());
