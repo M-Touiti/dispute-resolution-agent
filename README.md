@@ -37,7 +37,7 @@ flowchart LR
 
 | Part | State | Tests |
 |---|---|---|
-| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, tested with fake ports. `adapters`: JSON and schema validation; the model, MCP, Kafka and database adapters follow | 80 |
+| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand, tested with fake ports. `adapters`: JSON and schema validation; the model, MCP, Kafka and database adapters follow | 90 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation. Same seed, same bytes | 21 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
@@ -81,7 +81,7 @@ investigator/        Java 21, Spring Boot 4: domain, application (ports, use cas
 mcp-servers/         ledger-mcp (Java), policy-mcp (Python), actions-mcp (Java); each has its own README
 data/                seeded synthetic data generator; policy corpus (Markdown, 24 sections)
 evals/               golden set, graders, recorded fixtures, REPORT.md (M1 to M3)
-skills/              Agent Skills loaded on demand (M1)
+skills/              Agent Skills (SKILL.md) the investigator loads on demand
 performance/         k6 scripts and failure injection (M2)
 deploy/              docker compose; Kustomize manifests (M2)
 docs/                roadmap, architecture decision records, diagrams

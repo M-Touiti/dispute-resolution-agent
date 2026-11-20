@@ -48,6 +48,10 @@ public sealed interface AuditEvent {
             implements AuditEvent {
     }
 
+    /** The model loaded a skill (or asked for one that does not exist). */
+    record SkillLoaded(CaseId caseId, Instant at, String skill, boolean found) implements AuditEvent {
+    }
+
     /** Triage could not classify; the reported category is used. */
     record TriageFellBack(CaseId caseId, Instant at, String reason) implements AuditEvent {
     }
