@@ -198,7 +198,7 @@ public final class InvestigateDispute {
             LlmResponse response = llm.send(request);
             audit.record(new AuditEvent.ModelCalled(dispute.id(), start, Stage.INVESTIGATE,
                     settings.investigatorModel(), response.model(), response.id(), response.stopReason(),
-                    response.usage(), Duration.between(start, clock.instant())));
+                    response.usage(), response.cost(), Duration.between(start, clock.instant())));
             return Optional.of(response);
         } catch (RuntimeException e) {
             audit.record(new AuditEvent.ModelCallFailed(dispute.id(), start, Stage.INVESTIGATE,

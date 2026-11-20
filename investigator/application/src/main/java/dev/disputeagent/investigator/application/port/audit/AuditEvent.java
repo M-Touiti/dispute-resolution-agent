@@ -1,5 +1,6 @@
 package dev.disputeagent.investigator.application.port.audit;
 
+import dev.disputeagent.investigator.application.port.llm.LlmCost;
 import dev.disputeagent.investigator.application.port.llm.StopReason;
 import dev.disputeagent.investigator.application.port.llm.Usage;
 import dev.disputeagent.investigator.application.port.mcp.McpServer;
@@ -23,7 +24,8 @@ public sealed interface AuditEvent {
     enum Caller { MODEL, SYSTEM }
 
     record ModelCalled(CaseId caseId, Instant at, Stage stage, String configuredModel, String answeredModel,
-            String responseId, StopReason stopReason, Usage usage, Duration latency) implements AuditEvent {
+            String responseId, StopReason stopReason, Usage usage, LlmCost cost, Duration latency)
+            implements AuditEvent {
     }
 
     /** A model call that failed before an answer (transport, provider error). */

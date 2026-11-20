@@ -63,7 +63,8 @@ public final class Fakes {
 
         public ScriptedLlm then(StopReason stop, ContentBlock... content) {
             script.add(new LlmResponse("msg_" + ++ids, "claude-opus-5-5", stop, List.of(content),
-                    new Usage(1_000, 200, 800, 0), stop == StopReason.REFUSAL ? "cyber" : null));
+                    new Usage(1_000, 200, 800, 0), stop == StopReason.REFUSAL ? "cyber" : null,
+                    new dev.disputeagent.investigator.application.port.llm.LlmCost(9_160, "test")));
             return this;
         }
 

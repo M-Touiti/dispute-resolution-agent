@@ -21,6 +21,11 @@
             <groupId>dev.disputeagent</groupId>
             <artifactId>investigator-application</artifactId>
         </dependency>
+        <!-- anthropic adapter: the only module that sees SDK types (ADR 0001); version pinned in the parent -->
+        <dependency>
+            <groupId>com.anthropic</groupId>
+            <artifactId>anthropic-java</artifactId>
+        </dependency>
         <!-- json adapter: Jackson 3 (managed by Spring Boot) and the validator the MCP SDK uses (pinned in the parent) -->
         <dependency>
             <groupId>tools.jackson.core</groupId>

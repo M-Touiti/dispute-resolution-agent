@@ -3,7 +3,7 @@ spring:
     name: investigator
 
 # Model ids, effort and max tokens live here and in the environment, never in code (ADR 0001).
-# Bound to configuration properties when the anthropic adapter lands (M1).
+# Bound to configuration properties when the bootstrap wires the adapters (task 1.13).
 investigator:
   llm:
     adapter: ${LLM_ADAPTER:replay}
@@ -11,8 +11,21 @@ investigator:
       model: ${INVESTIGATOR_MODEL:}
       effort: ${INVESTIGATOR_EFFORT:medium}
       max-tokens: 16000
+      # Retries are configured in exactly one place: the SDK in M1; 0 once Resilience4j wraps the port (M2).
+      max-retries: 2
+      timeout: PT5M
     triage:
       model: ${TRIAGE_MODEL:}
+      effort: ${TRIAGE_EFFORT:low}
+      max-tokens: 1000
+    # Dollars per million tokens (ADR 0001); the version is recorded with every cost. Input, output and cache
+    # reads are the published prices on 20 Nov 2026; cache writes (5-minute cache) are not published for these
+    # models and are derived as 1.25x input. Haiku: the price for prompts up to 100K tokens.
+    prices:
+      version: "2026-11-20"
+      models:
+        claude-opus-5-5: {input: 4.00, output: 20.00, cache-read: 0.20, cache-write: 5.00}
+        claude-haiku-5-5: {input: 0.10, output: 0.50, cache-read: 0.01, cache-write: 0.125}
   mcp:
     ledger-url: ${LEDGER_MCP_URL:http://localhost:8081/mcp}
     policy-url: ${POLICY_MCP_URL:http://localhost:8082/mcp}

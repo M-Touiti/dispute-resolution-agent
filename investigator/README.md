@@ -61,7 +61,18 @@ Pure Java, no clock: time is passed in. Parsing the model's JSON into a `Decisio
 validator), so the decision is validated against `decision.schema.json` before it is mapped.
 `adapters/skills/FileSkillLibrary` reads `skills/*/SKILL.md`.
 
+`adapters/anthropic/AnthropicAdapter` implements `LlmPort` on the Anthropic Java SDK (non-beta Messages API, one
+non-streaming call per request). `AnthropicMapping` is the only class that knows the request shape: adaptive thinking
+sent explicitly, `output_config` with the effort and the JSON schema format, strict tools, the cache breakpoint on
+the system block, assistant turns passed back block for block; never `tool_choice`, sampling parameters or a
+thinking budget. Responses carry a cost from `PriceTable` (configured in `application.yml`, versioned). SDK
+exceptions become `LlmCallException` kinds (rate limited, overloaded, timeout, server error, bad request,
+authentication); retries live in the SDK (`max-retries`) until Resilience4j takes over in M2.
+
+Live check (off by default, never in CI, under one cent):
+`ANTHROPIC_LIVE_TEST=1 ANTHROPIC_API_KEY=... ./mvnw -pl adapters test -Dtest=AnthropicLiveTest`
+
 ## Status
 
-M1 in progress: domain (1.7), use cases (1.8) and skills (1.9) done; the LLM, MCP, Kafka and JPA adapters (1.10 to
-1.13) follow.
+M1 in progress: domain (1.7), use cases (1.8), skills (1.9) and the Anthropic adapter (1.10) done; record and
+replay (1.11), the MCP client (1.12) and Kafka and JPA (1.13) follow.
