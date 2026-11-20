@@ -39,6 +39,13 @@ public final class Fakes {
     private Fakes() {
     }
 
+    /** The two repository skills, abridged. */
+    public static final dev.disputeagent.investigator.application.port.skills.SkillLibrary SKILLS = () -> List.of(
+            new dev.disputeagent.investigator.application.port.skills.Skill("unauthorised-transaction-checklist",
+                    "The evidence check for an unauthorised transaction.", "1. Get the disputed transaction."),
+            new dev.disputeagent.investigator.application.port.skills.Skill("reading-an-authorisation-trail",
+                    "How to read an authorisation.", "| entry_mode | CHIP |"));
+
     /** Settings as configuration would give them: model ids, effort, token caps, budget, policy limits. */
     public static dev.disputeagent.investigator.application.investigation.InvestigationSettings settings(
             dev.disputeagent.investigator.domain.investigation.LoopBudget budget) {

@@ -27,7 +27,7 @@ final class Toolbox {
         this.byName = byName;
     }
 
-    static Toolbox discover(McpToolPort mcp) {
+    static Toolbox discover(McpToolPort mcp, Set<String> reservedNames) {
         Map<String, McpTool> byName = new LinkedHashMap<>();
         List<McpServer> servers = new ArrayList<>(ALLOWED);
         servers.sort(Comparator.naturalOrder());
@@ -36,6 +36,10 @@ final class Toolbox {
                 throw new IllegalStateException("a write server must never be offered to the model: " + server);
             }
             for (McpTool tool : mcp.listTools(server)) {
+                if (reservedNames.contains(tool.name())) {
+                    throw new IllegalStateException(server + " offers " + tool.name() + ", a name the investigator "
+                            + "keeps for its own tool");
+                }
                 McpTool previous = byName.putIfAbsent(tool.name(), tool);
                 if (previous != null) {
                     throw new IllegalStateException("tool " + tool.name() + " offered by " + previous.server()

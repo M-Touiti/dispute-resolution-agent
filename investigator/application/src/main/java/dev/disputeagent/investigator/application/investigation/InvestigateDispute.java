@@ -15,10 +15,12 @@ import dev.disputeagent.investigator.application.port.llm.LlmResponse;
 import dev.disputeagent.investigator.application.port.llm.OutputFormat;
 import dev.disputeagent.investigator.application.port.llm.Role;
 import dev.disputeagent.investigator.application.port.llm.SystemBlock;
+import dev.disputeagent.investigator.application.port.llm.ToolDefinition;
 import dev.disputeagent.investigator.application.port.mcp.McpServer;
 import dev.disputeagent.investigator.application.port.mcp.McpToolCall;
 import dev.disputeagent.investigator.application.port.mcp.McpToolPort;
 import dev.disputeagent.investigator.application.port.mcp.McpToolResult;
+import dev.disputeagent.investigator.application.port.skills.SkillLibrary;
 import dev.disputeagent.investigator.domain.decision.Decision;
 import dev.disputeagent.investigator.domain.guard.GuardResult;
 import dev.disputeagent.investigator.domain.guard.PolicyGuard;
@@ -55,7 +57,7 @@ import java.util.concurrent.ExecutorService;
  */
 public final class InvestigateDispute {
 
-    private static final String SYSTEM_PROMPT = Resources.text(InvestigateDispute.class, "system-prompt.md");
+    private static final String BASE_PROMPT = Resources.text(InvestigateDispute.class, "system-prompt.md");
 
     private final LlmPort llm;
     private final McpToolPort mcp;
@@ -66,9 +68,11 @@ public final class InvestigateDispute {
     private final InvestigationSettings settings;
     private final PolicyGuard guard;
     private final ToolInvoker invoker;
+    private final Skills skills;
+    private final String systemPrompt;
 
     public InvestigateDispute(LlmPort llm, McpToolPort mcp, JsonPort json, AuditLog audit, Clock clock,
-            ExecutorService toolExecutor, InvestigationSettings settings) {
+            ExecutorService toolExecutor, InvestigationSettings settings, SkillLibrary skillLibrary) {
         this.llm = llm;
         this.mcp = mcp;
         this.json = json;
@@ -78,11 +82,13 @@ public final class InvestigateDispute {
         this.settings = settings;
         this.guard = new PolicyGuard(settings.policyLimits());
         this.invoker = new ToolInvoker(mcp, clock);
+        this.skills = new Skills(skillLibrary);
+        this.systemPrompt = BASE_PROMPT + skills.index();
     }
 
-    /** The stable system prompt; part of every request and of the fixture key. */
-    public static String systemPrompt() {
-        return SYSTEM_PROMPT;
+    /** The stable system prompt with the skill index; part of every request and of the fixture key. */
+    public String systemPrompt() {
+        return systemPrompt;
     }
 
     /** Runs the investigation of a triaged case to a terminal state. */
@@ -95,7 +101,7 @@ public final class InvestigateDispute {
         Toolbox toolbox;
         CaseEvidence evidence;
         try {
-            toolbox = Toolbox.discover(mcp);
+            toolbox = Toolbox.discover(mcp, Set.of(Skills.TOOL_NAME));
             evidence = CaseEvidence.collect(event, invoker, json, audit);
         } catch (CaseEvidence.InvalidCaseData e) {
             escalate(dispute, EscalationReason.CASE_DATA_INVALID, e.getMessage());
@@ -180,9 +186,13 @@ public final class InvestigateDispute {
     }
 
     private Optional<LlmResponse> send(DisputeCase dispute, List<LlmMessage> messages, Toolbox toolbox) {
+        List<ToolDefinition> tools = new ArrayList<>(toolbox.definitions());
+        if (!skills.isEmpty()) {
+            tools.add(skills.tool());
+        }
         var request = new LlmRequest(settings.investigatorModel(), settings.investigatorEffort(),
-                settings.investigatorMaxTokens(), List.of(new SystemBlock(SYSTEM_PROMPT, true)), messages,
-                toolbox.definitions(), new OutputFormat(Decision.jsonSchema()));
+                settings.investigatorMaxTokens(), List.of(new SystemBlock(systemPrompt, true)), messages, tools,
+                new OutputFormat(Decision.jsonSchema()));
         Instant start = clock.instant();
         try {
             LlmResponse response = llm.send(request);
@@ -212,6 +222,10 @@ public final class InvestigateDispute {
         List<ContentBlock> results = new ArrayList<>();
         for (int i = 0; i < calls.size(); i++) {
             ContentBlock.ToolUse call = calls.get(i);
+            if (call.name().equals(Skills.TOOL_NAME)) {
+                results.add(loadSkill(dispute, call));
+                continue;
+            }
             if (futures.get(i) == null) {
                 results.add(new ContentBlock.ToolResult(call.id(),
                         "UNKNOWN_TOOL: " + call.name() + " is not available in this investigation", true));
@@ -229,6 +243,16 @@ public final class InvestigateDispute {
             results.add(new ContentBlock.ToolResult(call.id(), wrapped, result.isError()));
         }
         return results;
+    }
+
+    /** Answered locally: skills are this repository's text, not data from outside, so they are not wrapped. */
+    private ContentBlock.ToolResult loadSkill(DisputeCase dispute, ContentBlock.ToolUse call) {
+        String name = json.valuesOf(call.inputJson(), "name").stream().findFirst().orElse("");
+        Optional<String> body = skills.load(name);
+        audit.record(new AuditEvent.SkillLoaded(dispute.id(), clock.instant(), name, body.isPresent()));
+        return body.map(text -> new ContentBlock.ToolResult(call.id(), text, false))
+                .orElseGet(() -> new ContentBlock.ToolResult(call.id(),
+                        "UNKNOWN_SKILL: " + name + "; available: " + String.join(", ", skills.names()), true));
     }
 
     private static Optional<String> lastText(LlmResponse response) {

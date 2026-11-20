@@ -52,7 +52,7 @@ class HandleDisputeOpenedTest {
 
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             var handler = new HandleDisputeOpened(new TriageDispute(llm, json, audit, clock, settings),
-                    new InvestigateDispute(llm, mcp, json, audit, clock, executor, settings), audit, clock);
+                    new InvestigateDispute(llm, mcp, json, audit, clock, executor, settings, Fakes.SKILLS), audit, clock);
 
             var result = handler.handle(dispute);
 
