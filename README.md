@@ -37,7 +37,7 @@ flowchart LR
 
 | Part | State | Tests |
 |---|---|---|
-| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand, tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, JSON and schema validation; MCP, Kafka and database adapters follow | 111 |
+| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand, tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, recording and replay of model calls, JSON and schema validation; MCP, Kafka and database adapters follow | 122 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation. Same seed, same bytes | 21 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
@@ -96,7 +96,7 @@ docs/                roadmap, architecture decision records, diagrams
 | [0003](docs/adr/0003-self-hosted-mcp-servers-and-client.md) | Self-hosted MCP servers and our own client on the raw MCP Java SDK, rather than the Messages API MCP connector or Spring AI: private servers, every call gated before it runs | accepted |
 | [0004](docs/adr/0004-local-embedding-model.md) | A local embedding model behind a port, baked into the image: one API key, no network in replay | accepted |
 | 0005 | Approval tokens verified inside the write server, not only in the client | planned (M2) |
-| 0006 | Recorded fixtures for CI and a nightly live evaluation slice with a spend cap | planned (M1 / M3) |
+| [0006](docs/adr/0006-recorded-fixtures-and-nightly-live-evaluation.md) | Fixtures keyed by a hash of the canonical request: CI replays them with no key, a miss fails and never calls live; a nightly live slice with a spend cap (M3) | accepted |
 | [0007](docs/adr/0007-embedding-model-and-fusion-measured-on-the-corpus.md) | `bge-small-en-v1.5` and hybrid retrieval with full text at half weight, chosen by measuring 45 questions on the real corpus; supersedes 0004's model | accepted |
 
 The index with full titles is in [docs/adr](docs/adr/README.md); pinned versions are in the

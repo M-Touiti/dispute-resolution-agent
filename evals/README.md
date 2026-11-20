@@ -6,7 +6,7 @@ Python 3.13, uv, standard library only at run time. Run from this directory.
 |---|---|---|
 | `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases |
 | `evaltools/` | `golden.py` selector; runner and deterministic graders | selector done; graders in task 1.15 |
-| `fixtures/` | Recorded model requests and responses keyed by request hash; served by the replay adapter in CI | task 1.16 |
+| `fixtures/llm/` | Recorded model requests and responses, `<sha256 of the canonical request>.json` (ADR 0006); served by the replay adapter in CI | format and adapters done (1.11); recorded in 1.16 |
 | `nightly/` | Dated results of the scheduled 30-case live slice | M3 |
 | `REPORT.md` | Published metrics and the unfixed failures | M3 |
 

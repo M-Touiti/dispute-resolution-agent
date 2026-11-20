@@ -69,10 +69,15 @@ thinking budget. Responses carry a cost from `PriceTable` (configured in `applic
 exceptions become `LlmCallException` kinds (rate limited, overloaded, timeout, server error, bad request,
 authentication); retries live in the SDK (`max-retries`) until Resilience4j takes over in M2.
 
+`adapters/fixtures` (ADR 0006): `Fixtures` keys a request by the SHA-256 of its canonical JSON and stores
+`evals/fixtures/llm/<key>.json` (canonical request plus response, no timestamps); `RecordingAdapter` writes them
+around the live adapter; `ReplayAdapter` serves them with no client and fails with `FIXTURE_MISSING` on a miss.
+`InvestigationReplayTest` records a whole investigation and replays it with fresh instances.
+
 Live check (off by default, never in CI, under one cent):
 `ANTHROPIC_LIVE_TEST=1 ANTHROPIC_API_KEY=... ./mvnw -pl adapters test -Dtest=AnthropicLiveTest`
 
 ## Status
 
-M1 in progress: domain (1.7), use cases (1.8), skills (1.9) and the Anthropic adapter (1.10) done; record and
-replay (1.11), the MCP client (1.12) and Kafka and JPA (1.13) follow.
+M1 in progress: domain (1.7), use cases (1.8), skills (1.9), the Anthropic adapter (1.10) and record and replay
+(1.11) done; the MCP client (1.12) and Kafka and JPA (1.13) follow.
