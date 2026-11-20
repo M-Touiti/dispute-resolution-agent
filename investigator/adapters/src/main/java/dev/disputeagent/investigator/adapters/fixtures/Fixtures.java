@@ -233,7 +233,8 @@ public final class Fixtures {
                     b.put("name", use.name());
                     b.put("input_json", use.inputJson()); // exact text: replay sends the same bytes to the tool
                 }
-                case ContentBlock.ToolResult tr -> throw new IllegalArgumentException("a response has no tool results");
+                case ContentBlock.ToolResult tr -> throw new IllegalArgumentException(
+                        "a response has no tool results, got one for " + tr.toolUseId());
             }
             content.add(b);
         }
