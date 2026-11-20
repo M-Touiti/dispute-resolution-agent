@@ -39,6 +39,25 @@ From this directory (the wrapper pins Maven 3.9.12; on Windows use `mvnw.cmd`):
 
 Pure Java, no clock: time is passed in. Parsing the model's JSON into a `Decision` belongs to an adapter.
 
+## Application (M1)
+
+- `HandleDisputeOpened`: one dispute from the event to a decided or escalated case: triage, then investigation.
+- `TriageDispute`: the cheap model classifies the statement as structured output; on a refusal, an invalid answer
+  or an unreachable model, the recorded category is used and the fallback audited. A disagreement reaches the
+  investigator as both categories.
+- `InvestigateDispute`: the loop (ADR 0002). Before the loop the investigator itself, not the model, collects the
+  records of the dispute's card (`CaseEvidence`); the guard accepts citations from that set and policy sections the
+  model actually retrieved. The model sees only the ledger and policy tools (`Toolbox`), strict and sorted, with a
+  stable cached system prompt (`system-prompt.md`) and the case in the user turn. Stop reason first: `refusal`,
+  truncation and anything unexpected escalate; a turn's tool calls run concurrently and return in one message,
+  wrapped as untrusted, failures as `is_error`. An answer that fails the decision schema is sent back once with
+  the errors. Every model call, tool call (arguments as SHA-256), state change and decision is audited.
+- Ports: `LlmPort`, `McpToolPort`, `JsonPort` (the application may not use a JSON library), `AuditLog`.
+
+`adapters/json/JacksonJsonAdapter` implements `JsonPort` with Jackson 3 and `json-schema-validator` (the MCP SDK's
+validator), so the decision is validated against `decision.schema.json` before it is mapped.
+
 ## Status
 
-M1 in progress: the domain above is done (task 1.7); the use cases (1.8) and the adapters (1.10 to 1.13) follow.
+M1 in progress: domain (1.7) and use cases (1.8) done; skills (1.9) and the LLM, MCP, Kafka and JPA adapters
+(1.10 to 1.13) follow.

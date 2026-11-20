@@ -15,7 +15,9 @@ public enum EscalationReason {
     /** The model stopped for a reason the loop does not handle (truncation, context window, unknown). */
     UNEXPECTED_STOP(false),
     /** A tool or the model could not be reached. */
-    DEPENDENCY_UNAVAILABLE(false);
+    DEPENDENCY_UNAVAILABLE(false),
+    /** The records contradict the dispute (for example the disputed transaction is not on the dispute's card). */
+    CASE_DATA_INVALID(false);
 
     private final boolean unsafeProposal;
 
