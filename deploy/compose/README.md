@@ -7,16 +7,17 @@
 | `ledger-mcp` | built from `mcp-servers/ledger-mcp` | `127.0.0.1:8081` | `http://ledger-mcp:8081/mcp` |
 | `policy-mcp` | built from `mcp-servers/policy-mcp` | `127.0.0.1:8082` | `http://policy-mcp:8082/mcp` |
 | `actions-mcp` | built from `mcp-servers/actions-mcp` | `127.0.0.1:8083` | `http://actions-mcp:8083/mcp` |
+| `investigator` | built from `investigator` | `127.0.0.1:8080` (health only) | consumes `disputes.opened`, publishes `disputes.decided` |
 
-The host ports match `.env.example`, so the investigator can run on the host against the stack. The investigator,
-Prometheus and Grafana join in M1 and M2.
+The host ports match `.env.example`, so the investigator can also run on the host against the stack. Prometheus and
+Grafana join in M2.
 
 ## Run
 
 ```sh
 (cd ../../data && uv run python generate.py)   # once; PostgreSQL loads data/generated/seed.sql on first start
 docker compose up -d --build --wait            # builds the three servers, waits until everything is healthy
-./smoke.sh                                     # seed, Kafka round trip, MCP handshakes, a ledger read, a policy search
+./smoke.sh                                     # seed, Kafka, MCP handshakes and reads, one dispute end to end
 docker compose down                            # stop; add -v to drop the database volume
 ```
 
@@ -32,6 +33,14 @@ docker compose down                            # stop; add -v to drop the databa
   `policy_service`; override it with `POLICY_SERVICE_PASSWORD`.
   `40-investigator.sh` creates `investigator`, which owns the `investigation` schema (cases and audit, migrated by
   Flyway) and nothing else; the investigator joins the stack in M1 task 1.14.
+- **Investigator:** `LLM_ADAPTER` selects `replay` (default: serves `evals/fixtures/llm`, needs no key), `recording`
+  or `anthropic` (both need `ANTHROPIC_API_KEY` in the environment). `skills/` and `evals/fixtures/llm/` are mounted
+  from the repository. Until the fixtures are recorded (M1 task 1.16), replay misses on every call and each case
+  escalates with `DEPENDENCY_UNAVAILABLE`; the audit row names the missing fixture. The smoke test accepts either
+  outcome: it checks the pipeline (event in, evidence read from ledger-mcp, case and audit stored, event out). Set
+  `SMOKE_DISPUTE` to send another dispute; a dispute already stored is published again, not investigated again.
+  On Linux, recording through compose needs the fixtures folder writable by uid 10001; recording from the host
+  (`./mvnw -pl bootstrap spring-boot:run` with `LLM_ADAPTER=recording`) avoids that.
 - **Kafka:** topic auto-creation is off; topics are created explicitly from M1.
 - **policy-mcp:** DNS rebinding protection is on, so `POLICY_MCP_ALLOWED_HOSTS` lists the service name as well as
   localhost.

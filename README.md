@@ -42,7 +42,7 @@ flowchart LR
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
 | `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token`; every call is rejected until token verification lands in M2 | 16 |
-| `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.2 (KRaft), the three servers; `smoke.sh` checks all of them | smoke |
+| `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.2 (KRaft), the three MCP servers and the investigator; `smoke.sh` checks each and runs one dispute end to end | smoke |
 | CI | Build and tests per module, lint, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
 
 Every tool's input schema stays inside the JSON Schema subset that strict tool use accepts, and a test in each
@@ -56,7 +56,7 @@ Prerequisites: JDK 21, [uv](https://docs.astral.sh/uv/), Docker. No API key is n
 # Generate the synthetic data (seed 20261101 by default)
 cd data && uv run python generate.py && cd ..
 
-# Start PostgreSQL, Kafka and the three MCP servers, then check them
+# Start PostgreSQL, Kafka, the three MCP servers and the investigator, then check them
 cd deploy/compose
 docker compose up -d --build --wait
 ./smoke.sh            # Git Bash on Windows

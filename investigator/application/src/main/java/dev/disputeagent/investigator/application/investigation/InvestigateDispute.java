@@ -8,6 +8,7 @@ import dev.disputeagent.investigator.application.port.audit.AuditLog;
 import dev.disputeagent.investigator.application.port.json.JsonPort;
 import dev.disputeagent.investigator.application.port.json.Parsed;
 import dev.disputeagent.investigator.application.port.llm.ContentBlock;
+import dev.disputeagent.investigator.application.port.llm.LlmCallException;
 import dev.disputeagent.investigator.application.port.llm.LlmMessage;
 import dev.disputeagent.investigator.application.port.llm.LlmPort;
 import dev.disputeagent.investigator.application.port.llm.LlmRequest;
@@ -124,12 +125,12 @@ public final class InvestigateDispute {
                 escalate(dispute, EscalationReason.CAP_REACHED, cap.get().cap() + " " + cap.get().detail());
                 return;
             }
-            Optional<LlmResponse> sent = send(dispute, messages, toolbox);
-            if (sent.isEmpty()) {
-                escalate(dispute, EscalationReason.DEPENDENCY_UNAVAILABLE, "the model could not be reached");
+            Sent sent = send(dispute, messages, toolbox);
+            if (sent.response() == null) {
+                escalate(dispute, EscalationReason.DEPENDENCY_UNAVAILABLE, "model call failed: " + sent.failure());
                 return;
             }
-            LlmResponse response = sent.get();
+            LlmResponse response = sent.response();
             usage.modelCallCompleted(response.usage().inputTokens(), response.usage().outputTokens());
 
             switch (response.stopReason()) {
@@ -185,7 +186,11 @@ public final class InvestigateDispute {
         }
     }
 
-    private Optional<LlmResponse> send(DisputeCase dispute, List<LlmMessage> messages, Toolbox toolbox) {
+    /** A response, or why there is none. */
+    private record Sent(LlmResponse response, String failure) {
+    }
+
+    private Sent send(DisputeCase dispute, List<LlmMessage> messages, Toolbox toolbox) {
         List<ToolDefinition> tools = new ArrayList<>(toolbox.definitions());
         if (!skills.isEmpty()) {
             tools.add(skills.tool());
@@ -199,12 +204,11 @@ public final class InvestigateDispute {
             audit.record(new AuditEvent.ModelCalled(dispute.id(), start, Stage.INVESTIGATE,
                     settings.investigatorModel(), response.model(), response.id(), response.stopReason(),
                     response.usage(), response.cost(), Duration.between(start, clock.instant())));
-            return Optional.of(response);
+            return new Sent(response, null);
         } catch (RuntimeException e) {
             audit.record(new AuditEvent.ModelCallFailed(dispute.id(), start, Stage.INVESTIGATE,
-                    settings.investigatorModel(), e.getClass().getSimpleName(), Duration.between(start,
-                            clock.instant())));
-            return Optional.empty();
+                    settings.investigatorModel(), failure(e), Duration.between(start, clock.instant())));
+            return new Sent(null, failure(e));
         }
     }
 
@@ -253,6 +257,14 @@ public final class InvestigateDispute {
         return body.map(text -> new ContentBlock.ToolResult(call.id(), text, false))
                 .orElseGet(() -> new ContentBlock.ToolResult(call.id(),
                         "UNKNOWN_SKILL: " + name + "; available: " + String.join(", ", skills.names()), true));
+    }
+
+    /**
+     * What went wrong, for the audit row and the escalation note. A port failure's message is the adapter's own text
+     * (a kind, an HTTP status and request id, or a fixture path), never a secret; anything else is named by its class.
+     */
+    public static String failure(RuntimeException e) {
+        return e instanceof LlmCallException ? e.getMessage() : e.getClass().getSimpleName();
     }
 
     private static Optional<String> lastText(LlmResponse response) {
