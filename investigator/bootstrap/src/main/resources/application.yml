@@ -1,21 +1,61 @@
 spring:
   application:
     name: investigator
+  # The investigator's own schema; the role owns it and nothing else (deploy/compose/postgres/initdb/40-investigator.sh).
+  datasource:
+    url: ${INVESTIGATOR_DB_URL:jdbc:postgresql://localhost:5432/disputes}
+    username: ${INVESTIGATOR_DB_USER:investigator}
+    password: ${INVESTIGATOR_DB_PASSWORD:investigator}
+    hikari:
+      maximum-pool-size: 5
+  flyway:
+    schemas: investigation
+    create-schemas: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 1
+      properties:
+        # One case can take minutes (several model calls); the consumer must not be evicted meanwhile.
+        max.poll.interval.ms: 900000
+    producer:
+      acks: all
+    listener:
+      ack-mode: manual_immediate
 
-# Model ids, effort and max tokens live here and in the environment, never in code (ADR 0001).
-# Bound to configuration properties when the bootstrap wires the adapters (task 1.13).
+server:
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+# Model ids, effort, token caps and prices live here and in the environment, never in code (ADR 0001).
 investigator:
   llm:
+    # replay (CI, load test; needs no key) | recording (live, writes fixtures) | anthropic (live)
     adapter: ${LLM_ADAPTER:replay}
+    live: anthropic
+    fixtures-dir: ${LLM_FIXTURES_DIR:../evals/fixtures/llm}
+    api-key: ${ANTHROPIC_API_KEY:}
+    base-url: ${ANTHROPIC_BASE_URL:}
+    # Retries are configured in exactly one place: the SDK in M1; 0 once Resilience4j wraps the port (M2).
+    max-retries: 2
+    timeout: PT5M
     investigator:
-      model: ${INVESTIGATOR_MODEL:}
+      model: ${INVESTIGATOR_MODEL:claude-opus-5-5}
       effort: ${INVESTIGATOR_EFFORT:medium}
       max-tokens: 16000
-      # Retries are configured in exactly one place: the SDK in M1; 0 once Resilience4j wraps the port (M2).
-      max-retries: 2
-      timeout: PT5M
     triage:
-      model: ${TRIAGE_MODEL:}
+      model: ${TRIAGE_MODEL:claude-haiku-5-5}
       effort: ${TRIAGE_EFFORT:low}
       max-tokens: 1000
     # Dollars per million tokens (ADR 0001); the version is recorded with every cost. Input, output and cache
@@ -30,3 +70,23 @@ investigator:
     ledger-url: ${LEDGER_MCP_URL:http://localhost:8081/mcp}
     policy-url: ${POLICY_MCP_URL:http://localhost:8082/mcp}
     actions-url: ${ACTIONS_MCP_URL:http://localhost:8083/mcp}
+    connect-timeout: PT5S
+    request-timeout: PT30S
+    max-response-bytes: 1000000
+  kafka:
+    opened-topic: disputes.opened
+    decided-topic: disputes.decided
+    group-id: investigator
+    partitions: 3
+    publish-timeout: PT10S
+  budget:
+    max-model-calls: 12
+    max-tool-calls: 40
+    max-tokens: 400000
+    max-wall-clock: PT10M
+    decision-retries: 1
+  # Must match data/datagen/policy.py and data/policy-corpus.
+  policy:
+    time-limit-days: 120
+    provisional-credit-limit-minor: 300000
+  skills-dir: ${INVESTIGATOR_SKILLS_DIR:../skills}
