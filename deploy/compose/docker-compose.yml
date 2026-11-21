@@ -15,6 +15,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-disputes}
       LEDGER_READER_PASSWORD: ${LEDGER_READER_PASSWORD:-ledger_reader}
       POLICY_SERVICE_PASSWORD: ${POLICY_SERVICE_PASSWORD:-policy_service}
+      INVESTIGATOR_DB_PASSWORD: ${INVESTIGATOR_DB_PASSWORD:-investigator}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
@@ -114,6 +115,47 @@ services:
       timeout: 3s
       retries: 30
       start_period: 20s
+
+
+  # The agent. LLM_ADAPTER=replay (default) serves evals/fixtures/llm and needs no key; recording and anthropic call
+  # the live API with ANTHROPIC_API_KEY from the environment. Skills and fixtures are mounted from the repository.
+  investigator:
+    build: ../../investigator
+    image: dispute-agent/investigator:dev
+    environment:
+      INVESTIGATOR_DB_URL: jdbc:postgresql://postgres:5432/disputes
+      INVESTIGATOR_DB_USER: investigator
+      INVESTIGATOR_DB_PASSWORD: ${INVESTIGATOR_DB_PASSWORD:-investigator}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+      LEDGER_MCP_URL: http://ledger-mcp:8081/mcp
+      POLICY_MCP_URL: http://policy-mcp:8082/mcp
+      ACTIONS_MCP_URL: http://actions-mcp:8083/mcp
+      LLM_ADAPTER: ${LLM_ADAPTER:-replay}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      INVESTIGATOR_MODEL: ${INVESTIGATOR_MODEL:-claude-opus-5-5}
+      INVESTIGATOR_EFFORT: ${INVESTIGATOR_EFFORT:-medium}
+      TRIAGE_MODEL: ${TRIAGE_MODEL:-claude-haiku-5-5}
+      TRIAGE_EFFORT: ${TRIAGE_EFFORT:-low}
+    volumes:
+      - ../../skills:/app/skills:ro
+      - ../../evals/fixtures/llm:/app/fixtures
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      ledger-mcp:
+        condition: service_healthy
+      policy-mcp:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health/readiness"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 30s
 
 volumes:
   postgres-data:

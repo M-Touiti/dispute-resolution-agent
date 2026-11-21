@@ -78,4 +78,49 @@ check_mcp policy-mcp 8082 "get_policy_section search_policy" \
 
 check_mcp actions-mcp 8083 "close_dispute issue_provisional_credit request_merchant_evidence"
 
+# The investigator: one dispute end to end. The disputes.opened event is built inside PostgreSQL from the seeded
+# intake tables (no CSV parsing in shell), published, and the matching disputes.decided awaited. With no fixture for
+# the dispute, replay misses and the case escalates; with fixtures it is decided. Both prove the pipeline: Kafka in,
+# the evidence index read from ledger-mcp, the model port, the case and audit stored, Kafka out.
+curl -fsS -o /dev/null http://localhost:8080/actuator/health/readiness || fail "investigator: not ready"
+echo "ok   investigator ready"
+
+dispute=${SMOKE_DISPUTE:-DSP-000001}
+event=$(docker compose exec -T postgres sh -c 'psql -tA -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d disputes' <<SQL
+SELECT json_build_object(
+    'version', 1, 'dispute_id', d.dispute_id, 'cardholder_id', d.cardholder_id, 'card_id', d.card_id,
+    'transaction_id', d.transaction_id, 'category', d.category,
+    'opened_at', to_char(d.opened_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+    'claimed_amount_minor', d.claimed_amount_minor, 'currency', d.currency,
+    'cardholder_statement', d.cardholder_statement,
+    'documents', COALESCE((SELECT json_agg(json_build_object('document_id', x.document_id, 'kind', x.kind,
+        'issued_by', x.issued_by, 'dated', to_char(x.dated, 'YYYY-MM-DD'), 'summary', x.summary)
+        ORDER BY x.document_id) FROM intake.dispute_documents x WHERE x.dispute_id = d.dispute_id), '[]'::json))
+FROM intake.disputes d WHERE d.dispute_id = '$dispute';
+SQL
+)
+[[ "$event" == "{"* ]] || fail "investigator: no dispute $dispute in intake.disputes"
+
+# "@@" separates key and value: it cannot occur in the generated statements.
+printf '%s@@%s\n' "$dispute" "$event" | docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-producer.sh \
+    --bootstrap-server kafka:19092 --topic disputes.opened --reader-property parse.key=true --reader-property key.separator=@@' \
+    || fail "investigator: could not publish disputes.opened"
+
+decided=""
+for _ in $(seq 1 24); do
+    decided=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:19092 \
+        --topic disputes.decided --from-beginning --timeout-ms 5000 --formatter-property print.key=true \
+        --formatter-property key.separator=@@ 2>/dev/null' | grep "^$dispute@@" | tail -1 || true)
+    [[ -n "$decided" ]] && break
+done
+[[ -n "$decided" ]] || fail "investigator: no disputes.decided for $dispute within two minutes"
+state=$(grep -oE '"state":"[A-Z]+"' <<<"$decided" | cut -d'"' -f4)
+reason=$(grep -oE '"escalation_reason":"[A-Z_]+"' <<<"$decided" | cut -d'"' -f4 || true)
+audit=$(docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -d disputes -c \
+    \"SELECT count(*) FILTER (WHERE type = 'ToolCalled'), count(*) FROM investigation.audit_events \
+      WHERE dispute_id = '$dispute'\"")
+IFS='|' read -r tool_rows audit_rows <<<"$audit"
+[[ "$tool_rows" -gt 0 ]] || fail "investigator: no tool calls audited for $dispute"
+echo "ok   investigator $dispute -> $state${reason:+ ($reason)}; $audit_rows audit rows, $tool_rows tool calls"
+
 echo "smoke: all checks passed"

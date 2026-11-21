@@ -1,6 +1,7 @@
 package dev.disputeagent.investigator.application.triage;
 
 import dev.disputeagent.investigator.application.intake.DisputeOpened;
+import dev.disputeagent.investigator.application.investigation.InvestigateDispute;
 import dev.disputeagent.investigator.application.investigation.InvestigationSettings;
 import dev.disputeagent.investigator.application.investigation.Resources;
 import dev.disputeagent.investigator.application.investigation.Untrusted;
@@ -65,8 +66,8 @@ public final class TriageDispute {
             response = llm.send(request);
         } catch (RuntimeException e) {
             audit.record(new AuditEvent.ModelCallFailed(dispute.disputeId(), start, Stage.TRIAGE,
-                    settings.triageModel(), e.getClass().getSimpleName(), Duration.between(start, clock.instant())));
-            return fallBack(dispute, "the triage model could not be reached");
+                    settings.triageModel(), InvestigateDispute.failure(e), Duration.between(start, clock.instant())));
+            return fallBack(dispute, "triage model call failed: " + InvestigateDispute.failure(e));
         }
         audit.record(new AuditEvent.ModelCalled(dispute.disputeId(), start, Stage.TRIAGE, settings.triageModel(),
                 response.model(), response.id(), response.stopReason(), response.usage(), response.cost(),

@@ -157,7 +157,7 @@ class InvestigationReplayTest {
         assertThat(replayed.state()).isEqualTo(CaseState.ESCALATED);
         assertThat(replayed.escalationReason()).contains(EscalationReason.DEPENDENCY_UNAVAILABLE);
         assertThat(audit).filteredOn(AuditEvent.ModelCallFailed.class::isInstance).singleElement()
-                .satisfies(e -> assertThat(((AuditEvent.ModelCallFailed) e).error()).isEqualTo("LlmCallException"));
+                .satisfies(e -> assertThat(((AuditEvent.ModelCallFailed) e).error()).startsWith("FIXTURE_MISSING: no fixture"));
     }
 
     @Test
