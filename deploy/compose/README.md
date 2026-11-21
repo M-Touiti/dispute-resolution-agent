@@ -30,6 +30,8 @@ docker compose down                            # stop; add -v to drop the databa
   `30-policy-service.sh` creates `policy_service`, which owns the `policy` schema only; `policy-mcp` ingests the
   corpus there at start-up (mounted read-only from `data/policy-corpus`). Its password defaults to
   `policy_service`; override it with `POLICY_SERVICE_PASSWORD`.
+  `40-investigator.sh` creates `investigator`, which owns the `investigation` schema (cases and audit, migrated by
+  Flyway) and nothing else; the investigator joins the stack in M1 task 1.14.
 - **Kafka:** topic auto-creation is off; topics are created explicitly from M1.
 - **policy-mcp:** DNS rebinding protection is on, so `POLICY_MCP_ALLOWED_HOSTS` lists the service name as well as
   localhost.

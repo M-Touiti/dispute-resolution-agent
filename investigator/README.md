@@ -6,7 +6,7 @@ Java 21, Spring Boot 4.1.2, Maven multi-module (hexagonal):
   fails the build otherwise.
 - `application`: ports (`LlmPort`, `McpToolPort`, repositories, clock) and use cases (triage, investigate, guard,
   act). Depends on `domain` only, also enforced.
-- `adapters`: kafka, jpa, anthropic, mcp-client, otel. The only module that sees SDK types.
+- `adapters`: kafka, persistence (JDBC), anthropic, fixtures, mcpclient, json, skills; otel in M2. The only module that sees SDK types.
 - `bootstrap`: the Spring Boot application, configuration, wiring.
 
 Base package `dev.disputeagent.investigator`. SDK versions are pinned in the parent `pom.xml` (see
@@ -15,6 +15,8 @@ Base package `dev.disputeagent.investigator`. SDK versions are pinned in the par
 ## Build
 
 From this directory (the wrapper pins Maven 3.9.12; on Windows use `mvnw.cmd`):
+
+The bootstrap tests need Docker (Testcontainers).
 
 ```sh
 ./mvnw verify                                        # build and run all tests
@@ -82,10 +84,24 @@ the servers it is constructed with exist: the bootstrap gives it the ledger and 
 `McpClientAdapterTest` runs against an in-process server on the SDK's servlet transport; `McpStackTest`
 (`MCP_STACK_TEST=1`, compose stack running) checks the client against ledger-mcp and the Python policy-mcp.
 
+`adapters/kafka`: `DisputeEvents` (the versioned JSON of `disputes.opened` and `disputes.decided`),
+`DisputeOpenedListener` (one record per poll, acknowledged after the case is stored and its outcome published; a
+malformed event is logged and skipped), `KafkaDecisionPublisher` (keyed by dispute id, waits for the broker).
+`adapters/persistence`: `JdbcCaseStore` and `JdbcAuditLog` on `JdbcClient` in the `investigation` schema (Flyway
+`V1`), owned by the `investigator` role, which cannot read the ledger, intake or policy schemas. Plain JDBC, not JPA:
+two tables written whole and appended to need no ORM.
+
+`bootstrap`: `InvestigatorProperties` binds `investigator.*`; `InvestigatorConfiguration` wires adapters to ports and
+use cases. `LLM_ADAPTER` picks `replay` (default, no key), `recording` or `anthropic`. `ProcessDisputeOpened` is
+idempotent on the dispute id: a stored case is published again, never investigated again.
+`InvestigatorEndToEndTest` runs the service on Testcontainers Kafka and PostgreSQL (the compose images and init
+scripts) with a scripted model and canned tools: record a dispute, redeliver it, then replay it in a second instance
+with no live call.
+
 Live check (off by default, never in CI, under one cent):
 `ANTHROPIC_LIVE_TEST=1 ANTHROPIC_API_KEY=... ./mvnw -pl adapters test -Dtest=AnthropicLiveTest`
 
 ## Status
 
-M1 in progress: domain (1.7), use cases (1.8), skills (1.9), the Anthropic adapter (1.10), record and replay
-(1.11) and the MCP client (1.12) done; Kafka, JPA and the bootstrap wiring (1.13) follow.
+M1 in progress: domain to wiring (1.7 to 1.13) done: the service runs end to end on Kafka and PostgreSQL. Next:
+the investigator in compose (1.14) and the evaluation runner (1.15).
