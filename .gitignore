@@ -45,3 +45,6 @@ evals/out/
 
 # Private planning document
 PORTFOLIO-PROJECT.md
+
+# Evaluation runs (results are graded, not committed; the baseline summary is)
+evals/runs/

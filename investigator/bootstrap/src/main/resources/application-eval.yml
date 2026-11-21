@@ -1,0 +1,24 @@
+# The evaluation run mode (task 1.15): no Kafka, no database, no web server. It runs the golden cases through the same
+# triage and investigation as the service and writes one result per case; the Python graders score them.
+#   LLM_ADAPTER=replay  (CI: fixtures only)     LLM_ADAPTER=recording  (the recording session, ADR 0006)
+spring:
+  main:
+    web-application-type: none
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceInitializationAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.health.DataSourceHealthContributorAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.metrics.DataSourcePoolMetricsAutoConfiguration
+      - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
+      - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration
+      - org.springframework.boot.kafka.autoconfigure.metrics.KafkaMetricsAutoConfiguration
+
+investigator:
+  eval:
+    golden: ${EVAL_GOLDEN:../evals/golden/unauthorised-v1.json}
+    data-dir: ${EVAL_DATA_DIR:../data/generated}
+    out: ${EVAL_OUT:../evals/runs/latest}

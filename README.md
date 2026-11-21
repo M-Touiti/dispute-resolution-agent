@@ -37,11 +37,12 @@ flowchart LR
 
 | Part | State | Tests |
 |---|---|---|
-| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand, tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, recording and replay of model calls, the MCP client, JSON and schema validation, Kafka in and out, cases and audit in PostgreSQL; tested end to end on Testcontainers | 143 |
+| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand, tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, recording and replay of model calls, the MCP client, JSON and schema validation, Kafka in and out, cases and audit in PostgreSQL; tested end to end on Testcontainers | 145 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation. Same seed, same bytes | 21 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
 | `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token`; every call is rejected until token verification lands in M2 | 16 |
+| `evals/` | Golden set of 30 cases; an evaluation run mode of the investigator; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals, schema, budget) with a regression rule against a baseline | 22 |
 | `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.2 (KRaft), the three MCP servers and the investigator; `smoke.sh` checks each and runs one dispute end to end | smoke |
 | CI | Build and tests per module, lint, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
 

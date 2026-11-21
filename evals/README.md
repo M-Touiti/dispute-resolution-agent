@@ -5,7 +5,9 @@ Python 3.13, uv, standard library only at run time. Run from this directory.
 | Path | Contents | Status |
 |---|---|---|
 | `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases |
-| `evaltools/` | `golden.py` selector; runner and deterministic graders | selector done; graders in task 1.15 |
+| `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders and the regression rule | done |
+| `runs/` | Results of evaluation runs, one JSON per case (git-ignored) | |
+| `baseline/` | The committed summary a run must not fall below | recorded in task 1.16 |
 | `fixtures/llm/` | Recorded model requests and responses, `<sha256 of the canonical request>.json` (ADR 0006); served by the replay adapter in CI | format and adapters done (1.11); recorded in 1.16 |
 | `nightly/` | Dated results of the scheduled 30-case live slice | M3 |
 | `REPORT.md` | Published metrics and the unfixed failures | M3 |
@@ -33,3 +35,31 @@ uv run python -m evaltools.golden            # re-select after a generator chang
 
 A stale golden set fails CI. Re-selecting changes the cases the fixtures were recorded for, so it re-records the
 fixtures in the same pull request (ADR 0001).
+
+## Running an evaluation
+
+The investigator runs the cases; Python grades them. With the compose stack up (the ledger and policy servers):
+
+```sh
+cd investigator
+./mvnw -q -pl bootstrap -am package -DskipTests
+java -jar bootstrap/target/investigator-bootstrap-0.1.0-SNAPSHOT.jar --spring.profiles.active=eval
+cd ../evals
+uv run python -m evaltools.grade              # writes runs/latest/summary.json, exits 1 on a regression
+```
+
+The `eval` profile has no Kafka and no database: it builds each golden dispute from `data/generated` (exactly as the
+smoke test builds the `disputes.opened` event, so the model requests and fixture keys are the same), runs the same
+triage and investigation as the service, and writes `runs/latest/<dispute id>.json` (the outcome as published, the
+model and tool calls, tokens, cost, schema retries) and `run.json`. `LLM_ADAPTER=replay` (default) serves the
+fixtures; `LLM_ADAPTER=recording` records them (task 1.16).
+
+**Checks per case** (`pass`, `fail`, or `n/a` when the model gave no decision): answered, decision correct, no unsafe
+proposal, no forbidden action, cited evidence belongs to the case, required evidence cited, cited policy sections
+exist, the deciding section cited, schema valid on the first try, within budget. They grade what the agent proposed:
+a proposal the guard stopped still fails what it broke.
+
+**The regression rule** (`graders.gate`): every case must be answered (in replay a missing decision is a fixture miss
+or a broken loop), and decision accuracy, every check's pass rate and the unsafe-proposal count must be no worse than
+`baseline/unauthorised-v1.json`. An intended improvement updates the baseline in the same pull request
+(`--write-baseline`).
