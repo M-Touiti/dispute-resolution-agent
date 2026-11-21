@@ -5,23 +5,16 @@ import dev.disputeagent.investigator.adapters.fixtures.Fixtures;
 import dev.disputeagent.investigator.adapters.fixtures.RecordingAdapter;
 import dev.disputeagent.investigator.adapters.fixtures.ReplayAdapter;
 import dev.disputeagent.investigator.adapters.json.JacksonJsonAdapter;
-import dev.disputeagent.investigator.adapters.kafka.DisputeOpenedListener;
-import dev.disputeagent.investigator.adapters.kafka.KafkaDecisionPublisher;
-import dev.disputeagent.investigator.adapters.persistence.JdbcAuditLog;
-import dev.disputeagent.investigator.adapters.persistence.JdbcCaseStore;
 import dev.disputeagent.investigator.adapters.skills.FileSkillLibrary;
 import dev.disputeagent.investigator.application.HandleDisputeOpened;
-import dev.disputeagent.investigator.application.ProcessDisputeOpened;
 import dev.disputeagent.investigator.application.investigation.InvestigateDispute;
 import dev.disputeagent.investigator.application.investigation.InvestigationSettings;
 import dev.disputeagent.investigator.application.port.audit.AuditLog;
-import dev.disputeagent.investigator.application.port.events.DecisionPublisher;
 import dev.disputeagent.investigator.application.port.json.JsonPort;
 import dev.disputeagent.investigator.application.port.llm.Effort;
 import dev.disputeagent.investigator.application.port.llm.LlmPort;
 import dev.disputeagent.investigator.application.port.mcp.McpToolPort;
 import dev.disputeagent.investigator.application.port.skills.SkillLibrary;
-import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.application.triage.TriageDispute;
 import dev.disputeagent.investigator.domain.decision.Money;
 import dev.disputeagent.investigator.domain.guard.PolicyLimits;
@@ -31,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -39,15 +31,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.util.backoff.FixedBackOff;
 
 /**
- * Wires the hexagon: adapters to ports, ports to use cases, use cases to the Kafka listener. The only place that
- * knows every module.
+ * Wires what every run mode shares: the model port, the tools, the skills, the settings and the use case that triages
+ * and investigates a dispute. {@link ServiceConfiguration} adds Kafka and PostgreSQL for the service;
+ * {@link EvalConfiguration} adds the evaluation runner instead (profile {@code eval}).
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(InvestigatorProperties.class)
@@ -105,22 +93,6 @@ class InvestigatorConfiguration {
     }
 
     @Bean
-    AuditLog auditLog(JdbcClient jdbc) {
-        return new JdbcAuditLog(jdbc);
-    }
-
-    @Bean
-    CaseStore caseStore(JdbcClient jdbc) {
-        return new JdbcCaseStore(jdbc);
-    }
-
-    @Bean
-    DecisionPublisher decisionPublisher(KafkaTemplate<String, String> kafka, InvestigatorProperties properties) {
-        return new KafkaDecisionPublisher(kafka, properties.kafka().decidedTopic(),
-                properties.kafka().publishTimeout());
-    }
-
-    @Bean
     InvestigationSettings investigationSettings(InvestigatorProperties properties) {
         var llm = properties.llm();
         var b = properties.budget();
@@ -132,35 +104,11 @@ class InvestigatorConfiguration {
                 new PolicyLimits(p.timeLimitDays(), Money.eur(p.provisionalCreditLimitMinor())), b.decisionRetries());
     }
 
+    /** Triage then investigation; the audit log is the service's (JDBC) or the evaluation's (in memory). */
     @Bean
-    ProcessDisputeOpened processDisputeOpened(LlmPort llm, McpToolPort mcp, JsonPort json, AuditLog audit,
-            Clock clock, ExecutorService toolExecutor, InvestigationSettings settings, SkillLibrary skills,
-            CaseStore cases, DecisionPublisher publisher) {
-        var handle = new HandleDisputeOpened(new TriageDispute(llm, json, audit, clock, settings),
+    HandleDisputeOpened handleDisputeOpened(LlmPort llm, McpToolPort mcp, JsonPort json, AuditLog audit, Clock clock,
+            ExecutorService toolExecutor, InvestigationSettings settings, SkillLibrary skills) {
+        return new HandleDisputeOpened(new TriageDispute(llm, json, audit, clock, settings),
                 new InvestigateDispute(llm, mcp, json, audit, clock, toolExecutor, settings, skills), audit, clock);
-        return new ProcessDisputeOpened(handle, cases, publisher);
-    }
-
-    @Bean
-    DisputeOpenedListener disputeOpenedListener(ProcessDisputeOpened process) {
-        return new DisputeOpenedListener(process);
-    }
-
-    @Bean
-    NewTopic disputesOpened(InvestigatorProperties properties) {
-        return TopicBuilder.name(properties.kafka().openedTopic()).partitions(properties.kafka().partitions())
-                .replicas(1).build();
-    }
-
-    @Bean
-    NewTopic disputesDecided(InvestigatorProperties properties) {
-        return TopicBuilder.name(properties.kafka().decidedTopic()).partitions(properties.kafka().partitions())
-                .replicas(1).build();
-    }
-
-    /** A failed case is retried twice, a second apart, then logged and skipped; the dead-letter topic is M2. */
-    @Bean
-    DefaultErrorHandler kafkaErrorHandler() {
-        return new DefaultErrorHandler(new FixedBackOff(1_000L, 2L));
     }
 }

@@ -98,6 +98,11 @@ idempotent on the dispute id: a stored case is published again, never investigat
 scripts) with a scripted model and canned tools: record a dispute, redeliver it, then replay it in a second instance
 with no live call.
 
+Profile `eval` (`--spring.profiles.active=eval`): no Kafka, database or web server; `EvalRunner` runs the golden
+cases through the same `HandleDisputeOpened` and writes one result per case for the Python graders (see
+`evals/README.md`). `ServiceConfiguration` holds what only the service needs; `InvestigatorConfiguration` what both
+share.
+
 Live check (off by default, never in CI, under one cent):
 `ANTHROPIC_LIVE_TEST=1 ANTHROPIC_API_KEY=... ./mvnw -pl adapters test -Dtest=AnthropicLiveTest`
 
