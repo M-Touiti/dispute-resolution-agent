@@ -10,7 +10,7 @@ When a milestone closes, its Status cell records the completion date.
 |---|---|---|
 | M0 Skeleton | Repository public, ADR 0001, module layout, seeded synthetic data generator, three MCP servers answering `tools/list`, CI green (build, unit, CodeQL) | done 16 Nov 2026 |
 | M1 Loop | One category end to end (Kafka in, triage, investigate via `ledger-mcp` + `policy-mcp`, structured decision, guard, audit rows, decision event out); recording and replay adapters; 30 golden cases; deterministic graders in CI | done 22 Nov 2026 |
-| M2 Production half | Approval gate + `actions-mcp` token verification; Resilience4j around the model; DLQ, replay, outbox; traces, metrics, dashboard; k6 and failure-injection first report; Kustomize manifests apply on a local cluster | |
+| M2 Production half | Approval gate + `actions-mcp` token verification; Resilience4j around the model; DLQ, replay, outbox; traces, metrics, dashboard; k6 and failure-injection first report; Kustomize manifests apply on a local cluster | in progress since 23 Nov 2026 |
 | M3 Evidence | All categories incl. two adversarial; 150+ golden cases; live eval; `evals/REPORT.md`; six ADRs; README results table first; tag `v0.1.0` | |
 | M4 Voice | Public write-up: what the evals found, the two hardest failures, what the approval gate caught | |
 
@@ -45,6 +45,16 @@ MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the d
 2.2.0, `fastapi` 0.162.0 → 0.163.1, `sentence-transformers` 6.2.0 → 6.3.0; Spring Boot 4.2.0 is still at RC2.
 Task 1.1 applied the bumps above: all builds and the three `tools/list` contract tests pass unchanged. The
 Anthropic SDK bump cost no re-baseline because no adapter or fixture exists yet.
+
+**Re-verified 23 Nov 2026 (M2 kick-off).** Drift since 16 Nov: Spring Boot 4.2.0 is GA (19 Nov; it manages Spring
+Framework 7.1.0, Jackson 3.1.8, `spring-kafka` 4.2.0, `kafka-clients` 4.4.0, Flyway 12.11.0, Micrometer 1.18.0,
+Micrometer Tracing 1.8.0, OpenTelemetry 1.68.0, Testcontainers 2.0.5); `anthropic-java` 3.8.0 → 3.12.0 (minor);
+`fastapi` 0.163.1 → 0.165.0; `mcp-bom`, `mcp`, `resilience4j-spring-boot4`, `fastembed`, `psycopg` and Python
+`testcontainers` unchanged; `json-schema-validator` 3.0.9 exists but stays at 3.0.8 with the MCP SDK. Images: the
+Kafka image follows the managed client to `4.4.0`; `pgvector` and `python` unchanged. New for M2 (checked on Docker
+Hub): `prom/prometheus` v3.16.0, `grafana/grafana` 13.3.1, `grafana/tempo` 2.10.10, `grafana/k6` 1.8.3. The
+`opentelemetry-javaagent` row is retired: tracing goes through Micrometer Tracing and the OTLP exporter that Boot
+manages (decision 3 at the M2 kick-off). Task 2.1 applies the bumps.
 
 ### Embedding runtimes measured for ADR 0004 (16 Nov 2026)
 
@@ -129,6 +139,87 @@ Order: 1.1 to 1.4 first (they fix the inputs); 1.5 and 1.6 can run alongside 1.7
 6. **The embedding runtime is a measured choice, not a default** (ADR 0004). If none fits the CI budget, the
    recorded scope cut applies: `policy-mcp` keeps full-text search only.
 
+## M2 task breakdown
+
+Done means: a decided case with a proposed action waits for a person; an approval mints a signed, single-use token
+bound to the case, the action and its arguments; `actions-mcp` verifies the token itself and records the write
+once, and a rejection or a bad token changes nothing; the model call sits behind a time limiter, bounded retry,
+bulkhead and circuit breaker, and a case the model cannot serve is parked and re-driven through `disputes.replay`
+rather than lost; poison events reach `disputes.dlq` without stalling the partition; every outgoing event goes
+through an outbox; one trace per case and the Prometheus metrics of the design's observability section show in a
+provisioned Grafana dashboard; the k6 and failure-injection runs have a first report with their caveats; the
+Kustomize manifests validate in CI and apply on a local cluster; ADRs 0005 and 0008 accepted; the 30 golden cases
+still replay from the M1 fixtures unchanged. Branches are named `m2/<task>`.
+
+| # | Task | Output | Status |
+|---|---|---|---|
+| 2.1 | Re-baseline pins (above): Spring Boot 4.2.0 with the Kafka image at 4.4.0, `anthropic-java` 3.12.0, `fastapi` 0.165.0; confirm `resilience4j-spring-boot4` 2.4.0 starts on Boot 4.2 (if not, M2 stays on 4.1.2: the breaker matters more than the Boot minor); the three `tools/list` contracts and the replay evaluation must pass unchanged; the SDK bump is checked by the offline mapping tests and one opt-in live check (under one cent, needs the go-ahead) | POMs, `pyproject.toml`, compose, this file | |
+| 2.2 | ADR 0005 approval tokens enforced inside the write server (Ed25519, binding, single use, idempotency); ADR 0008 reliability and observability as decorators around the ports (parked cases, replay, outbox, Micrometer Tracing instead of an agent) | `docs/adr/0005`, `docs/adr/0008`, index | |
+| 2.3 | Domain: case states after `DECIDED` (`AWAITING_APPROVAL`, `APPROVED`, `REJECTED`, `ACTED`, `ACTION_FAILED`) and the parked state `AWAITING_RETRY` with its transitions and replay count; `ApprovalRequest` and `ApprovalToken` values (case id, action, SHA-256 of the canonical arguments, token id, issued and expiry instants); the audit events for approval, action and parking; state-machine tests | `investigator/domain` | |
+| 2.4 | Approval gate in the application: a decision with an action moves the case to `AWAITING_APPROVAL` and raises `disputes.approval-requested`; `ApproveAction` and `RejectAction` use cases (reviewer id, note) behind a `TokenSigner` port and an `ActionPort`; on approval the investigator signs, calls the action, records the result (`ACTED` or `ACTION_FAILED` with the server's reason) and audits every step; the model's tool list is untouched; tests with fake ports | `investigator/application` | |
+| 2.5 | Token adapter and key handling: Ed25519 with the JDK (`KeyPairGenerator`, `Signature`; no library), compact token `base64url(payload).base64url(signature)`; `docs/approval-token.md` documents the format; `docs/approval-token/vectors.json` holds test vectors (keys, tokens, expected verdicts) that both Java projects' tests read; keys from configuration (`APPROVAL_SIGNING_KEY`, `APPROVAL_VERIFY_KEY`), generated by a compose init service into a shared volume so nothing is committed | `investigator/adapters`, `docs/`, `deploy/compose` | |
+| 2.6 | `actions-mcp` verification and writes: signature, expiry, binding (the argument hash recomputed from the call), single use recorded in its own `actions` schema as role `actions_service` in the same transaction as the write; the same token id with the same arguments returns the stored result (idempotent retry), with different arguments is rejected; business limits read from `intake.disputes` (credit at most the disputed amount, dispute not already closed); Testcontainers test on the seed; the `tools/list` contract must not change (the descriptions already promise this) | `mcp-servers/actions-mcp/`, `deploy/compose/postgres/initdb` | |
+| 2.7 | Reviewer API in the investigator: `GET /reviews` (pending), `POST /reviews/{id}/approve` and `/reject` with a reviewer id and note, `409` on a state conflict, a static API key header from the environment as the stand-in for SSO; the MCP client's allowlist gains `actions-mcp` for the investigator's own calls only; `smoke.sh` approves a golden case with curl and checks the action in `actions-mcp`'s tables, then rejects another | `investigator/adapters` (web), bootstrap, `deploy/compose/smoke.sh` | |
+| 2.8 | Outbox: `investigation.outbox` written in the same transaction as the case; a polling publisher sends in id order and marks rows sent; the consumer acknowledges after the save, no longer after the publish; `KafkaDecisionPublisher` becomes the outbox writer; Testcontainers test that a publish failure after the save still delivers the event on the next poll | `investigator/adapters` (persistence, kafka) | |
+| 2.9 | Resilience4j around `LlmPort` as a decorator in the adapters: time limiter, retry with jitter on the transient kinds (rate limited, overloaded, server, timeout), bulkhead on concurrent model calls, circuit breaker; the SDK's `max-retries` goes to 0 (one place); an open breaker or a transient failure after the retries parks the case `AWAITING_RETRY` with the original event stored; permanent kinds (fixture miss, authentication, invalid request) still escalate; tests with a fake port and a fake clock | `investigator/adapters` (resilience), bootstrap, `application.yml` | |
+| 2.10 | Dead-letter and replay: a `DeadLetterPublishingRecoverer` sends malformed events and cases that fail the error handler's retries to `disputes.dlq` with reason headers; a scheduled sweep re-publishes parked cases to `disputes.replay` when the breaker allows, up to a replay cap after which the case escalates `DEPENDENCY_UNAVAILABLE`; the listener consumes both topics and re-runs a parked case from scratch; Testcontainers test: a poison message reaches the dead-letter topic without stalling the partition, a parked case recovers on replay | `investigator/adapters` (kafka), bootstrap | |
+| 2.11 | Traces, metrics and logs as decorators in `adapters/otel` (Micrometer Observation and Tracing with the OpenTelemetry bridge and OTLP exporter; no agent): one span per case opened by the listener and the eval runner, a span per model call (model id, stop reason, input, output, cache read and cache creation tokens, cost, effort), per tool call (server, tool, argument hash, outcome), the guard, the approval wait and each action; Prometheus metrics: cases by outcome, tokens and cost per case (histograms), model latency, tool error rate by server and tool, unsafe proposals, approval latency, cache hit ratio; structured JSON logs keyed by case id with card-number redaction; tests on the simple tracer and meter registry | `investigator/adapters` (otel), bootstrap | |
+| 2.12 | Compose observability: Prometheus scraping the Java services, Tempo receiving OTLP, Grafana with provisioned datasources and the dashboard JSON in the repository; `policy-mcp` exposes `/metrics`; `smoke.sh` checks that Prometheus sees every target up and that a case's trace exists in Tempo | `deploy/compose`, `deploy/compose/grafana` | |
+| 2.13 | k6 load test: a `performance/shim` (Python, compose profile `perf`) that publishes `disputes.opened` and tracks `disputes.decided`; scripts for cases per second at 1 and 3 investigator replicas, p99 end to end, consumer lag, database connections, outbox drain time, all on the replay adapter; the report in `performance/README.md` in the before/after shape with the caveats (one laptop, replayed model); CI matrix and Dependabot entries for the shim | `performance/` | |
+| 2.14 | Failure injection: a stalled `policy-mcp` (the time limiter and bulkhead hold), a malformed event (reaches the dead-letter topic, the partition moves on), the replay adapter forced to answer "overloaded" for 40 seconds through a fault switch (cases park and recover on replay); scripted, with the measured results added to the report | `performance/`, `investigator/adapters` (fixtures) | |
+| 2.15 | Kubernetes: Kustomize base and a `local` overlay, HPA on the investigator, readiness and liveness probes, resource limits, secrets for the API key and the signing keys, a ServiceMonitor, an optional Argo CD application; CI validates with `kubectl kustomize` and `kubeconform`; applied on a local `kind` cluster by hand (needs the user's laptop; no cluster in CI) | `deploy/k8s/`, `.github/` | |
+| 2.16 | Images and scanning: a release workflow builds the four images and pushes them to GitHub Container Registry on a tag; Trivy scans the images on pull requests (the `SECURITY.md` promise); Actions pinned to commit SHAs | `.github/workflows/release.yml`, `ci.yml`, `SECURITY.md` | |
+| 2.17 | Close M2: README status and "What exists today", the approval gate and parking in `docs/diagrams/` (a second sequence diagram), the load and failure numbers linked from the README with their caveats, `CLAUDE.md` commands; the compose smoke test and the evaluation job stay required on `main` | `README.md`, `docs/diagrams/`, `CLAUDE.md`, this file | |
+
+Order: 2.1 and 2.2 first (they fix the inputs). The gate chain is 2.3 → 2.4 → 2.5 → 2.6 → 2.7, in that order. The
+reliability chain is 2.8, then 2.9, then 2.10 (replay needs the stored event from 2.8 and the breaker from 2.9).
+2.11 needs 2.4 for the approval spans but can start after 2.2; 2.12 needs 2.11. The two chains and 2.11 run in
+parallel. 2.13 and 2.14 need 2.8 to 2.12; 2.15 and 2.16 need the compose stack of 2.12; 2.17 closes.
+
+## Decisions fixed at M2 kick-off
+
+1. **M2 changes nothing the model sees.** The write tools never enter the model's tool list; approval happens
+   after the decision; the prompt, skills, tool descriptions, model and effort stay as recorded. The M1 fixtures
+   therefore stay valid and no recording session is planned in M2. A task that would change the prompt waits for
+   M3, where the golden set grows and is re-recorded anyway.
+2. **Approval tokens are Ed25519 with the JDK, no library** (ADR 0005). The investigator holds the private key and
+   signs; `actions-mcp` holds only the public key and verifies: a compromised write server cannot mint tokens, and
+   nothing but the investigator can. The payload binds the case id, the action, the SHA-256 of the canonical
+   arguments, a token id, and issue and expiry instants (five minutes). Single use is recorded by `actions-mcp` in
+   its own schema in the same transaction as the write; the token id is also the idempotency key, so a retried call
+   with the same arguments returns the stored result instead of a second write. The format is pinned by shared
+   test vectors read by both projects' tests, so the two implementations cannot drift apart silently.
+3. **Reliability and observability are decorators around the ports** (ADR 0008). Resilience4j wraps `LlmPort`;
+   spans and meters wrap `LlmPort`, `McpToolPort` and the audit log; the case span is opened by the Kafka
+   listener and the eval runner. `application` stays framework-free (the enforcer rule holds) and every decorator
+   is testable with a fake port. Tracing uses Micrometer Tracing with the OpenTelemetry bridge and the OTLP
+   exporter that Boot manages, not the Java agent: the agent is absent from the build and the tests, and the
+   manual spans with the cost attributes are the point. Retries move to Resilience4j and the SDK's go to 0: one
+   place, as `CLAUDE.md` demands.
+4. **A case the model cannot serve is parked, not escalated.** Transient kinds (rate limited, overloaded, server
+   error, timeout, open breaker, an unreachable tool server) park the case as `AWAITING_RETRY` with its original
+   event stored; a scheduled sweep re-drives parked cases through `disputes.replay` when the breaker allows,
+   re-running them from scratch (the loop is stateless per case and the fixtures make a re-run cheap), up to a
+   replay cap after which the case escalates `DEPENDENCY_UNAVAILABLE`. Permanent kinds (a fixture miss,
+   authentication, an invalid request) still escalate at once, so a missing fixture in CI fails fast instead of
+   looping.
+5. **The outbox is a polling publisher inside the investigator**, not change-data capture: one table in the case's
+   transaction, a poller, at-least-once delivery, consumers idempotent on the dispute id (already the rule since
+   M1). The consumer acknowledges after the save; the publish is no longer on the consumer's path.
+6. **The reviewer is an API, not a page.** The first scope cut of the plan is applied up front: `smoke.sh` and the
+   failure scripts approve with curl, and a static API key header stands in for SSO. A page is a candidate for
+   v0.2; the gate, the token and the audit are what M2 proves.
+7. **The observability stack is Prometheus, Tempo and Grafana in compose, with no collector:** the investigator
+   exports OTLP straight to Tempo and Prometheus scrapes the actuator endpoints. One laptop; every number carries
+   that caveat. Kubernetes manifests are validated in CI with `kubeconform` and applied on `kind` by hand; CI has
+   no cluster.
+8. **Spring Boot moves to 4.2.0** now that it is GA, in 2.1, with the Kafka image following the managed client.
+   `resilience4j-spring-boot4` 2.4.0 is the only Boot 4 line; if it does not start on 4.2, M2 stays on 4.1.2 and
+   says so here.
+9. **The load test measures the platform, not the model.** k6 drives Kafka through a small shim with the replay
+   adapter, so a run costs nothing and the p99 is the pipeline's. The fault switch for failure injection lives in
+   the fixtures adapter, so the live adapter is never touched.
+
 ## Architecture decisions fixed at M0
 
 1. **Hexagonal `investigator`.** `domain` has no dependencies; `application` holds ports and use cases; `adapters`
@@ -153,3 +244,5 @@ Order: 1.1 to 1.4 first (they fix the inputs); 1.5 and 1.6 can run alongside 1.7
 | 0004 | Local sentence-embedding model behind a port | M1 |
 | 0005 | Approval tokens enforced inside the write server | M2 |
 | 0006 | Recorded fixtures for CI and nightly live evaluation | M1 / M3 |
+| 0007 | Embedding model and fusion weights measured on the policy corpus | M1 |
+| 0008 | Reliability and observability as decorators around the ports | M2 |
