@@ -7,7 +7,7 @@
 A production-shaped agent that investigates card disputes through MCP tool servers, cites its evidence, cannot
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
-> **Status: M1 (the agent loop) complete; M2 (the production half) next.** The agent investigates one dispute
+> **Status: M1 (the agent loop) complete; M2 (the production half) in progress.** The agent investigates one dispute
 > category, unauthorised transactions, end to end, and every pull request replays 30 golden cases and grades them.
 > It cannot act yet: every outcome is a proposal until the approval gate lands in M2. The first numbers below come
 > from one category and 30 cases; the full results table replaces this notice at M3.
