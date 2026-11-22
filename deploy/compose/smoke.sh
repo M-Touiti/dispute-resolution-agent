@@ -79,13 +79,14 @@ check_mcp policy-mcp 8082 "get_policy_section search_policy" \
 check_mcp actions-mcp 8083 "close_dispute issue_provisional_credit request_merchant_evidence"
 
 # The investigator: one dispute end to end. The disputes.opened event is built inside PostgreSQL from the seeded
-# intake tables (no CSV parsing in shell), published, and the matching disputes.decided awaited. With no fixture for
-# the dispute, replay misses and the case escalates; with fixtures it is decided. Both prove the pipeline: Kafka in,
-# the evidence index read from ledger-mcp, the model port, the case and audit stored, Kafka out.
+# intake tables (no CSV parsing in shell), published, and the matching disputes.decided awaited. The default is a
+# golden case, replayed from the recorded fixtures, and must come out DECIDED: Kafka in, the evidence read from
+# ledger-mcp, the model loop, the guard, the case and audit stored, Kafka out. Any other SMOKE_DISPUTE has no fixture
+# unless it is in the golden set; it then escalates (DEPENDENCY_UNAVAILABLE), which still proves the pipeline.
 curl -fsS -o /dev/null http://localhost:8080/actuator/health/readiness || fail "investigator: not ready"
 echo "ok   investigator ready"
 
-dispute=${SMOKE_DISPUTE:-DSP-000001}
+dispute=${SMOKE_DISPUTE:-DSP-000018}
 event=$(docker compose exec -T postgres sh -c 'psql -tA -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d disputes' <<SQL
 SELECT json_build_object(
     'version', 1, 'dispute_id', d.dispute_id, 'cardholder_id', d.cardholder_id, 'card_id', d.card_id,
@@ -121,6 +122,9 @@ audit=$(docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -
       WHERE dispute_id = '$dispute'\"")
 IFS='|' read -r tool_rows audit_rows <<<"$audit"
 [[ "$tool_rows" -gt 0 ]] || fail "investigator: no tool calls audited for $dispute"
+if [[ -z "${SMOKE_DISPUTE:-}" && "$state" != "DECIDED" ]]; then
+    fail "investigator: golden case $dispute ended $state${reason:+ ($reason)}, expected DECIDED (a fixture miss?)"
+fi
 echo "ok   investigator $dispute -> $state${reason:+ ($reason)}; $audit_rows audit rows, $tool_rows tool calls"
 
 echo "smoke: all checks passed"
