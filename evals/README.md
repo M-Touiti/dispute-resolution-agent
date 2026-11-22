@@ -8,6 +8,7 @@ Python 3.13, uv, standard library only at run time. Run from this directory.
 | `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders and the regression rule | done |
 | `runs/` | Results of evaluation runs, one JSON per case (git-ignored) | |
 | `baseline/` | The committed summary a run must not fall below | recorded in task 1.16 |
+| `record.sh` | The recording session: live check, record under a spend cap, replay with no key, grade and write the baseline | done |
 | `fixtures/llm/` | Recorded model requests and responses, `<sha256 of the canonical request>.json` (ADR 0006); served by the replay adapter in CI | format and adapters done (1.11); recorded in 1.16 |
 | `nightly/` | Dated results of the scheduled 30-case live slice | M3 |
 | `REPORT.md` | Published metrics and the unfixed failures | M3 |
@@ -52,7 +53,16 @@ The `eval` profile has no Kafka and no database: it builds each golden dispute f
 smoke test builds the `disputes.opened` event, so the model requests and fixture keys are the same), runs the same
 triage and investigation as the service, and writes `runs/latest/<dispute id>.json` (the outcome as published, the
 model and tool calls, tokens, cost, schema retries) and `run.json`. `LLM_ADAPTER=replay` (default) serves the
-fixtures; `LLM_ADAPTER=recording` records them (task 1.16).
+fixtures; `LLM_ADAPTER=recording` records them.
+
+**Recording** (`evals/record.sh`, from the repository root, compose stack up, `ANTHROPIC_API_KEY` in the environment or
+`.env`): runs the opt-in live check, deletes the old fixtures, records the golden set under a spend cap
+(`RECORD_CAP_USD`, default 10), replays it with the key unset to prove every case is served from fixtures, then grades
+the replay and writes the baseline. Commit the fixtures and the baseline together.
+
+First recording (generator v3, `claude-opus-5-5` at medium effort, `claude-haiku-5-5` at low effort for triage): 30 of 30 decisions
+correct, no unsafe proposals, every check passing, $1.93 in total (median $0.066 a case, p90 $0.086), 149 model calls,
+two thirds of input tokens read from the cache.
 
 **Checks per case** (`pass`, `fail`, or `n/a` when the model gave no decision): answered, decision correct, no unsafe
 proposal, no forbidden action, cited evidence belongs to the case, required evidence cited, cited policy sections

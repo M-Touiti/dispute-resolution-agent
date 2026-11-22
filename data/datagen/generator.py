@@ -156,6 +156,11 @@ class _Generator:
             for k in range(1 if self.rng.random() < 0.75 else 2):
                 latest_issue = (self.c.as_of - since).days - self.c.history_days - 10
                 issued = since + dt.timedelta(days=self.rng.randint(0, latest_issue))
+                # Renewed every four years under the same id: the current expiry is after the dataset's "today",
+                # so no transaction falls after its card's expiry (generator v3).
+                years = 4
+                while dt.date(issued.year + years, issued.month, 1) <= self.c.as_of:
+                    years += 4
                 self.ds.cards.append(
                     Card(
                         card_id=self._id("CRD"),
@@ -164,7 +169,7 @@ class _Generator:
                         product=self.rng.choice(catalog.CARD_PRODUCTS),
                         status="ACTIVE" if k == 0 or self.rng.random() < 0.9 else "BLOCKED",
                         issued_on=issued,
-                        expiry=f"{issued.year + 4}-{issued.month:02d}",
+                        expiry=f"{issued.year + years}-{issued.month:02d}",
                     )
                 )
 
@@ -368,8 +373,15 @@ class _Generator:
 
     # Unauthorised transaction -----------------------------------------------------------------------------------
 
+    def _merchants_used(self, card_id: str) -> set[str]:
+        return {t.merchant_id for t in self.ds.transactions if t.card_id == card_id}
+
     def _cnp_fraud(self, case: _Case, when: dt.datetime, amount: int, categories: tuple[str, ...]):
-        m = self._merchant(lambda m: m.category in categories and m.city != case.holder.city)
+        # A merchant this card has never used, so the cardholder's history does not contradict the claim (v3).
+        used = self._merchants_used(case.card.card_id)
+        m = self._merchant(
+            lambda m: m.category in categories and m.city != case.holder.city and m.merchant_id not in used
+        )
         return m, *self._purchase(
             case.card,
             m,
@@ -383,14 +395,20 @@ class _Generator:
         )
 
     def _unrecognised(self, m: Merchant, txn: Transaction) -> str:
-        return self.rng.choice(
-            (
-                f"I do not recognise the payment of {eur(txn.amount_minor)} to {m.statement_descriptor} on "
-                f"{txn.transaction_at.date()}. My card has been with me the whole time.",
-                f"There is a charge from {m.statement_descriptor} for {eur(txn.amount_minor)} that I did not make. "
-                "I have never shopped there and I did not give my card details to anyone.",
-            )
+        statements = [
+            f"I do not recognise the payment of {eur(txn.amount_minor)} to {m.statement_descriptor} on "
+            f"{txn.transaction_at.date()}. My card has been with me the whole time."
+        ]
+        shopped_there_before = any(
+            t.card_id == txn.card_id and t.merchant_id == m.merchant_id and t.transaction_at < txn.transaction_at
+            for t in self.ds.transactions
         )
+        if not shopped_there_before:  # only then may the cardholder say so (v3)
+            statements.append(
+                f"There is a charge from {m.statement_descriptor} for {eur(txn.amount_minor)} that I did not make. "
+                "I have never shopped there and I did not give my card details to anyone."
+            )
+        return self.rng.choice(statements)
 
     def u_cnp_no_3ds_fraud_flag(self, case: _Case) -> None:
         when = self._in_time(case)
