@@ -3,7 +3,7 @@
 | Service | Image | Host port | Inside the network |
 |---|---|---|---|
 | `postgres` | `pgvector/pgvector:0.8.7-pg18-trixie` | `127.0.0.1:5432` | `postgres:5432`, database `disputes` |
-| `kafka` | `apache/kafka:4.2.2`, single-node KRaft | `127.0.0.1:9092` | `kafka:19092` |
+| `kafka` | `apache/kafka:4.4.0`, single-node KRaft | `127.0.0.1:9092` | `kafka:19092` |
 | `ledger-mcp` | built from `mcp-servers/ledger-mcp` | `127.0.0.1:8081` | `http://ledger-mcp:8081/mcp` |
 | `policy-mcp` | built from `mcp-servers/policy-mcp` | `127.0.0.1:8082` | `http://policy-mcp:8082/mcp` |
 | `actions-mcp` | built from `mcp-servers/actions-mcp` | `127.0.0.1:8083` | `http://actions-mcp:8083/mcp` |

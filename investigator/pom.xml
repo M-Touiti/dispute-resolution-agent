@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.2</version>
+        <version>4.2.0</version>
         <relativePath/>
     </parent>
 
@@ -31,7 +31,7 @@
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <!-- Pins verified in docs/ROADMAP.md. An SDK bump must pass the tools/list contract tests and the
              deterministic eval suite; an Anthropic SDK major bump re-records fixtures (ADR 0001). -->
-        <anthropic-java.version>3.8.0</anthropic-java.version>
+        <anthropic-java.version>3.12.0</anthropic-java.version>
         <mcp.version>2.2.0</mcp.version>
         <!-- The JSON Schema validator mcp-json-jackson3 2.2.0 uses for tool inputs; keep the two in step so the
              client and the servers validate with the same library and version. -->

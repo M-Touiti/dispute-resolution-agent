@@ -6,7 +6,7 @@ requires-python = ">=3.13"
 # mcp and fastapi are pinned in docs/ROADMAP.md; a bump must pass tests/test_tools_list_contract.py.
 dependencies = [
     "mcp==2.3.0",
-    "fastapi==0.163.1",
+    "fastapi==0.165.0",
     "jsonschema>=4.26.0",
     "psycopg[binary,pool]==3.3.9",
     "fastembed==0.9.1",

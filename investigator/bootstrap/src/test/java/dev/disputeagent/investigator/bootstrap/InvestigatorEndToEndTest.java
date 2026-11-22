@@ -90,7 +90,7 @@ class InvestigatorEndToEndTest {
                     "/docker-entrypoint-initdb.d/00-extensions.sql")
             .withCopyFileToContainer(MountableFile.forHostPath(initdb("40-investigator.sh"), 0755),
                     "/docker-entrypoint-initdb.d/40-investigator.sh");
-    static final KafkaContainer KAFKA = new KafkaContainer("apache/kafka:4.2.2");
+    static final KafkaContainer KAFKA = new KafkaContainer("apache/kafka:4.4.0");
 
     static final AtomicInteger LIVE_CALLS = new AtomicInteger();
 

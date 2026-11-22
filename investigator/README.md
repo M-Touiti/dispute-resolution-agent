@@ -1,6 +1,6 @@
 # investigator
 
-Java 21, Spring Boot 4.1.2, Maven multi-module (hexagonal):
+Java 21, Spring Boot 4.2.0, Maven multi-module (hexagonal):
 
 - `domain`: entities, value objects, case state machine. No dependencies outside the JDK; a Maven enforcer rule
   fails the build otherwise.
