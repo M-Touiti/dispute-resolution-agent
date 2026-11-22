@@ -9,7 +9,7 @@ When a milestone closes, its Status cell records the completion date.
 | Milestone | Done means | Status |
 |---|---|---|
 | M0 Skeleton | Repository public, ADR 0001, module layout, seeded synthetic data generator, three MCP servers answering `tools/list`, CI green (build, unit, CodeQL) | done 16 Nov 2026 |
-| M1 Loop | One category end to end (Kafka in, triage, investigate via `ledger-mcp` + `policy-mcp`, structured decision, guard, audit rows, decision event out); recording and replay adapters; 30 golden cases; deterministic graders in CI | in progress since 16 Nov 2026 |
+| M1 Loop | One category end to end (Kafka in, triage, investigate via `ledger-mcp` + `policy-mcp`, structured decision, guard, audit rows, decision event out); recording and replay adapters; 30 golden cases; deterministic graders in CI | done 22 Nov 2026 |
 | M2 Production half | Approval gate + `actions-mcp` token verification; Resilience4j around the model; DLQ, replay, outbox; traces, metrics, dashboard; k6 and failure-injection first report; Kustomize manifests apply on a local cluster | |
 | M3 Evidence | All categories incl. two adversarial; 150+ golden cases; live eval; `evals/REPORT.md`; six ADRs; README results table first; tag `v0.1.0` | |
 | M4 Voice | Public write-up: what the evals found, the two hardest failures, what the approval gate caught | |
@@ -108,7 +108,7 @@ graders green; ADRs 0002, 0003, 0004 and 0006 accepted. Branches are named `m1/<
 | 1.14 | Investigator in compose with its Dockerfile; `smoke.sh` publishes one `disputes.opened` and waits for `disputes.decided` | `deploy/compose/` | done; a case escalates until fixtures exist (1.16) |
 | 1.15 | Eval runner: an `eval` run mode of the investigator (replay adapter, one results file per golden case) and Python deterministic graders (decision matches, cited evidence exists and belongs to the case, cited sections exist, no forbidden action, cost and tool calls within budget, schema valid first try); a committed baseline and the regression rule | `evals/runner/` | done; the baseline is committed with the fixtures in 1.16 |
 | 1.16 | Recording session: one live run of the 30 cases through `RecordingAdapter`; fixtures and baseline committed; needs `ANTHROPIC_API_KEY` and a go-ahead on the estimated spend | `evals/fixtures/`, `evals/golden/baseline` | done; 149 fixtures, $1.93, accuracy 30/30. The first recording ($2.01) exposed two generator flaws (expired cards in use, contradicted "never shopped there" statements); generator v3 fixed both and the set was re-recorded |
-| 1.17 | CI eval job (compose, eval run, graders) required on `main`; README status and the first per-category numbers; sequence diagram of the loop; close M1 | `.github/`, `README.md`, `docs/diagrams/` | |
+| 1.17 | CI eval job (compose, eval run, graders) required on `main`; README status and the first per-category numbers; sequence diagram of the loop; close M1 | `.github/`, `README.md`, `docs/diagrams/` | done; the `Evaluation (replay)` check is made required in the branch protection of `main` |
 
 Order: 1.1 to 1.4 first (they fix the inputs); 1.5 and 1.6 can run alongside 1.7 to 1.9, which need no server;
 1.10 to 1.13 need 1.8; 1.14 and 1.15 need 1.12 and 1.13; 1.16 needs everything; 1.17 closes.

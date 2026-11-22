@@ -7,9 +7,11 @@
 A production-shaped agent that investigates card disputes through MCP tool servers, cites its evidence, cannot
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
-> **Status: M0 (skeleton) complete; M1 (the agent loop) next.** The infrastructure, data and tool contracts exist
-> and are tested; the agent does not yet investigate anything, so there are **no results yet**. The results table
-> replaces this notice at M3. Progress: [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status: M1 (the agent loop) complete; M2 (the production half) next.** The agent investigates one dispute
+> category, unauthorised transactions, end to end, and every pull request replays 30 golden cases and grades them.
+> It cannot act yet: every outcome is a proposal until the approval gate lands in M2. The first numbers below come
+> from one category and 30 cases; the full results table replaces this notice at M3.
+> Progress: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## What it is
 
@@ -33,25 +35,50 @@ flowchart LR
     I --> O[(Kafka<br/>decision event)]
 ```
 
-## What exists today (M0)
+## First results (M1, unauthorised transactions)
+
+30 golden cases, 6 per scenario, recorded once against the live API and replayed in CI on every pull request
+([evals/](evals/README.md)). The graders are deterministic; the ground truth comes from the data generator's rules.
+
+| Scenario | Expected | Correct |
+|---|---|---|
+| Chip and PIN, card present | decline | 6/6 |
+| 3-D Secure authenticated | decline | 6/6 |
+| Card not present, no 3-D Secure, fraud flag | provisional credit | 6/6 |
+| Above the provisional credit limit | escalate | 6/6 |
+| Outside the time limit | decline | 6/6 |
+
+Unsafe proposals: 0. Forbidden actions: 0. Every decision cited only records of its own case and the deciding
+policy section, and passed the schema on the first try. Cost per case, as recorded: median $0.066, p90 $0.086
+(`claude-opus-5-5` at medium effort, `claude-haiku-5-5` triage), about two thirds of input tokens read from the
+cache.
+
+Read this as a working loop, not as accuracy. These five scenarios have one clear answer each. The first recording
+scored 28/30, and both misses were the model correctly escalating contradictions the synthetic data generator had
+introduced by mistake; the generator was fixed and the set re-recorded. Ambiguous and adversarial cases arrive in M3.
+
+How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md).
+
+## What exists today (M1)
 
 | Part | State | Tests |
 |---|---|---|
 | `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand, tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, recording and replay of model calls, the MCP client, JSON and schema validation, Kafka in and out, cases and audit in PostgreSQL; tested end to end on Testcontainers | 145 |
-| `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation. Same seed, same bytes | 21 |
+| `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation; the policy corpus, checked against the generator's rules. Same seed, same bytes | 52 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
 | `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token`; every call is rejected until token verification lands in M2 | 16 |
-| `evals/` | Golden set of 30 cases; an evaluation run mode of the investigator; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals, schema, budget) with a regression rule against a baseline | 22 |
+| `evals/` | Golden set of 30 cases; an evaluation run mode of the investigator; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals, schema, budget) with a regression rule against a committed baseline; 149 recorded model calls; `record.sh` for re-recording | 22 |
 | `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.2 (KRaft), the three MCP servers and the investigator; `smoke.sh` checks each and runs one dispute end to end | smoke |
-| CI | Build and tests per module, lint, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
+| CI | Build and tests per module, lint, the golden set replayed and graded against the baseline, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
 
 Every tool's input schema stays inside the JSON Schema subset that strict tool use accepts, and a test in each
 server enforces it. The schemas can be passed to Claude unchanged.
 
 ## Run it
 
-Prerequisites: JDK 21, [uv](https://docs.astral.sh/uv/), Docker. No API key is needed for anything in M0.
+Prerequisites: JDK 21, [uv](https://docs.astral.sh/uv/), Docker. No API key is needed: model calls are replayed from
+`evals/fixtures/llm` unless you choose the live adapter.
 
 ```sh
 # Generate the synthetic data (seed 20261101 by default)
@@ -60,8 +87,16 @@ cd data && uv run python generate.py && cd ..
 # Start PostgreSQL, Kafka, the three MCP servers and the investigator, then check them
 cd deploy/compose
 docker compose up -d --build --wait
-./smoke.sh            # Git Bash on Windows
+./smoke.sh            # Git Bash on Windows: one dispute through Kafka, the loop and back
 docker compose down -v
+```
+
+Replay and grade the golden set, as CI does (stack up, no key):
+
+```sh
+cd investigator && ./mvnw -q -pl bootstrap -am package -DskipTests
+java -jar bootstrap/target/investigator-bootstrap-*.jar --spring.profiles.active=eval
+cd ../evals && uv run python -m evaltools.grade      # exit 1 on a regression against evals/baseline
 ```
 
 Each module builds and tests on its own. CI runs the same commands:
@@ -108,7 +143,7 @@ The index with full titles is in [docs/adr](docs/adr/README.md); pinned versions
 | Milestone | Done means |
 |---|---|
 | **M0 Skeleton** (done) | Module layout, data generator, three MCP servers answering `tools/list`, compose, CI and CodeQL green |
-| M1 Loop | One category end to end through both read servers, with a structured decision, guard and audit; 30 golden cases replayed in CI |
+| **M1 Loop** (done) | One category end to end through both read servers, with a structured decision, guard and audit; 30 golden cases replayed in CI |
 | M2 Production half | Approval gate and token verification, resilience, DLQ and outbox, traces and dashboards, load and failure tests, Kubernetes manifests |
 | M3 Evidence | All categories including two adversarial ones, 150+ golden cases, live evaluation, `evals/REPORT.md`, tag `v0.1.0` |
 | M4 Write-up | What the evaluations found, the two hardest failures, what the approval gate caught |
