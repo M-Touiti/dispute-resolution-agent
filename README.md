@@ -69,7 +69,7 @@ How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md)
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |
 | `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token`; every call is rejected until token verification lands in M2 | 16 |
 | `evals/` | Golden set of 30 cases; an evaluation run mode of the investigator; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals, schema, budget) with a regression rule against a committed baseline; 149 recorded model calls; `record.sh` for re-recording | 22 |
-| `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.2 (KRaft), the three MCP servers and the investigator; `smoke.sh` checks each and runs one dispute end to end | smoke |
+| `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.4 (KRaft), the three MCP servers and the investigator; `smoke.sh` checks each and runs one dispute end to end | smoke |
 | CI | Build and tests per module, lint, the golden set replayed and graded against the baseline, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
 
 Every tool's input schema stays inside the JSON Schema subset that strict tool use accepts, and a test in each

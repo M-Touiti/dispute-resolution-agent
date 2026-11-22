@@ -35,9 +35,9 @@ services:
       start_period: 30s
 
   # Single-node KRaft broker. Containers use kafka:19092; the host uses localhost:9092.
-  # Version matches the kafka-clients managed by Spring Boot 4.1.2.
+  # Version matches the kafka-clients managed by Spring Boot 4.2.0.
   kafka:
-    image: apache/kafka:4.2.2
+    image: apache/kafka:4.4.0
     environment:
       CLUSTER_ID: "-L_07n1dUzG2QQz8ZplXJQ"  # base64 of a fixed UUID; any 16-byte value works
       KAFKA_NODE_ID: 1

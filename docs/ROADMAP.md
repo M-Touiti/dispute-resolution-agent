@@ -23,20 +23,20 @@ report, approval gate, recorded fixtures, ADRs.
 | Concern | Artifact | Pin | Note |
 |---|---|---|---|
 | JDK | Temurin / Oracle | 21 (LTS) | Spring Boot 4 baseline is 17; 21 for virtual threads and records patterns |
-| Orchestrator | `org.springframework.boot:spring-boot-starter-parent` | 4.1.2 | Latest GA line (4.2.0 is at RC2 on 16 Nov). Jackson 3, Servlet 6.1 |
-| Model access | `com.anthropic:anthropic-java` | 3.8.0 | 3.0.0 (21 Oct 2026) moved to API version 2026-10-21; ships `OutputConfig`, `JsonOutputFormat`, `Tool.strict`, `CacheControlEphemeral` |
+| Orchestrator | `org.springframework.boot:spring-boot-starter-parent` | 4.2.0 | GA 19 Nov 2026, applied in 2.1 (from 4.1.2). Spring Framework 7.1, Jackson 3.1, Servlet 6.1 |
+| Model access | `com.anthropic:anthropic-java` | 3.12.0 | 3.8.0 → 3.12.0 in 2.1 left every fixture key unchanged. 3.0.0 (21 Oct 2026) moved to API version 2026-10-21; ships `OutputConfig`, `JsonOutputFormat`, `Tool.strict`, `CacheControlEphemeral` |
 | MCP (Java) | `io.modelcontextprotocol.sdk:mcp-bom` | 2.2.0 | Latest GA. Use the `mcp` bundle = `mcp-core` + `mcp-json-jackson3`. 2.1.0 → 2.2.0 left all three `tools/list` contracts unchanged |
 | MCP server transport | `HttpServletStreamableServerTransportProvider` in `mcp-core` | n/a | The `mcp-spring-webmvc` and `server-servlet` artifacts stopped at 0.18.x; in 2.x the Spring transports live in Spring AI. We register the servlet transport in Spring Boot via `ServletRegistrationBean` and do not depend on Spring AI |
 | MCP client transport | `HttpClientStreamableHttpTransport` in `mcp-core` | n/a | JDK `HttpClient` based, Streamable HTTP |
 | MCP (Python) | `mcp` | 2.3.0 | v2 line; v1.x is maintenance only |
 | Python runtime | CPython | 3.13 | `mcp` requires >= 3.10 |
-| Retrieval | `fastapi`, `psycopg[binary,pool]` (`psycopg-pool`), `fastembed` | 0.163.1, 3.3.9 (3.3.3), 0.9.1 | Model `BAAI/bge-small-en-v1.5`, quantised ONNX, pinned by SHA-256 (ADR 0007). The `pgvector` Python package is not needed: vectors are passed as text and cast in SQL |
+| Retrieval | `fastapi`, `psycopg[binary,pool]` (`psycopg-pool`), `fastembed` | 0.165.0, 3.3.9 (3.3.3), 0.9.1 | Model `BAAI/bge-small-en-v1.5`, quantised ONNX, pinned by SHA-256 (ADR 0007). The `pgvector` Python package is not needed: vectors are passed as text and cast in SQL |
 | JSON Schema (Java) | `com.networknt:json-schema-validator` | 3.0.8 | The version `mcp-json-jackson3` 2.2.0 uses for server-side input validation; the investigator pins the same one so client and servers validate alike. 3.0.9 exists; bump with the MCP SDK |
-| Resilience | `io.github.resilience4j:resilience4j-spring-boot4` | 2.4.0 | The `-spring-boot4` module exists from 2.4.0 |
+| Resilience | `io.github.resilience4j:resilience4j-spring-boot4` | 2.4.0 | The `-spring-boot4` module exists from 2.4.0. Probed on Boot 4.2.0 in 2.1: binds and runs retry, circuit breaker, bulkhead and time limiter |
 | Testing | `org.testcontainers:testcontainers-bom`; Python `testcontainers` | 2.0.5; 4.15.0 | Kafka (KRaft) and PostgreSQL modules. In Python 4.15 the PostgreSQL module is `testcontainers.community.postgres` (the old path is deprecated) |
-| Observability | `io.opentelemetry.javaagent:opentelemetry-javaagent` | 2.33.1 | Plus manual spans for model and tool calls |
-| Kafka | managed by Spring Boot 4.1.2 (`spring-kafka` 4.1.x) | | KRaft broker in compose |
-| Container images (verified on Docker Hub 16 Nov 2026) | `pgvector/pgvector`, `apache/kafka`, `eclipse-temurin`, `python`, `ghcr.io/astral-sh/uv` | `0.8.7-pg18-trixie`, `4.2.2`, `21-jdk-noble`/`21-jre-noble`, `3.13.18-slim-trixie`, `0.11.33` | Broker matches the `kafka-clients` 4.2.2 that Boot manages; 4.4.0 is the newest GA |
+| Observability | Micrometer Tracing with the OpenTelemetry bridge and OTLP exporter | managed by Boot (Tracing 1.8.0, OpenTelemetry 1.68.0) | Replaces the Java agent (decision 3 at the M2 kick-off); manual spans for model and tool calls |
+| Kafka | managed by Spring Boot 4.2.0 (`spring-kafka` 4.2.0, `kafka-clients` 4.4.0) | | KRaft broker in compose |
+| Container images (verified on Docker Hub 16 Nov 2026) | `pgvector/pgvector`, `apache/kafka`, `eclipse-temurin`, `python`, `ghcr.io/astral-sh/uv` | `0.8.7-pg18-trixie`, `4.4.0` (from 4.2.2 in 2.1), `21-jdk-noble`/`21-jre-noble`, `3.13.18-slim-trixie`, `0.11.33` | Broker matches the `kafka-clients` 4.2.2 that Boot manages; 4.4.0 is the newest GA |
 
 Re-verify this table on the first day of each milestone. Dependabot raises weekly pull requests; a bump of the
 MCP SDK or the Anthropic SDK must pass the `tools/list` contract tests and the deterministic eval suite.
@@ -153,7 +153,7 @@ still replay from the M1 fixtures unchanged. Branches are named `m2/<task>`.
 
 | # | Task | Output | Status |
 |---|---|---|---|
-| 2.1 | Re-baseline pins (above): Spring Boot 4.2.0 with the Kafka image at 4.4.0, `anthropic-java` 3.12.0, `fastapi` 0.165.0; confirm `resilience4j-spring-boot4` 2.4.0 starts on Boot 4.2 (if not, M2 stays on 4.1.2: the breaker matters more than the Boot minor); the three `tools/list` contracts and the replay evaluation must pass unchanged; the SDK bump is checked by the offline mapping tests and one opt-in live check (under one cent, needs the go-ahead) | POMs, `pyproject.toml`, compose, this file | |
+| 2.1 | Re-baseline pins (above): Spring Boot 4.2.0 with the Kafka image at 4.4.0, `anthropic-java` 3.12.0, `fastapi` 0.165.0; confirm `resilience4j-spring-boot4` 2.4.0 starts on Boot 4.2 (if not, M2 stays on 4.1.2: the breaker matters more than the Boot minor); the three `tools/list` contracts and the replay evaluation must pass unchanged; the SDK bump is checked by the offline mapping tests and one opt-in live check (under one cent, needs the go-ahead) | POMs, `pyproject.toml`, compose, this file | done; all builds, the three `tools/list` contracts, the compose smoke and the replay evaluation (30/30, every fixture hit) pass unchanged. The opt-in live check is not run: no go-ahead yet, and the replay already shows the request shape the fixtures were recorded with is unchanged |
 | 2.2 | ADR 0005 approval tokens enforced inside the write server (Ed25519, binding, single use, idempotency); ADR 0008 reliability and observability as decorators around the ports (parked cases, replay, outbox, Micrometer Tracing instead of an agent) | `docs/adr/0005`, `docs/adr/0008`, index | |
 | 2.3 | Domain: case states after `DECIDED` (`AWAITING_APPROVAL`, `APPROVED`, `REJECTED`, `ACTED`, `ACTION_FAILED`) and the parked state `AWAITING_RETRY` with its transitions and replay count; `ApprovalRequest` and `ApprovalToken` values (case id, action, SHA-256 of the canonical arguments, token id, issued and expiry instants); the audit events for approval, action and parking; state-machine tests | `investigator/domain` | |
 | 2.4 | Approval gate in the application: a decision with an action moves the case to `AWAITING_APPROVAL` and raises `disputes.approval-requested`; `ApproveAction` and `RejectAction` use cases (reviewer id, note) behind a `TokenSigner` port and an `ActionPort`; on approval the investigator signs, calls the action, records the result (`ACTED` or `ACTION_FAILED` with the server's reason) and audits every step; the model's tool list is untouched; tests with fake ports | `investigator/application` | |

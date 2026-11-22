@@ -1,6 +1,6 @@
 # actions-mcp
 
-The only MCP server that changes state. Java 21, Spring Boot 4.1.2, MCP Java SDK 2.2.0 (`mcp-core` +
+The only MCP server that changes state. Java 21, Spring Boot 4.2.0, MCP Java SDK 2.2.0 (`mcp-core` +
 `mcp-json-jackson3`), no Spring AI: the SDK's `HttpServletStreamableServerTransportProvider` is registered at `/mcp`
 through a `ServletRegistrationBean`. Port 8083.
 
