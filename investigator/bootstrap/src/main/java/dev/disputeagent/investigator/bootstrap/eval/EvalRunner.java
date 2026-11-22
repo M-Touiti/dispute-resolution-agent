@@ -48,15 +48,20 @@ public final class EvalRunner implements ApplicationRunner {
     private final Path dataDir;
     private final Path out;
     private final String adapter;
+    private final long maxCostMicroUsd;
 
+    /**
+     * @param maxCostMicroUsd stop before the next case once the run has cost this much (live runs); 0 for no cap
+     */
     public EvalRunner(HandleDisputeOpened handle, EvalAuditLog audit, Path golden, Path dataDir, Path out,
-            String adapter) {
+            String adapter, long maxCostMicroUsd) {
         this.handle = handle;
         this.audit = audit;
         this.golden = golden;
         this.dataDir = dataDir;
         this.out = out;
         this.adapter = adapter;
+        this.maxCostMicroUsd = maxCostMicroUsd;
     }
 
     @Override
@@ -70,7 +75,14 @@ public final class EvalRunner implements ApplicationRunner {
                 adapter, out.toAbsolutePath().normalize());
 
         Map<String, Integer> states = new LinkedHashMap<>();
+        long spent = 0;
+        int done = 0;
         for (String id : ids) {
+            if (maxCostMicroUsd > 0 && spent >= maxCostMicroUsd) {
+                log.warn("spend cap reached: ${} of ${} after {} of {} cases; stopping", spent / 1e6,
+                        maxCostMicroUsd / 1e6, done, ids.size());
+                break;
+            }
             DisputeOpened dispute = disputes.get(id);
             if (dispute == null) {
                 throw new IllegalStateException(id + " is in the golden set but not in " + dataDir);
@@ -79,12 +91,19 @@ public final class EvalRunner implements ApplicationRunner {
             Map<String, Object> result = result(dispute, finished, audit.take(dispute.disputeId()));
             write(out.resolve(id + ".json"), result);
             states.merge(finished.state() + finished.escalationReason().map(r -> " " + r).orElse(""), 1, Integer::sum);
-            log.info("{}: {}", id, result.get("outcome"));
+            @SuppressWarnings("unchecked")
+            long cost = (long) ((Map<String, Object>) result.get("usage")).get("cost_micro_usd");
+            spent += cost;
+            done++;
+            log.info("{}: {} (${}, run total ${})", id, finished.state(), cost / 1e6, spent / 1e6);
         }
         Map<String, Object> run = new LinkedHashMap<>();
         run.put("golden_set", set.get("golden_set").asString());
         run.put("adapter", adapter);
         run.put("cases", ids.size());
+        run.put("cases_run", done);
+        run.put("cost_micro_usd", spent);
+        run.put("max_cost_micro_usd", maxCostMicroUsd);
         run.put("states", states);
         write(out.resolve("run.json"), run);
         log.info("evaluation run done: {}", states);

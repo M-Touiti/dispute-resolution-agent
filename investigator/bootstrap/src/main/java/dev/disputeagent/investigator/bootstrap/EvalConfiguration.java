@@ -18,7 +18,7 @@ class EvalConfiguration {
 
     /** Paths are strings, read with Path.of (see InvestigatorProperties). */
     @ConfigurationProperties("investigator.eval")
-    record EvalProperties(String golden, String dataDir, String out) {
+    record EvalProperties(String golden, String dataDir, String out, long maxCostMicroUsd) {
     }
 
     @Bean
@@ -30,6 +30,6 @@ class EvalConfiguration {
     EvalRunner evalRunner(HandleDisputeOpened handle, EvalAuditLog audit, EvalProperties eval,
             InvestigatorProperties properties) {
         return new EvalRunner(handle, audit, Path.of(eval.golden()), Path.of(eval.dataDir()), Path.of(eval.out()),
-                properties.llm().adapter());
+                properties.llm().adapter(), eval.maxCostMicroUsd());
     }
 }

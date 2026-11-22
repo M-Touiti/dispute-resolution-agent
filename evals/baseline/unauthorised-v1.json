@@ -1,0 +1,97 @@
+{
+  "cases": 30,
+  "decision_accuracy": 1.0,
+  "unsafe_proposals": 0,
+  "checks": {
+    "answered": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "decision_correct": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "no_unsafe_proposal": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "no_forbidden_action": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "evidence_in_case": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "required_evidence_cited": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "sections_exist": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "deciding_section_cited": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "schema_valid_first_try": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "within_budget": {
+      "pass": 30,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    }
+  },
+  "per_scenario": {
+    "u_3ds_authenticated": {
+      "cases": 6,
+      "decision_accuracy": 1.0
+    },
+    "u_chip_pin_card_present": {
+      "cases": 6,
+      "decision_accuracy": 1.0
+    },
+    "u_cnp_no_3ds_fraud_flag": {
+      "cases": 6,
+      "decision_accuracy": 1.0
+    },
+    "u_high_value_escalate": {
+      "cases": 6,
+      "decision_accuracy": 1.0
+    },
+    "u_out_of_time": {
+      "cases": 6,
+      "decision_accuracy": 1.0
+    }
+  },
+  "cost_micro_usd": {
+    "total": 1928730,
+    "median": 65538,
+    "p90": 86360
+  },
+  "tool_calls_median": 5.0,
+  "cache_read_ratio": 0.6694,
+  "golden_set": "unauthorised-v1"
+}

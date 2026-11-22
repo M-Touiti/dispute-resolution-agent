@@ -183,3 +183,25 @@ def test_ground_truth_never_reaches_the_sql_seed(written):
 def test_rejects_more_disputes_than_cards():
     with pytest.raises(ValueError, match="exceeds cards"):
         generate(Config(seed=1, cardholders=5, disputes=50))
+
+
+def test_no_active_card_is_expired_and_no_transaction_follows_its_cards_expiry(dataset, config):
+    as_of_month = config.as_of.strftime("%Y-%m")
+    cards = {c.card_id: c for c in dataset.cards}
+    for c in dataset.cards:
+        assert c.expiry > as_of_month or c.status != "ACTIVE", c
+    late = [t.transaction_id for t in dataset.transactions if t.posted_on.strftime("%Y-%m") > cards[t.card_id].expiry]
+    assert not late, late[:5]
+
+
+def test_a_cardholder_who_says_never_shopped_there_has_not(dataset):
+    for d in dataset.disputes:
+        if "never shopped there" not in d.cardholder_statement:
+            continue
+        txn = next(t for t in dataset.transactions if t.transaction_id == d.transaction_id)
+        earlier = [
+            t.transaction_id
+            for t in dataset.transactions
+            if t.card_id == d.card_id and t.merchant_id == txn.merchant_id and t.transaction_at < txn.transaction_at
+        ]
+        assert not earlier, (d.dispute_id, earlier)

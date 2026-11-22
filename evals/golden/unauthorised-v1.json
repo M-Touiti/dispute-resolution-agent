@@ -11,9 +11,9 @@
   "dataset": {
     "seed": 20261101,
     "as_of": "2026-11-01",
-    "generator_version": 2,
+    "generator_version": 3,
     "ground_truth_sha256": "409f3e51fc4dc891c98b2791278f82fd84adfa011537100258c72fd7d4d848f1",
-    "seed_sql_sha256": "8ca003ee44c924b73285caa2d192f5265145ced53e7151e18fc8243474229aa4"
+    "seed_sql_sha256": "794e1403b820f28dea45dd3513487c9bfa0b0c71c8b7feed966a4619bce838fa"
   },
   "cases": [
     {
