@@ -12,13 +12,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import anyio
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from mcp.server.transport_security import TransportSecuritySettings
 from psycopg_pool import ConnectionPool
 
 from . import __version__
 from .corpus import fingerprint, read_corpus
 from .embedding import Embedder, FastEmbedEmbedder, HashEmbedder
+from .metrics import exposition
 from .retrieval import Retriever
 from .server import build_server
 from .store import PolicyStore
@@ -114,6 +115,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/health")
     async def health() -> dict[str, object]:
         return {"status": "UP", **state}
+
+    @app.get("/metrics")
+    async def metrics() -> Response:
+        body, content_type = exposition()
+        return Response(content=body, media_type=content_type)
 
     app.mount("/", mcp_app)
     return app

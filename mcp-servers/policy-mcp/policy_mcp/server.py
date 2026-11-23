@@ -19,6 +19,7 @@ from mcp_types import INVALID_PARAMS, CallToolRequestParams, CallToolResult, Lis
 
 from . import __version__
 from .corpus import Section
+from .metrics import ToolTimer
 from .retrieval import Retriever
 from .tools import TOOLS, TOOLS_BY_NAME
 
@@ -90,20 +91,24 @@ def build_server(retriever: Retriever) -> Server[Any]:
         tool = TOOLS_BY_NAME.get(params.name)
         if tool is None:
             raise MCPError(INVALID_PARAMS, f"Unknown tool: {params.name}")
-        args = params.arguments or {}
-        errors = sorted(Draft202012Validator(tool.input_schema).iter_errors(args), key=str)
-        if errors:
-            details = "; ".join(f"{'/'.join(map(str, e.absolute_path)) or '(root)'}: {e.message}" for e in errors)
-            return _error(f"INVALID_INPUT: {details}")
-        try:
-            # Embedding and the database are blocking; keep them off the event loop.
-            result = await anyio.to_thread.run_sync(_HANDLERS[tool.name], retriever, args)
-        except ToolError as e:
-            return _error(str(e))
-        except psycopg.Error:
-            log.exception("%s failed", tool.name)
-            return _error("UNAVAILABLE: the policy store could not be read; try again later")
-        return CallToolResult(content=[TextContent(text=json.dumps(result, ensure_ascii=False))])
+        with ToolTimer(tool.name) as timer:
+            args = params.arguments or {}
+            errors = sorted(Draft202012Validator(tool.input_schema).iter_errors(args), key=str)
+            if errors:
+                details = "; ".join(f"{'/'.join(map(str, e.absolute_path)) or '(root)'}: {e.message}" for e in errors)
+                timer.outcome = "error"
+                return _error(f"INVALID_INPUT: {details}")
+            try:
+                # Embedding and the database are blocking; keep them off the event loop.
+                result = await anyio.to_thread.run_sync(_HANDLERS[tool.name], retriever, args)
+            except ToolError as e:
+                timer.outcome = "error"
+                return _error(str(e))
+            except psycopg.Error:
+                log.exception("%s failed", tool.name)
+                timer.outcome = "unavailable"
+                return _error("UNAVAILABLE: the policy store could not be read; try again later")
+            return CallToolResult(content=[TextContent(text=json.dumps(result, ensure_ascii=False))])
 
     def input_schema(name: str) -> dict[str, Any] | None:
         tool = TOOLS_BY_NAME.get(name)

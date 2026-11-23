@@ -124,3 +124,27 @@ def test_the_service_role_cannot_read_the_ledger(postgres, service_url: str) -> 
         admin.execute("CREATE TABLE IF NOT EXISTS ledger.cards (card_id TEXT PRIMARY KEY)")
     with psycopg.connect(service_url) as conn, pytest.raises(psycopg.errors.InsufficientPrivilege):
         conn.execute("SELECT 1 FROM ledger.cards").fetchall()
+
+
+async def test_metrics_count_tool_calls_by_tool_and_outcome(mcp_url: str, base_url: str) -> None:
+    import re
+
+    import httpx
+
+    def count(body: str, tool: str, outcome: str) -> float:
+        m = re.search(rf'^policy_tool_calls_total\{{outcome="{outcome}",tool="{tool}"\}} (\S+)$', body, re.M)
+        return float(m.group(1)) if m else 0.0
+
+    before = httpx.get(f"{base_url}/metrics").text
+    await _ok(mcp_url, "get_policy_section", {"section_id": "time-limits"})
+    await _call(mcp_url, "search_policy", {"query": ""})  # invalid input: a tool-level error
+
+    response = httpx.get(f"{base_url}/metrics")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/plain")
+    body = response.text
+    assert count(body, "get_policy_section", "ok") == count(before, "get_policy_section", "ok") + 1
+    assert count(body, "search_policy", "error") == count(before, "search_policy", "error") + 1
+    assert "policy_tool_seconds_bucket{" in body
+    # The runtime metrics; the process collector (process_cpu_seconds_total) reads /proc and exists on Linux only.
+    assert "python_gc_objects_collected_total" in body

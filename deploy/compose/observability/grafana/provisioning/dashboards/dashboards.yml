@@ -1,0 +1,11 @@
+# Dashboards from the repository (task 2.12): edit the JSON, not the UI; changes made in Grafana are not kept.
+apiVersion: 1
+
+providers:
+  - name: dispute-agent
+    folder: Dispute agent
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

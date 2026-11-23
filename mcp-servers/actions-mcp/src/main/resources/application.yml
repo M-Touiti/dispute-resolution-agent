@@ -28,10 +28,13 @@ actions-mcp:
     verify-keys: ''
 
 management:
+  metrics:
+    tags:
+      application: actions-mcp
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,prometheus
   endpoint:
     health:
       probes:

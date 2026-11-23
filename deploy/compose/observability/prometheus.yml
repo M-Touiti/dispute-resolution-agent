@@ -1,0 +1,26 @@
+# Prometheus for the local stack (ADR 0008, task 2.12): every service's metrics, every 5 s. One laptop: the numbers
+# are for watching the system, not for capacity planning.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: investigator
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["investigator:8080"]
+  - job_name: ledger-mcp
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["ledger-mcp:8081"]
+  - job_name: actions-mcp
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["actions-mcp:8083"]
+  - job_name: policy-mcp
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["policy-mcp:8082"]
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
