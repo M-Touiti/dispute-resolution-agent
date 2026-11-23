@@ -28,6 +28,9 @@ mounted in a FastAPI app that also serves `/health`. Port 8082.
   (`max_results` out of range, empty query, malformed section id), `NOT_FOUND`, `UNAVAILABLE` (database failure;
   details only in the log).
 - DNS rebinding protection is on: only the Host headers in `POLICY_MCP_ALLOWED_HOSTS` are served.
+- Prometheus metrics at `/metrics` (`prometheus-client`): `policy_tool_calls_total` and the `policy_tool_seconds`
+  histogram by `tool` and `outcome` (`ok`, `error`, `unavailable`, the same outcomes as the investigator's tool spans),
+  and the Python runtime and process metrics (the process ones on Linux only).
 
 Configuration: `POLICY_DB_URL` (default `postgresql://policy_service:policy_service@localhost:5432/disputes`),
 `POLICY_CORPUS_DIR` (default `data/policy-corpus` of the checkout), `POLICY_EMBEDDER` (`fastembed`; `hash` is for

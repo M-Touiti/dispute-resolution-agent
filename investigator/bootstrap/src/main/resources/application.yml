@@ -59,6 +59,15 @@ management:
   metrics:
     tags:
       application: investigator
+    # Histogram buckets for the percentiles on the dashboard (p50/p90 cost per case, p99 model latency, ...).
+    distribution:
+      percentiles-histogram:
+        dispute.llm.call: true
+        dispute.tool.call: true
+        dispute.action: true
+        dispute.case.cost: true
+        dispute.case.tokens: true
+        dispute.approval.latency: true
 
 # JSON logs (ECS): the trace and span ids and the dispute id (MDC) on every line; card numbers masked in every string.
 # LOG_FORMAT= (empty) gives plain text for reading locally.

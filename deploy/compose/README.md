@@ -10,8 +10,30 @@
 | `investigator` | built from `investigator` | `127.0.0.1:8080` (health, reviewer API) | consumes `disputes.opened` and `disputes.replay`; publishes `disputes.decided`, `disputes.approval-requested`, `disputes.replay` (through its outbox) and `disputes.dlq` (dead letters) |
 | `approval-keys` | `eclipse-temurin:21-jdk-noble`, runs once | none | generates the approval-token key pair on the first start into `approval-signing` (investigator) and `approval-verify` (public key only, for actions-mcp); see [docs/approval-token.md](../../docs/approval-token.md) |
 
-The host ports match `.env.example`, so the investigator can also run on the host against the stack. Prometheus and
-Grafana join in M2.
+| `prometheus` | `prom/prometheus:v3.16.0` | `127.0.0.1:9090` | scrapes the investigator, ledger-mcp and actions-mcp (`/actuator/prometheus`) and policy-mcp (`/metrics`) every 5 s |
+| `tempo` | `grafana/tempo:2.10.10` | `127.0.0.1:3200` | receives the investigator's spans over OTLP/HTTP at `tempo:4318`; traces on a tmpfs, kept while the stack runs |
+| `grafana` | `grafana/grafana:13.3.1` | `127.0.0.1:3000` | the **Dispute agent** dashboard and the Prometheus and Tempo datasources, provisioned from `observability/grafana` |
+
+The host ports match `.env.example`, so the investigator can also run on the host against the stack.
+
+## Observability (ADR 0008)
+
+Open http://localhost:3000. The home dashboard is **Dispute agent**, read-only without a login; log in as
+`admin`/`admin` (`GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD`) to explore. Its rows:
+
+- cases by outcome, unsafe proposals, parked cases and replays;
+- model latency and failures, the circuit breaker, the prompt cache hit ratio, tokens;
+- cost per case and spend;
+- tool error ratio and policy-mcp latency;
+- approval latency, actions, outbox lag, scrape targets;
+- recent case traces from Tempo.
+
+Click a trace to see the case span with its model, tool and action spans.
+
+The dashboard is `observability/grafana/dashboards/dispute-agent.json`: change it there, as the UI does not save
+changes. Every service's metrics carry an `application` tag, and every investigator log line its trace id and
+dispute id. `smoke.sh` checks that every scrape target is up, that the case's trace is in Tempo with its model and
+tool spans, and that Grafana has both datasources and the dashboard.
 
 ## Run
 

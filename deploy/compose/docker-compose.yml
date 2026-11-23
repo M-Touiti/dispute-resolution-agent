@@ -163,6 +163,9 @@ services:
       # only; to change it, set REVIEWER_API_KEY in deploy/compose/.env (compose reads .env from this folder, not
       # from the repository root) or in the shell.
       REVIEWER_API_KEY: ${REVIEWER_API_KEY:-local-reviewer-key}
+      # One trace per case to Tempo over OTLP/HTTP (ADR 0008).
+      OTEL_TRACES_EXPORT: "true"
+      MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT: http://tempo:4318/v1/traces
     volumes:
       - ../../skills:/app/skills:ro
       - ../../evals/fixtures/llm:/app/fixtures
@@ -190,6 +193,60 @@ services:
       timeout: 3s
       retries: 40
       start_period: 30s
+
+  # Observability (ADR 0008, task 2.12): Prometheus scrapes every service, Tempo keeps the investigator's traces,
+  # Grafana shows both with a dashboard provisioned from observability/grafana. All bound to 127.0.0.1.
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=2d"]
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "127.0.0.1:9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:9090/-/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Distroless: no shell for a healthcheck; smoke.sh polls /ready from the host. Traces on a tmpfs owned by Tempo's
+  # user (10001): they live as long as the stack does.
+  tempo:
+    image: grafana/tempo:2.10.10
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./observability/tempo.yaml:/etc/tempo/tempo.yaml:ro
+    tmpfs:
+      - /var/tempo:uid=10001,gid=10001,mode=0755
+    ports:
+      - "127.0.0.1:3200:3200"
+
+  grafana:
+    image: grafana/grafana:13.3.1
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      # Read-only browsing without a login, for this local stack only.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/dispute-agent.json
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      tempo:
+        condition: service_started
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
 volumes:
   postgres-data:

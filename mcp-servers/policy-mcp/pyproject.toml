@@ -11,6 +11,7 @@ dependencies = [
     "psycopg[binary,pool]==3.3.9",
     "fastembed==0.9.1",
     "uvicorn>=0.54.0",
+    "prometheus-client==0.26.0",
 ]
 
 [tool.uv]

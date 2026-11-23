@@ -5,6 +5,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
+# Ubuntu runners may have python3 only; Git Bash on Windows has python.
+PY=$(command -v python || command -v python3) || fail "python is needed to read JSON answers"
 
 # PostgreSQL: pgvector is installed and the seed is loaded.
 rows=$(docker compose exec -T postgres sh -c \
@@ -174,6 +176,57 @@ if [[ -z "${SMOKE_DISPUTE:-}" && "$state" != "DECIDED" ]]; then
     fail "investigator: golden case $dispute ended $state${reason:+ ($reason)}, expected DECIDED (a fixture miss?)"
 fi
 echo "ok   investigator $dispute -> $state${reason:+ ($reason)}; $audit_rows audit rows, $tool_rows tool calls"
+
+# Observability (ADR 0008, task 2.12): every service scraped, the case's trace in Tempo, Grafana provisioned.
+targets=$(curl -fsS http://localhost:9090/api/v1/targets | "$PY" -c "
+import json, sys
+t = json.load(sys.stdin)['data']['activeTargets']
+down = sorted(x['labels']['job'] for x in t if x['health'] != 'up')
+print(len(t), ' '.join(down))") || fail "prometheus: not reachable"
+read -r target_count down_jobs <<<"$targets"
+for _ in $(seq 1 12); do
+    [[ -z "$down_jobs" && "$target_count" -ge 5 ]] && break
+    sleep 5
+    read -r target_count down_jobs <<<"$(curl -fsS http://localhost:9090/api/v1/targets | "$PY" -c "
+import json, sys
+t = json.load(sys.stdin)['data']['activeTargets']
+print(len(t), ' '.join(sorted(x['labels']['job'] for x in t if x['health'] != 'up')))")"
+done
+[[ -z "$down_jobs" && "$target_count" -ge 5 ]] || fail "prometheus: targets down: ${down_jobs:-none} ($target_count targets)"
+echo "ok   prometheus   all $target_count targets up"
+
+for _ in $(seq 1 24); do
+    [[ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3200/ready)" == "200" ]] && break
+    sleep 5
+done
+spans=""
+for _ in $(seq 1 24); do
+    trace=$(curl -fsS -G http://localhost:3200/api/search --data-urlencode "q={ name = \"case $dispute\" }" \
+        | "$PY" -c "import json, sys; t = json.load(sys.stdin).get('traces') or []; print(t[0]['traceID'] if t else '')" \
+        || true)
+    if [[ -n "$trace" ]]; then
+        spans=$(curl -fsS "http://localhost:3200/api/v2/traces/$trace" | "$PY" -c "
+import json, sys
+names = [s['name'] for rs in json.load(sys.stdin)['trace']['resourceSpans'] for ss in rs['scopeSpans'] for s in ss['spans']]
+print(sum(n.startswith('llm ') for n in names), sum(n.startswith('tool ') for n in names))")
+        break
+    fi
+    sleep 5
+done
+read -r llm_spans tool_spans <<<"$spans"
+[[ "${llm_spans:-0}" -gt 0 && "${tool_spans:-0}" -gt 0 ]] \
+    || fail "tempo: no trace for case $dispute with model and tool spans (${spans:-no trace})"
+echo "ok   tempo        trace $trace: case $dispute with $llm_spans model and $tool_spans tool spans"
+
+grafana_user=${GRAFANA_ADMIN_USER:-admin}
+grafana_password=${GRAFANA_ADMIN_PASSWORD:-admin}
+datasources=$(curl -fsS -u "$grafana_user:$grafana_password" http://localhost:3000/api/datasources \
+    | "$PY" -c "import json, sys; print(' '.join(sorted(d['uid'] for d in json.load(sys.stdin))))") \
+    || fail "grafana: not reachable"
+[[ "$datasources" == "prometheus tempo" ]] || fail "grafana: datasources are '$datasources'"
+curl -fsS -u "$grafana_user:$grafana_password" http://localhost:3000/api/dashboards/uid/dispute-agent -o /dev/null \
+    || fail "grafana: the dispute-agent dashboard is not provisioned"
+echo "ok   grafana      datasources prometheus and tempo, dashboard dispute-agent"
 
 # A decided case's action waits for a person (ADR 0005): stored AWAITING_APPROVAL, one disputes.approval-requested.
 # On a stack that already ran the smoke test the case is past that; it is reported, not re-reviewed.
