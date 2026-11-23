@@ -3,6 +3,9 @@ package dev.disputeagent.investigator.domain.investigation;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.DecisionOutcome;
 import dev.disputeagent.investigator.domain.DisputeCategory;
+import dev.disputeagent.investigator.domain.approval.ApprovalRequest;
+import dev.disputeagent.investigator.domain.approval.ApprovalToken;
+import dev.disputeagent.investigator.domain.approval.Review;
 import dev.disputeagent.investigator.domain.decision.Decision;
 import dev.disputeagent.investigator.domain.guard.GuardResult;
 import java.time.Instant;
@@ -12,8 +15,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * One dispute through investigation. Only legal transitions are possible, each is recorded with its time and
- * reason, and the outcome is set exactly once. Time is passed in; the domain has no clock.
+ * One dispute through investigation, approval and action. Only legal transitions are possible (see {@link CaseState}),
+ * each is recorded with its time and reason, and the decision is set at most once per run. Time is passed in; the
+ * domain has no clock.
  */
 public final class DisputeCase {
 
@@ -29,6 +33,11 @@ public final class DisputeCase {
     private Decision decision;
     private GuardResult guardResult;
     private EscalationReason escalationReason;
+    private int replays;
+    private ApprovalRequest approvalRequest;
+    private Review review;
+    private ApprovalToken token;
+    private String actionDetail;
 
     public DisputeCase(CaseId id, DisputeCategory reportedCategory, Instant receivedAt) {
         this.id = Objects.requireNonNull(id, "id");
@@ -71,11 +80,92 @@ public final class DisputeCase {
         }
     }
 
-    /** Ends the case with a person: from any non-terminal state. */
+    /** Ends the case with a person: from any state of the investigation, or a parked case (replay cap). */
     public void escalate(EscalationReason reason, Instant at, String detail) {
         Objects.requireNonNull(reason, "reason");
         move(CaseState.ESCALATED, at, reason + ": " + detail);
         this.escalationReason = reason;
+    }
+
+    /**
+     * Parks the case: the model or the ledger was unavailable after the retries (ADR 0008). Nothing the run produced
+     * is kept; a replay starts again from {@code RECEIVED}.
+     */
+    public void park(Instant at, String reason) {
+        Objects.requireNonNull(reason, "reason");
+        move(CaseState.AWAITING_RETRY, at, "parked: " + reason);
+    }
+
+    /** Starts a parked case again from the beginning; the history and the replay count carry over. */
+    public void replay(Instant at) {
+        requireState(CaseState.AWAITING_RETRY);
+        replays++;
+        move(CaseState.RECEIVED, at, "replay " + replays);
+        category = reportedCategory;
+        decision = null;
+        guardResult = null;
+    }
+
+    /**
+     * Puts the decision's action before a person. Every passing decision that is not an escalation carries exactly
+     * one action (the guard's rule), so every decided case goes through approval.
+     */
+    public ApprovalRequest requestApproval(Instant at) {
+        requireState(CaseState.DECIDED);
+        var actions = decision.proposedActions();
+        if (actions.size() != 1) {
+            throw new IllegalStateException("case " + id + " has " + actions.size() + " actions, expected one");
+        }
+        move(CaseState.AWAITING_APPROVAL, at, "approval requested: " + actions.getFirst().toolName());
+        approvalRequest = new ApprovalRequest(id, actions.getFirst(), at);
+        return approvalRequest;
+    }
+
+    /**
+     * A person approved; the token is what {@code actions-mcp} will verify. It must be issued for this case and this
+     * action, by the reviewer who approved, and still be valid now.
+     */
+    public void approve(Review review, ApprovalToken token, Instant at) {
+        Objects.requireNonNull(review, "review");
+        Objects.requireNonNull(token, "token");
+        requireState(CaseState.AWAITING_APPROVAL);
+        if (!token.bindsTo(id, approvalRequest.action())) {
+            throw new IllegalArgumentException("token " + token.tokenId() + " is for " + token.caseId() + " "
+                    + token.action() + ", not " + id + " " + approvalRequest.action().toolName());
+        }
+        if (!token.reviewer().equals(review.reviewer())) {
+            throw new IllegalArgumentException("token " + token.tokenId() + " names another reviewer");
+        }
+        if (token.expiredAt(at)) {
+            throw new IllegalArgumentException("token " + token.tokenId() + " expired at " + token.expiresAt());
+        }
+        move(CaseState.APPROVED, at, "approved by " + review.reviewer());
+        this.review = review;
+        this.token = token;
+    }
+
+    /** A person rejected the action: nothing is carried out. */
+    public void reject(Review review, Instant at) {
+        Objects.requireNonNull(review, "review");
+        requireState(CaseState.AWAITING_APPROVAL);
+        move(CaseState.REJECTED, at, "rejected by " + review.reviewer());
+        this.review = review;
+    }
+
+    /** {@code actions-mcp} carried the approved action out. */
+    public void acted(Instant at, String detail) {
+        Objects.requireNonNull(detail, "detail");
+        requireState(CaseState.APPROVED);
+        move(CaseState.ACTED, at, token.action() + " done");
+        this.actionDetail = detail;
+    }
+
+    /** {@code actions-mcp} refused or failed the approved action; a person takes over. */
+    public void actionFailed(Instant at, String reason) {
+        Objects.requireNonNull(reason, "reason");
+        requireState(CaseState.APPROVED);
+        move(CaseState.ACTION_FAILED, at, token.action() + " failed: " + reason);
+        this.actionDetail = reason;
     }
 
     private void move(CaseState to, Instant at, String note) {
@@ -120,6 +210,28 @@ public final class DisputeCase {
 
     public Optional<EscalationReason> escalationReason() {
         return Optional.ofNullable(escalationReason);
+    }
+
+    /** How many times the case was replayed after being parked. */
+    public int replays() {
+        return replays;
+    }
+
+    public Optional<ApprovalRequest> approvalRequest() {
+        return Optional.ofNullable(approvalRequest);
+    }
+
+    public Optional<Review> review() {
+        return Optional.ofNullable(review);
+    }
+
+    public Optional<ApprovalToken> token() {
+        return Optional.ofNullable(token);
+    }
+
+    /** What {@code actions-mcp} answered: its result when acted, its reason when the action failed. */
+    public Optional<String> actionDetail() {
+        return Optional.ofNullable(actionDetail);
     }
 
     public List<StateChange> history() {

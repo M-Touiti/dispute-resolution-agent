@@ -174,6 +174,19 @@ public final class EvalRunner implements ApplicationRunner {
                 }
                 case AuditEvent.DecisionChecked d -> {
                 }
+                // Approval, action and parking do not happen in an evaluation run (M2): the run ends at the
+                // investigation's outcome and replay never fails with a retryable kind.
+                case AuditEvent.CaseParked parked -> modelFailures.add("PARKED: " + parked.reason());
+                case AuditEvent.CaseReplayed replayed -> {
+                }
+                case AuditEvent.ApprovalRequested requested -> {
+                }
+                case AuditEvent.Reviewed reviewed -> {
+                }
+                case AuditEvent.TokenIssued issued -> {
+                }
+                case AuditEvent.ActionCalled called -> {
+                }
             }
         }
         Map<String, Object> usage = new LinkedHashMap<>();

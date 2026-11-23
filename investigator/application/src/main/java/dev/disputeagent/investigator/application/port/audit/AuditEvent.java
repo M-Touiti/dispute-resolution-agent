@@ -10,6 +10,7 @@ import dev.disputeagent.investigator.domain.guard.GuardResult;
 import dev.disputeagent.investigator.domain.investigation.CaseState;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 /** One audit row. Every model call, tool call, state change and decision of a case is one event, in order. */
 public sealed interface AuditEvent {
@@ -56,5 +57,31 @@ public sealed interface AuditEvent {
 
     /** Triage could not classify; the reported category is used. */
     record TriageFellBack(CaseId caseId, Instant at, String reason) implements AuditEvent {
+    }
+
+    /** The case was parked after the model or the ledger stayed unavailable (ADR 0008). */
+    record CaseParked(CaseId caseId, Instant at, String reason, int replays) implements AuditEvent {
+    }
+
+    /** A parked case started again from the beginning. */
+    record CaseReplayed(CaseId caseId, Instant at, int replay) implements AuditEvent {
+    }
+
+    /** The decision's action was put before a person (ADR 0005). */
+    record ApprovalRequested(CaseId caseId, Instant at, String action) implements AuditEvent {
+    }
+
+    /** A person approved or rejected the action. */
+    record Reviewed(CaseId caseId, Instant at, boolean approved, String reviewer, String note) implements AuditEvent {
+    }
+
+    /** An approval token was signed. Its id and claims are recorded, never the token itself. */
+    record TokenIssued(CaseId caseId, Instant at, UUID tokenId, String action, String argumentsSha256,
+            Instant expiresAt) implements AuditEvent {
+    }
+
+    /** The investigator called the approved action on actions-mcp; {@code detail} is the server's answer. */
+    record ActionCalled(CaseId caseId, Instant at, String action, UUID tokenId, boolean isError, String detail,
+            Duration latency) implements AuditEvent {
     }
 }
