@@ -133,10 +133,14 @@ public final class EvalRunner implements ApplicationRunner {
 
     /** One case's result: the outcome as published, and what the investigation used, from its audit trail. */
     static Map<String, Object> result(DisputeOpened dispute, DisputeCase finished, List<AuditEvent> events) {
-        CaseOutcome outcome = CaseOutcome.of(finished);
+        // A parked case has no outcome yet; it shows as unanswered (no decision, no escalation).
+        CaseOutcome outcome = finished.state().endsInvestigation() ? CaseOutcome.of(finished) : null;
         Map<String, Object> r = new LinkedHashMap<>();
         r.put("dispute_id", dispute.disputeId().value());
-        r.put("outcome", JSON.readTree(dev.disputeagent.investigator.adapters.kafka.DisputeEvents.decided(outcome)));
+        r.put("outcome", outcome != null
+                ? JSON.readTree(dev.disputeagent.investigator.adapters.kafka.DisputeEvents.decided(outcome))
+                : JSON.createObjectNode().put("state", finished.state().name()).putNull("decision")
+                        .putNull("escalation_reason").put("unsafe_proposal", false));
 
         long modelCalls = 0, inputTokens = 0, outputTokens = 0, cacheRead = 0, cacheWrite = 0, costMicroUsd = 0;
         List<String> priceTables = new ArrayList<>();

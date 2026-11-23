@@ -145,6 +145,40 @@ class JdbcCaseStoreTest {
     }
 
     @Test
+    void aParkedCaseIsStoredWithItsEventAndNoOutcome() {
+        var c = new DisputeCase(new CaseId("DSP-000105"), DisputeCategory.UNAUTHORISED_TRANSACTION, T0);
+        c.triaged(DisputeCategory.UNAUTHORISED_TRANSACTION, T0.plusSeconds(1));
+        c.investigationStarted(T0.plusSeconds(2));
+        c.park(T0.plusSeconds(3), "model call failed: OVERLOADED");
+        var event = new dev.disputeagent.investigator.application.intake.DisputeOpened(c.id(), "CH-1", "CRD-1",
+                "TXN-1", DisputeCategory.UNAUTHORISED_TRANSACTION, T0, Money.eur(100), "never made it", List.of());
+
+        store.park(c, event);
+
+        var stored = store.find(c.id()).orElseThrow();
+        assertThat(stored.disputeCase().state()).isEqualTo(CaseState.AWAITING_RETRY);
+        assertThat(stored.outcome()).isNull();
+        assertThat(stored.disputeCase().history()).isEqualTo(c.history());
+        assertThat(jdbc.sql("SELECT opened_event FROM investigation.cases WHERE dispute_id = 'DSP-000105'")
+                .query(String.class).single()).contains("\"dispute_id\":\"DSP-000105\"").contains("never made it");
+        assertThat(jdbc.sql("SELECT count(*) FROM investigation.outbox WHERE dispute_id = 'DSP-000105'")
+                .query(Long.class).single()).as("nothing to publish yet").isZero();
+    }
+
+    @Test
+    void theSchemaRefusesAParkedCaseWithoutItsEventOrWithAnOutcome() {
+        assertThatThrownBy(() -> jdbc.sql("""
+                INSERT INTO investigation.cases (dispute_id, state, reported_category, category, unsafe_proposal, history)
+                VALUES ('DSP-000106', 'AWAITING_RETRY', 'UNAUTHORISED_TRANSACTION', 'UNAUTHORISED_TRANSACTION', false,
+                    '[]'::jsonb)""").update()).isInstanceOf(DataIntegrityViolationException.class);
+        saved("DSP-000107");
+        assertThatThrownBy(() -> jdbc.sql("""
+                UPDATE investigation.cases SET state = 'AWAITING_RETRY', opened_event = '{}'
+                WHERE dispute_id = 'DSP-000107'""").update()).as("a parked case has no outcome")
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
     void theSchemaRefusesAnApprovedCaseWithoutItsToken() {
         saved("DSP-000104");
 

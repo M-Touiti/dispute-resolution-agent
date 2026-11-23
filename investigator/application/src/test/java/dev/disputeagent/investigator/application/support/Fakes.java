@@ -100,6 +100,15 @@ public final class Fakes {
             return this;
         }
 
+        /** Changes what an already offered tool answers; {@link #tool} would offer it a second time. */
+        public FakeMcp answering(String name, Function<String, McpToolResult> handler) {
+            if (!handlers.containsKey(name)) {
+                throw new IllegalArgumentException("no tool " + name + " to change");
+            }
+            handlers.put(name, handler);
+            return this;
+        }
+
         @Override
         public List<McpTool> listTools(McpServer server) {
             return tools.getOrDefault(server, List.of());

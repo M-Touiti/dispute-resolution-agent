@@ -1,5 +1,6 @@
 package dev.disputeagent.investigator.bootstrap;
 
+import dev.disputeagent.investigator.adapters.resilience.ResilientLlmPort;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -12,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("investigator")
 public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budget, Policy policy, String skillsDir,
-        Approval approval, Reviewer reviewer, Outbox outbox) {
+        Approval approval, Reviewer reviewer, Outbox outbox, ResilientLlmPort.Settings resilience) {
 
     // Directories are bound as strings and read with Path.of: Spring's String-to-Path conversion goes through the
     // resource loader, which rejects relative paths with '..' in a web application.
@@ -25,7 +26,7 @@ public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budge
      * @param adapter     {@code anthropic} (live), {@code recording} (live, writes fixtures) or {@code replay}
      * @param live        which live model to use when the adapter needs one: {@code anthropic}; tests supply their own
      * @param apiKey      from {@code ANTHROPIC_API_KEY}; needed only by a live adapter
-     * @param maxRetries  retries in the SDK, the one place they are configured in M1
+     * @param maxRetries  retries in the SDK: 0, because Resilience4j retries around the port (ADR 0008)
      */
     public record Llm(String adapter, String live, Model investigator, Model triage, Prices prices,
             String fixturesDir, String apiKey, String baseUrl, int maxRetries, Duration timeout) {

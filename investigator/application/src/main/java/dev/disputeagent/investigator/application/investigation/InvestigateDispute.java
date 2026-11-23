@@ -92,23 +92,28 @@ public final class InvestigateDispute {
         return systemPrompt;
     }
 
-    /** Runs the investigation of a triaged case to a terminal state. */
+    /** Runs the investigation of a triaged case to its outcome (decided or escalated), or parks it (ADR 0008). */
     public void investigate(DisputeCase dispute, DisputeOpened event) {
         if (dispute.state() != CaseState.TRIAGED) {
             throw new IllegalStateException("case " + dispute.id() + " is " + dispute.state() + ", expected TRIAGED");
         }
         transition(dispute, () -> dispute.investigationStarted(clock.instant()));
 
+        // Before the loop: a configuration error or contradicting data ends the case with a person; a server that cannot
+        // be reached or read is an outage, and the case is parked to be replayed (ADR 0008).
         Toolbox toolbox;
         CaseEvidence evidence;
         try {
             toolbox = Toolbox.discover(mcp, Set.of(Skills.TOOL_NAME));
             evidence = CaseEvidence.collect(event, invoker, json, audit);
+        } catch (Toolbox.InvalidToolset e) {
+            escalate(dispute, EscalationReason.DEPENDENCY_UNAVAILABLE, "the tools cannot be offered: " + e.getMessage());
+            return;
         } catch (CaseEvidence.InvalidCaseData e) {
             escalate(dispute, EscalationReason.CASE_DATA_INVALID, e.getMessage());
             return;
         } catch (RuntimeException e) {
-            escalate(dispute, EscalationReason.DEPENDENCY_UNAVAILABLE, "before the loop: " + e.getMessage());
+            park(dispute, "before the loop: " + e.getMessage());
             return;
         }
 
@@ -127,7 +132,11 @@ public final class InvestigateDispute {
             }
             Sent sent = send(dispute, messages, toolbox);
             if (sent.response() == null) {
-                escalate(dispute, EscalationReason.DEPENDENCY_UNAVAILABLE, "model call failed: " + sent.failure());
+                if (sent.retryable()) {
+                    park(dispute, "model call failed: " + sent.failure());
+                } else {
+                    escalate(dispute, EscalationReason.DEPENDENCY_UNAVAILABLE, "model call failed: " + sent.failure());
+                }
                 return;
             }
             LlmResponse response = sent.response();
@@ -187,7 +196,8 @@ public final class InvestigateDispute {
     }
 
     /** A response, or why there is none. */
-    private record Sent(LlmResponse response, String failure) {
+    /** A model call's answer, or why there is none and whether a later attempt could succeed. */
+    private record Sent(LlmResponse response, String failure, boolean retryable) {
     }
 
     private Sent send(DisputeCase dispute, List<LlmMessage> messages, Toolbox toolbox) {
@@ -204,11 +214,11 @@ public final class InvestigateDispute {
             audit.record(new AuditEvent.ModelCalled(dispute.id(), start, Stage.INVESTIGATE,
                     settings.investigatorModel(), response.model(), response.id(), response.stopReason(),
                     response.usage(), response.cost(), Duration.between(start, clock.instant())));
-            return new Sent(response, null);
+            return new Sent(response, null, false);
         } catch (RuntimeException e) {
             audit.record(new AuditEvent.ModelCallFailed(dispute.id(), start, Stage.INVESTIGATE,
                     settings.investigatorModel(), failure(e), Duration.between(start, clock.instant())));
-            return new Sent(null, failure(e));
+            return new Sent(null, failure(e), e instanceof LlmCallException l && l.kind().retryable());
         }
     }
 
@@ -279,6 +289,15 @@ public final class InvestigateDispute {
 
     private void escalate(DisputeCase dispute, EscalationReason reason, String detail) {
         transition(dispute, () -> dispute.escalate(reason, clock.instant(), detail));
+    }
+
+    /**
+     * The model or a server stayed unavailable after the retries around the port (ADR 0008): the case waits as
+     * {@code AWAITING_RETRY} and is replayed from the start, instead of ending with a person.
+     */
+    private void park(DisputeCase dispute, String reason) {
+        transition(dispute, () -> dispute.park(clock.instant(), reason));
+        audit.record(new AuditEvent.CaseParked(dispute.id(), clock.instant(), reason, dispute.replays()));
     }
 
     /** Applies a change to the case and audits every state change it caused. */

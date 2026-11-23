@@ -51,8 +51,9 @@ investigator:
     fixtures-dir: ${LLM_FIXTURES_DIR:../evals/fixtures/llm}
     api-key: ${ANTHROPIC_API_KEY:}
     base-url: ${ANTHROPIC_BASE_URL:}
-    # Retries are configured in exactly one place: the SDK in M1; 0 once Resilience4j wraps the port (M2).
-    max-retries: 2
+    # Retries are configured in exactly one place: Resilience4j around the port (investigator.resilience, ADR 0008).
+    max-retries: 0
+    # The SDK's own limit, a backstop behind the time limiter's attempt-timeout.
     timeout: PT5M
     investigator:
       model: ${INVESTIGATOR_MODEL:claude-opus-5-5}
@@ -77,6 +78,22 @@ investigator:
     connect-timeout: PT5S
     request-timeout: PT30S
     max-response-bytes: 1000000
+  # Around the model call (ADR 0008), outermost first: retry, circuit breaker, bulkhead, time limiter. A case the model
+  # cannot serve after the retries, or while the breaker is open, is parked and replayed (task 2.10).
+  resilience:
+    attempt-timeout: ${LLM_ATTEMPT_TIMEOUT:PT4M}
+    max-attempts: 3
+    first-backoff: PT2S
+    backoff-multiplier: 2.0
+    jitter: 0.5
+    max-backoff: PT30S
+    max-concurrent-calls: ${LLM_MAX_CONCURRENT_CALLS:8}
+    bulkhead-wait: PT10S
+    breaker-window: 20
+    breaker-minimum-calls: 10
+    breaker-failure-rate: 50
+    breaker-open-for: PT30S
+    breaker-half-open-calls: 3
   # The outbox relay (ADR 0008): events are saved with the case and published from investigation.outbox.
   outbox:
     poll-interval: ${OUTBOX_POLL_INTERVAL:PT0.2S}

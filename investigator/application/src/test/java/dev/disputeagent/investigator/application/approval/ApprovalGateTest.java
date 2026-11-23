@@ -275,6 +275,11 @@ class ApprovalGateTest {
         }
 
         @Override
+        public void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event) {
+            real.park(parked, event);
+        }
+
+        @Override
         public boolean update(DisputeCase c, CaseState expected, String token) {
             return real.update(c, expected, token);
         }

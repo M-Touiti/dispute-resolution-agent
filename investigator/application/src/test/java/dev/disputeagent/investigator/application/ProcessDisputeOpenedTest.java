@@ -114,6 +114,26 @@ class ProcessDisputeOpenedTest {
     }
 
     @Test
+    void aParkedCaseIsSavedWithItsEventAndEmitsNothing() {
+        llm.then(StopReason.REFUSAL) // triage falls back
+                .thenThrow(new dev.disputeagent.investigator.application.port.llm.LlmCallException(
+                        dev.disputeagent.investigator.application.port.llm.LlmCallException.Kind.OVERLOADED,
+                        "529", null));
+
+        var result = process().process(DISPUTE);
+
+        assertThat(result.state()).isEqualTo(CaseState.AWAITING_RETRY);
+        assertThat(result.outcome()).as("no outcome yet").isNull();
+        assertThat(store.stateOf(DISPUTE.disputeId())).isEqualTo(CaseState.AWAITING_RETRY);
+        assertThat(store.parkedEvents).containsEntry(DISPUTE.disputeId(), DISPUTE);
+        assertThat(store.outbox).as("nothing to publish until it is decided").isEmpty();
+
+        var redelivered = process().process(DISPUTE);
+        assertThat(redelivered.redelivery()).isTrue();
+        assertThat(redelivered.state()).isEqualTo(CaseState.AWAITING_RETRY);
+    }
+
+    @Test
     void anEscalatedCaseIsSavedWithItsOutcomeAndNoRequest() {
         llm.then(StopReason.REFUSAL).then(StopReason.REFUSAL); // triage falls back, the investigation escalates
 

@@ -5,6 +5,7 @@ import dev.disputeagent.investigator.adapters.fixtures.Fixtures;
 import dev.disputeagent.investigator.adapters.fixtures.RecordingAdapter;
 import dev.disputeagent.investigator.adapters.fixtures.ReplayAdapter;
 import dev.disputeagent.investigator.adapters.json.JacksonJsonAdapter;
+import dev.disputeagent.investigator.adapters.resilience.ResilientLlmPort;
 import dev.disputeagent.investigator.adapters.skills.FileSkillLibrary;
 import dev.disputeagent.investigator.application.HandleDisputeOpened;
 import dev.disputeagent.investigator.application.investigation.InvestigateDispute;
@@ -27,6 +28,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +52,15 @@ class InvestigatorConfiguration {
 
     /** Runs a turn's tool calls concurrently; virtual threads, one per call. */
     @Bean(destroyMethod = "shutdownNow")
+    @Qualifier("toolExecutor")
     ExecutorService toolExecutor() {
+        return Executors.newVirtualThreadPerTaskExecutor();
+    }
+
+    /** Runs each model attempt, so the time limiter can cancel it (ADR 0008); virtual threads. */
+    @Bean(destroyMethod = "shutdownNow")
+    @Qualifier("llmAttempts")
+    ExecutorService llmAttempts() {
         return Executors.newVirtualThreadPerTaskExecutor();
     }
 
@@ -69,17 +79,21 @@ class InvestigatorConfiguration {
      */
     @Bean
     @Primary
-    LlmPort llmPort(InvestigatorProperties properties, PriceTable prices, ObjectProvider<LiveLlm> live) {
+    LlmPort llmPort(InvestigatorProperties properties, PriceTable prices, ObjectProvider<LiveLlm> live, Clock clock,
+            @Qualifier("llmAttempts") ExecutorService attempts) {
         var fixtures = new Fixtures(properties.llm().fixturesPath());
         String adapter = properties.llm().adapter();
         log.info("model adapter: {} (fixtures {})", adapter, fixtures.dir().toAbsolutePath().normalize());
-        return switch (adapter) {
+        LlmPort port = switch (adapter) {
             case "replay" -> new ReplayAdapter(fixtures, prices);
             case "recording" -> new RecordingAdapter(live.getObject(), fixtures);
             case "anthropic" -> live.getObject();
             default -> throw new IllegalStateException(
                     "investigator.llm.adapter must be anthropic, recording or replay, got " + adapter);
         };
+        // Every adapter, replay included, goes through the same decorator (ADR 0008); replay never fails with a
+        // transient kind, so there it passes through and the fixtures see the same requests.
+        return new ResilientLlmPort(port, properties.resilience(), clock, attempts);
     }
 
     @Bean
@@ -107,7 +121,8 @@ class InvestigatorConfiguration {
     /** Triage then investigation; the audit log is the service's (JDBC) or the evaluation's (in memory). */
     @Bean
     HandleDisputeOpened handleDisputeOpened(LlmPort llm, McpToolPort mcp, JsonPort json, AuditLog audit, Clock clock,
-            ExecutorService toolExecutor, InvestigationSettings settings, SkillLibrary skills) {
+            @Qualifier("toolExecutor") ExecutorService toolExecutor, InvestigationSettings settings,
+            SkillLibrary skills) {
         return new HandleDisputeOpened(new TriageDispute(llm, json, audit, clock, settings),
                 new InvestigateDispute(llm, mcp, json, audit, clock, toolExecutor, settings, skills), audit, clock);
     }

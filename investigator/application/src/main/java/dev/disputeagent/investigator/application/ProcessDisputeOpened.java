@@ -4,6 +4,7 @@ import dev.disputeagent.investigator.application.approval.RequestApproval;
 import dev.disputeagent.investigator.application.intake.DisputeOpened;
 import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.application.port.store.CaseStore;
+import dev.disputeagent.investigator.domain.investigation.CaseState;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import java.util.List;
  *       ({@code AWAITING_APPROVAL}). The case is saved with {@code disputes.decided}, and
  *       {@code disputes.approval-requested} when there is an action, in one transaction. A crash before the commit
  *       re-runs the case on redelivery; after it, the redelivery finds the case.</li>
+ *   <li>A case the model or a server could not serve is parked ({@code AWAITING_RETRY}, ADR 0008): it is saved with
+ *       its {@code disputes.opened} event, to be replayed from the start, and nothing is emitted yet.</li>
  * </ol>
  */
 public final class ProcessDisputeOpened {
@@ -37,17 +40,25 @@ public final class ProcessDisputeOpened {
     public Result process(DisputeOpened dispute) {
         var existing = cases.find(dispute.disputeId());
         if (existing.isPresent()) {
-            return new Result(existing.get().outcome(), true);
+            return new Result(existing.get().disputeCase().state(), existing.get().outcome(), true);
         }
         var investigated = handle.handle(dispute);
+        if (investigated.state() == CaseState.AWAITING_RETRY) {
+            cases.park(investigated, dispute);
+            return new Result(investigated.state(), null, false);
+        }
         CaseOutcome outcome = CaseOutcome.of(investigated);
         List<OutgoingEvent> events = new ArrayList<>();
         events.add(new OutgoingEvent.Decided(outcome));
         requestApproval.request(investigated).ifPresent(r -> events.add(new OutgoingEvent.ApprovalRequested(r)));
         cases.save(investigated, outcome, events);
-        return new Result(outcome, false);
+        return new Result(investigated.state(), outcome, false);
     }
 
-    public record Result(CaseOutcome outcome, boolean redelivery) {
+    /**
+     * @param state   where the case is now
+     * @param outcome the investigation's outcome; null while the case is parked
+     */
+    public record Result(CaseState state, CaseOutcome outcome, boolean redelivery) {
     }
 }
