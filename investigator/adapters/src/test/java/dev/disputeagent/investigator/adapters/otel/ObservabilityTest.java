@@ -122,7 +122,7 @@ class ObservabilityTest {
         assertThat(meters.get("dispute.cases").tags("outcome", "escalated", "reason", "GUARD_FAILED").counter()
                 .count()).isEqualTo(1);
         assertThat(meters.get("dispute.unsafe.proposals").counter().count()).isEqualTo(1);
-        assertThat(meters.get("dispute.cases.parked").counter().count()).isEqualTo(1);
+        assertThat(meters.get("dispute.cases.parked").tags("after_replays", "0").counter().count()).isEqualTo(1);
         assertThat(meters.get("dispute.llm.tokens").tags("type", "cache_read").counter().count()).isEqualTo(6000);
         assertThat(meters.get("dispute.llm.cost").counter().count()).isEqualTo(0.08);
         assertThat(meters.get("dispute.case.tokens").summary().totalAmount()).as("one run, both calls")

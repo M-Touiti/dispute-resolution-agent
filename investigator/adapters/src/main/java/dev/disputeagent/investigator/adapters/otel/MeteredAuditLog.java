@@ -19,7 +19,9 @@ import java.util.concurrent.atomic.LongAdder;
  * <ul>
  *   <li>{@code dispute.cases} by {@code outcome} ({@code decided}, {@code escalated}) and {@code reason} (the
  *       escalation reason, {@code none} when decided); {@code dispute.unsafe.proposals} for guard failures.</li>
- *   <li>{@code dispute.cases.parked} and {@code dispute.cases.replayed}.</li>
+ *   <li>{@code dispute.cases.parked} by {@code after_replays} (how many replays the case had already) and
+ *       {@code dispute.cases.replayed} by {@code replay} (which replay this is): whether outages clear on the first
+ *       replay or need more.</li>
  *   <li>{@code dispute.llm.tokens} by {@code model} and {@code type} (input, output, cache_read, cache_creation): the
  *       cache hit ratio is cache_read over input plus cache_read; {@code dispute.llm.cost} in dollars by model.</li>
  *   <li>{@code dispute.case.tokens} and {@code dispute.case.cost} per case run (histograms), recorded when the
@@ -50,8 +52,13 @@ public final class MeteredAuditLog implements AuditLog {
         switch (event) {
             case AuditEvent.ModelCalled called -> modelCalled(called);
             case AuditEvent.StateChanged changed -> stateChanged(changed);
-            case AuditEvent.CaseParked parked -> meters.counter("dispute.cases.parked").increment();
-            case AuditEvent.CaseReplayed replayed -> meters.counter("dispute.cases.replayed").increment();
+            // Tagged by how far the case got: bounded by the replay cap, so the tag values stay few.
+            case AuditEvent.CaseParked parked ->
+                    meters.counter("dispute.cases.parked", "after_replays", Integer.toString(parked.replays()))
+                            .increment();
+            case AuditEvent.CaseReplayed replayed ->
+                    meters.counter("dispute.cases.replayed", "replay", Integer.toString(replayed.replay()))
+                            .increment();
             case AuditEvent.Reviewed reviewed -> Timer.builder("dispute.approval.latency")
                     .description("From the approval request to the person's review")
                     .tag("decision", reviewed.approved() ? "approved" : "rejected")

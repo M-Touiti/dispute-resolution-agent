@@ -23,6 +23,7 @@ import dev.disputeagent.investigator.domain.decision.Money;
 import dev.disputeagent.investigator.domain.guard.PolicyLimits;
 import dev.disputeagent.investigator.domain.investigation.LoopBudget;
 import io.micrometer.context.ContextExecutorService;
+import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import java.time.Clock;
@@ -60,7 +61,8 @@ class InvestigatorConfiguration {
     @Qualifier("toolExecutor")
     ExecutorService toolExecutor() {
         // Carries the current observation to the thread, so work there stays in its case's trace (ADR 0008).
-        return ContextExecutorService.wrap(Executors.newVirtualThreadPerTaskExecutor());
+        return ContextExecutorService.wrap(Executors.newVirtualThreadPerTaskExecutor(),
+                ContextSnapshotFactory.builder().build());
     }
 
     /** Runs each model attempt, so the time limiter can cancel it (ADR 0008); virtual threads. */
@@ -68,7 +70,8 @@ class InvestigatorConfiguration {
     @Qualifier("llmAttempts")
     ExecutorService llmAttempts() {
         // Carries the current observation to the thread, so work there stays in its case's trace (ADR 0008).
-        return ContextExecutorService.wrap(Executors.newVirtualThreadPerTaskExecutor());
+        return ContextExecutorService.wrap(Executors.newVirtualThreadPerTaskExecutor(),
+                ContextSnapshotFactory.builder().build());
     }
 
     @Bean
