@@ -1,0 +1,5 @@
+# Used by run.sh with REPLICAS > 1: the investigator's fixed host port (8080) cannot be shared by several replicas.
+# Inside the network nothing changes; Prometheus finds every replica by DNS.
+services:
+  investigator:
+    ports: !reset []

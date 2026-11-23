@@ -16,6 +16,9 @@
 
 The host ports match `.env.example`, so the investigator can also run on the host against the stack.
 
+The `perf` profile adds `load-shim` (port 8090) and `k6` for the load test; `performance/run.sh` starts them (see
+`performance/README.md`). Prometheus finds investigator replicas by DNS, so a scaled investigator is scraped whole.
+
 ## Observability (ADR 0008)
 
 Open http://localhost:3000. The home dashboard is **Dispute agent**, read-only without a login; log in as

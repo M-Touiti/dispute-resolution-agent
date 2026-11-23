@@ -71,6 +71,7 @@ How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md)
 | `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token` it verifies itself: an Ed25519 signature from the investigator's key, bound to the dispute, the tool and the exact arguments; each approved action carried out once (the token id is the idempotency key), within limits read from its own data, as a role that owns only its schema | 29 |
 | `evals/` | Golden set of 30 cases; an evaluation run mode of the investigator; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals, schema, budget) with a regression rule against a committed baseline; 149 recorded model calls; `record.sh` for re-recording | 22 |
 | `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.4 (KRaft), the three MCP servers and the investigator, Prometheus, Tempo and Grafana with a provisioned dashboard; `smoke.sh` checks each, runs disputes end to end through the approval gate, and finds a case's trace in Tempo | smoke |
+| `performance/` | k6 at a constant arrival rate through a shim that publishes `disputes.opened` and awaits `disputes.decided`, on the replay adapter: one investigator replica saturates at 12.6 cases/s (p99 4.1 s at 20/s offered), three carry 20/s at p99 0.77 s ([report](performance/README.md)) | 6 |
 | CI | Build and tests per module, lint, the golden set replayed and graded against the baseline, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
 
 Every tool's input schema stays inside the JSON Schema subset that strict tool use accepts, and a test in each
@@ -119,7 +120,7 @@ mcp-servers/         ledger-mcp (Java), policy-mcp (Python), actions-mcp (Java);
 data/                seeded synthetic data generator; policy corpus (Markdown, 24 sections)
 evals/               golden set, graders, recorded fixtures, REPORT.md (M1 to M3)
 skills/              Agent Skills (SKILL.md) the investigator loads on demand
-performance/         k6 scripts and failure injection (M2)
+performance/         load test (k6, shim, report) and failure injection (M2)
 deploy/              docker compose; Kustomize manifests (M2)
 docs/                roadmap, architecture decision records, diagrams
 ```
