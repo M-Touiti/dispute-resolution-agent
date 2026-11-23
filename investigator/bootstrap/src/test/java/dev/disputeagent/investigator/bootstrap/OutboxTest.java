@@ -145,7 +145,7 @@ class OutboxTest {
 
     @Test
     void aFailureMidBatchKeepsWhatWasSentAndStopsThere() {
-        saveDecided();
+        CaseId first = saveDecided();
         saveDecided();
         AtomicInteger calls = new AtomicInteger();
         List<String> sent = new ArrayList<>();
@@ -158,6 +158,7 @@ class OutboxTest {
         }, 100).relayOnce();
 
         assertThat(n).isEqualTo(1);
+        assertThat(sent).as("only the oldest row went out").containsExactly(first.value() + " disputes.decided");
         assertThat(calls).as("the batch stopped at the failure").hasValue(2);
         assertThat(unsent()).isEqualTo(3);
         List<Long> unsentIds = jdbc.sql("SELECT id FROM investigation.outbox WHERE sent_at IS NULL ORDER BY id")
