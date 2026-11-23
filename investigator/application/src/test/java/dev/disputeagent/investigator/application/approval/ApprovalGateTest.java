@@ -48,18 +48,29 @@ class ApprovalGateTest {
     };
     final FakeActions actions = new FakeActions();
 
+    /** Records which case and action each call was for; hashes only the case and action it knows. */
     static final class FakeActions implements ActionPort {
         final List<String> tokensSent = new ArrayList<>();
+        final List<String> hashed = new ArrayList<>();
+        final List<String> executed = new ArrayList<>();
         ActionPort.Result answer = new ActionPort.Result(true, "credited 1100.56 EUR");
         RuntimeException failure;
 
         @Override
         public String argumentsSha256(CaseId disputeId, ProposedAction action) {
+            hashed.add(disputeId + " " + action.toolName());
+            if (!disputeId.equals(ID) || !action.equals(CREDIT)) {
+                throw new AssertionError("hash asked for " + disputeId + " " + action);
+            }
             return HASH;
         }
 
         @Override
         public ActionPort.Result execute(CaseId disputeId, ProposedAction action, String approvalToken) {
+            executed.add(disputeId + " " + action.toolName());
+            if (!action.equals(CREDIT)) {
+                throw new AssertionError("asked to execute " + action + ", the case proposed " + CREDIT);
+            }
             tokensSent.add(approvalToken);
             if (failure != null) {
                 throw failure;
@@ -112,6 +123,9 @@ class ApprovalGateTest {
         assertThat(claims.argumentsSha256()).isEqualTo(HASH);
         assertThat(claims.reviewer()).isEqualTo("reviewer-1");
         assertThat(actions.tokensSent).containsExactly("jws." + TOKEN_ID);
+        assertThat(actions.hashed).as("the hash is for the action that runs")
+                .containsExactly(ID + " issue_provisional_credit");
+        assertThat(actions.executed).containsExactly(ID + " issue_provisional_credit");
         assertThat(cases.find(ID).orElseThrow().approvalToken()).contains("jws." + TOKEN_ID);
 
         assertThat(audit.events).extracting(e -> e.getClass().getSimpleName()).containsExactly("Reviewed",
@@ -141,6 +155,9 @@ class ApprovalGateTest {
         assertThat(result.state()).isEqualTo(CaseState.ACTED);
         assertThat(signed).as("no second token").hasSize(1);
         assertThat(actions.tokensSent).containsExactly("jws." + TOKEN_ID, "jws." + TOKEN_ID);
+        assertThat(actions.executed).as("the stored case and action, restored")
+                .containsExactly(ID + " issue_provisional_credit", ID + " issue_provisional_credit");
+        assertThat(actions.hashed).as("no second hash on resume").hasSize(1);
     }
 
     @Test
