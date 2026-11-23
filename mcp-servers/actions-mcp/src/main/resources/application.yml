@@ -1,12 +1,31 @@
 spring:
   application:
     name: actions-mcp
+  # The public approval keys as files, one property per file (compose mounts actions-mcp.approval.verify-keys here).
+  config:
+    import: optional:configtree:${APPROVAL_KEYS_DIR:/run/secrets/approval/}
+  # Its own role: owns the actions schema, reads intake.disputes (deploy/compose/postgres/initdb/50-actions-service.sh).
+  datasource:
+    url: ${ACTIONS_DB_URL:jdbc:postgresql://localhost:5432/disputes}
+    username: ${ACTIONS_DB_USER:actions_service}
+    password: ${ACTIONS_DB_PASSWORD:actions_service}
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 5000
+  flyway:
+    schemas: actions
+    default-schema: actions
+    create-schemas: false
 
 server:
   port: ${PORT:8083}
 
 actions-mcp:
   version: '@project.version@'
+  approval:
+    # Base64 X.509 Ed25519 public keys, separated by commas or whitespace (a rotation lists two). From the config tree
+    # or ACTIONS_MCP_APPROVAL_VERIFY_KEYS; none means every call is rejected.
+    verify-keys: ''
 
 management:
   endpoints:

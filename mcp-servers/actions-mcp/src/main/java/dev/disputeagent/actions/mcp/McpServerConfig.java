@@ -1,5 +1,6 @@
 package dev.disputeagent.actions.mcp;
 
+import dev.disputeagent.actions.action.ActionService;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.jackson3.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServer;
@@ -47,6 +48,7 @@ class McpServerConfig {
     McpSyncServer mcpServer(
             HttpServletStreamableServerTransportProvider transport,
             McpJsonMapper jsonMapper,
+            ActionService actions,
             @Value("${actions-mcp.version}") String version) {
         return McpServer.sync(transport)
                 .serverInfo("actions-mcp", version)
@@ -55,7 +57,7 @@ class McpServerConfig {
                         + "without a valid token are rejected and change nothing.")
                 .capabilities(ServerCapabilities.builder().tools(false).build())
                 .validateToolInputs(true)
-                .tools(ActionTools.specifications(jsonMapper))
+                .tools(ActionTools.specifications(jsonMapper, actions))
                 .build();
     }
 }

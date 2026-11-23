@@ -97,6 +97,13 @@ verify_files=$(docker compose run --rm --no-deps --entrypoint sh approval-keys -
 [[ "$verify_files" == "actions-mcp.approval.verify-keys" ]] \
     || fail "approval keys: the verify volume holds '$verify_files', expected the public key only"
 echo "ok   approval keys: the investigator signs with $signing; actions-mcp's volume holds the public key only"
+accepted=$(docker compose logs --no-log-prefix actions-mcp 2>/dev/null \
+    | grep -oE 'approval tokens are accepted from Ed25519 keys \[[0-9a-f, ]+\]' | tail -1 | grep -oE '\[.*\]')
+[[ "$accepted" == "[$signing]" ]] || fail "actions-mcp accepts keys '${accepted:-none}', expected [$signing]"
+migrated=$(docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -d disputes -c \
+    \"SELECT count(*) FROM actions.flyway_schema_history WHERE success\"")
+[[ "$migrated" -ge 1 ]] || fail "actions-mcp: the actions schema is not migrated"
+echo "ok   actions-mcp verifies tokens from key $signing only; actions schema migrated"
 
 dispute=${SMOKE_DISPUTE:-DSP-000018}
 event=$(docker compose exec -T postgres sh -c 'psql -tA -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d disputes' <<SQL

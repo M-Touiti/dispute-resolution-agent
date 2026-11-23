@@ -74,10 +74,19 @@ In this order. The first failure rejects the call with `APPROVAL_REJECTED: <reas
 | 7 | `act` is the tool being called | `WRONG_TOOL` |
 | 8 | `sub` is the call's `dispute_id` | `WRONG_DISPUTE` |
 | 9 | `args` equals the hash of the call's own arguments | `ARGUMENTS_MISMATCH` |
-| 10 | Business limits on the server's own data (task 2.6) | `LIMIT_EXCEEDED`, `DISPUTE_CLOSED` |
-| 11 | Single use: `jti` recorded in the write's transaction. A known `jti` returns the stored result and writes nothing | none |
+| 10 | Single use: a `jti` already recorded returns the stored result of its first call and writes nothing | none |
+| 11 | Business limits on the server's own data: the dispute exists; it is not closed; credits are positive, in the dispute's currency and in total never above the disputed amount; evidence lists at least one item, each once; a closure gives a reason and a policy section | `UNKNOWN_DISPUTE`, `DISPUTE_CLOSED`, `LIMIT_EXCEEDED`, `INVALID_ARGUMENTS` |
+| 12 | The action is recorded with its `jti` in the same transaction; the answer is stored with it | none |
 
-Checks 1 to 9 are pure and pinned by the vectors. Checks 10 and 11 need the server's database and have their own
+Steps 10 to 12 run in one transaction holding a lock on the dispute (`pg_advisory_xact_lock`), so two calls for one
+dispute run one after the other: without it, four concurrent 60% credits all succeeded in the tests. The `jti`
+lookup comes before the limits so that a retry is answered from the record even when its own first call closed
+the dispute; this keeps ADR 0005's rule that a retry returns the stored result.
+
+A carried-out action answers `{"status":"DONE","action":...,"dispute_id":...,"token_id":...,"summary":...}`;
+a refusal answers `isError` with `APPROVAL_REJECTED: <REASON>: <detail>. No action was taken.`
+
+Checks 1 to 9 are pure and pinned by the vectors. Steps 10 to 12 need the server's database and have their own
 tests (task 2.6).
 
 ## Keys in each deployment

@@ -36,14 +36,15 @@ jobs:
           java-version: "21"
           cache: maven
           cache-dependency-path: ${{ matrix.project }}/**/pom.xml
-      # ledger-mcp's tests run PostgreSQL (Testcontainers) loaded with the generated seed; they fail without it.
+      # ledger-mcp's and actions-mcp's tests run PostgreSQL (Testcontainers) loaded with the generated seed; they fail
+      # without it.
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
-        if: matrix.project == 'mcp-servers/ledger-mcp'
+        if: matrix.project == 'mcp-servers/ledger-mcp' || matrix.project == 'mcp-servers/actions-mcp'
         with:
           enable-cache: true
           cache-dependency-glob: data/uv.lock
       - name: Generate the seed
-        if: matrix.project == 'mcp-servers/ledger-mcp'
+        if: matrix.project == 'mcp-servers/ledger-mcp' || matrix.project == 'mcp-servers/actions-mcp'
         working-directory: data
         run: uv run --locked python generate.py
       - name: Build and test

@@ -1,5 +1,6 @@
 package dev.disputeagent.actions.mcp;
 
+import dev.disputeagent.actions.ActionsDatabase;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.modelcontextprotocol.client.McpClient;
@@ -23,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -34,6 +37,11 @@ import tools.jackson.databind.json.JsonMapper;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ToolsListContractTest {
+
+    @DynamicPropertySource
+    static void database(DynamicPropertyRegistry registry) {
+        ActionsDatabase.register(registry);
+    }
 
     private static final Path CONTRACT = Path.of("src/test/resources/contract/tools-list.json");
 
@@ -99,7 +107,7 @@ class ToolsListContractTest {
     }
 
     @Test
-    void aWellFormedCallWithATokenIsStillRejectedUntilM2() {
+    void aWellFormedCallWithAMadeUpTokenIsRejectedAndChangesNothing() {
         CallToolResult result = client.callTool(call("issue_provisional_credit", Map.of(
                 "dispute_id", "DSP-000001",
                 "amount_minor", 4250,
@@ -107,7 +115,7 @@ class ToolsListContractTest {
                 ActionTools.APPROVAL_TOKEN, "any-token")));
 
         assertThat(result.isError()).isTrue();
-        assertThat(text(result)).isEqualTo(ActionTools.APPROVAL_REJECTED);
+        assertThat(text(result)).startsWith("APPROVAL_REJECTED: MALFORMED:").endsWith("No action was taken.");
     }
 
     @Test
@@ -118,7 +126,7 @@ class ToolsListContractTest {
                 "policy_section_ids", List.of("time-limits"))));
 
         assertThat(result.isError()).isTrue();
-        assertThat(text(result)).isNotEqualTo(ActionTools.APPROVAL_REJECTED).contains(ActionTools.APPROVAL_TOKEN);
+        assertThat(text(result)).doesNotStartWith("APPROVAL_REJECTED").contains(ActionTools.APPROVAL_TOKEN);
     }
 
     @Test
@@ -130,7 +138,7 @@ class ToolsListContractTest {
                 ActionTools.APPROVAL_TOKEN, "any-token")));
 
         assertThat(result.isError()).isTrue();
-        assertThat(text(result)).isNotEqualTo(ActionTools.APPROVAL_REJECTED);
+        assertThat(text(result)).as("refused by the schema, before any token check").doesNotStartWith("APPROVAL_REJECTED");
     }
 
     private static String text(CallToolResult result) {
