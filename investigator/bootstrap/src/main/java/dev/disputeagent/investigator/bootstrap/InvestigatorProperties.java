@@ -49,7 +49,8 @@ public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budge
             int maxResponseBytes) {
     }
 
-    public record Kafka(String openedTopic, String decidedTopic, String groupId, int partitions,
+    public record Kafka(String openedTopic, String decidedTopic, String approvalRequestedTopic, String groupId,
+            int partitions,
             Duration publishTimeout) {
     }
 

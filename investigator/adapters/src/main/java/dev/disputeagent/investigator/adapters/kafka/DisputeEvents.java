@@ -5,6 +5,7 @@ import dev.disputeagent.investigator.application.intake.DisputeOpened;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.DecisionOutcome;
 import dev.disputeagent.investigator.domain.DisputeCategory;
+import dev.disputeagent.investigator.domain.approval.ApprovalRequest;
 import dev.disputeagent.investigator.domain.decision.Confidence;
 import dev.disputeagent.investigator.domain.decision.Decision;
 import dev.disputeagent.investigator.domain.decision.EvidenceKind;
@@ -24,7 +25,7 @@ import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
 /**
- * The JSON of the two topics, version 1, snake_case. Written by hand rather than by reflection so the wire format is
+ * The JSON of the investigator's topics, version 1, snake_case. Written by hand rather than by reflection so the wire format is
  * explicit and stable when classes change. {@code disputes.decided} is also the form the case store keeps, so a
  * redelivery publishes exactly what was published the first time.
  *
@@ -112,21 +113,7 @@ public final class DisputeEvents {
             d.citedEvidenceIds().forEach(dn.putArray("cited_evidence_ids")::add);
             d.citedPolicySections().forEach(dn.putArray("cited_policy_sections")::add);
             ArrayNode actions = dn.putArray("proposed_actions");
-            for (ProposedAction a : d.proposedActions()) {
-                ObjectNode an = actions.addObject().put("action", a.toolName());
-                switch (a) {
-                    case ProposedAction.IssueProvisionalCredit c ->
-                            an.put("amount_minor", c.amount().amountMinor()).put("currency", c.amount().currency());
-                    case ProposedAction.RequestMerchantEvidence r -> {
-                        r.evidence().forEach(k -> an.withArray("evidence").add(k.name()));
-                        an.put("note", r.note());
-                    }
-                    case ProposedAction.CloseDispute c -> {
-                        an.put("reason", c.reason());
-                        c.policySectionIds().forEach(an.putArray("policy_section_ids")::add);
-                    }
-                }
-            }
+            d.proposedActions().forEach(a -> action(actions.addObject(), a));
         }
         ArrayNode violations = n.putArray("guard_violations");
         o.guardViolations().forEach(v -> violations.addObject().put("rule", v.rule().name()).put("message", v.message()));
@@ -166,6 +153,37 @@ public final class DisputeEvents {
                 DisputeCategory.valueOf(n.get("category").asString()), decision,
                 reason == null || reason.isNull() ? null : EscalationReason.valueOf(reason.asString()), violations,
                 Instant.parse(n.get("decided_at").asString()));
+    }
+
+    // disputes.approval-requested --------------------------------------------------------------------------------
+
+    /**
+     * A decided case's action waits for a person (ADR 0005): {@code version, dispute_id, requested_at, action}, the
+     * action in the same shape as in {@code disputes.decided}.
+     */
+    public static String approvalRequested(ApprovalRequest r) {
+        ObjectNode n = JSON.createObjectNode();
+        n.put("version", VERSION);
+        n.put("dispute_id", r.caseId().value());
+        n.put("requested_at", r.requestedAt().toString());
+        action(n.putObject("action"), r.action());
+        return JSON.writeValueAsString(n);
+    }
+
+    private static void action(ObjectNode an, ProposedAction a) {
+        an.put("action", a.toolName());
+        switch (a) {
+            case ProposedAction.IssueProvisionalCredit c ->
+                    an.put("amount_minor", c.amount().amountMinor()).put("currency", c.amount().currency());
+            case ProposedAction.RequestMerchantEvidence r -> {
+                r.evidence().forEach(k -> an.withArray("evidence").add(k.name()));
+                an.put("note", r.note());
+            }
+            case ProposedAction.CloseDispute c -> {
+                an.put("reason", c.reason());
+                c.policySectionIds().forEach(an.putArray("policy_section_ids")::add);
+            }
+        }
     }
 
     private static String text(JsonNode node, String field) {

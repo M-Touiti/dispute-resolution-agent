@@ -1,8 +1,10 @@
 package dev.disputeagent.investigator.application;
 
+import dev.disputeagent.investigator.application.approval.RequestApproval;
 import dev.disputeagent.investigator.application.intake.DisputeOpened;
 import dev.disputeagent.investigator.application.port.events.DecisionPublisher;
 import dev.disputeagent.investigator.application.port.store.CaseStore;
+import dev.disputeagent.investigator.domain.approval.ApprovalRequest;
 import java.util.Optional;
 
 /**
@@ -10,35 +12,44 @@ import java.util.Optional;
  * returns.
  *
  * <ol>
- *   <li>A case already stored is not investigated again: its stored outcome is published again (a publish that failed
- *       after the save is completed by the redelivery) and the event is done.</li>
- *   <li>Otherwise the dispute is triaged and investigated, the finished case is saved, then the outcome is
- *       published. A crash before the save re-runs the case on redelivery; a crash after it only re-publishes.</li>
+ *   <li>A case already stored is not investigated again: its stored outcome, and its approval request if it has one,
+ *       are published again (a publish that failed after the save is completed by the redelivery) and the event is
+ *       done.</li>
+ *   <li>Otherwise the dispute is triaged and investigated. A decided case's action goes before a person
+ *       ({@code AWAITING_APPROVAL}); the case is saved, then the outcome and the approval request are published. A
+ *       crash before the save re-runs the case on redelivery; a crash after it only re-publishes.</li>
  * </ol>
  */
 public final class ProcessDisputeOpened {
 
     private final HandleDisputeOpened handle;
+    private final RequestApproval requestApproval;
     private final CaseStore cases;
     private final DecisionPublisher publisher;
 
-    public ProcessDisputeOpened(HandleDisputeOpened handle, CaseStore cases, DecisionPublisher publisher) {
+    public ProcessDisputeOpened(HandleDisputeOpened handle, RequestApproval requestApproval, CaseStore cases,
+            DecisionPublisher publisher) {
         this.handle = handle;
+        this.requestApproval = requestApproval;
         this.cases = cases;
         this.publisher = publisher;
     }
 
     /** Returns the outcome, and whether it came from a case stored earlier. */
     public Result process(DisputeOpened dispute) {
-        Optional<CaseOutcome> existing = cases.findOutcome(dispute.disputeId());
+        var existing = cases.find(dispute.disputeId());
         if (existing.isPresent()) {
-            publisher.publish(existing.get());
-            return new Result(existing.get(), true);
+            CaseOutcome outcome = existing.get().outcome();
+            publisher.publish(outcome);
+            existing.get().disputeCase().approvalRequest().ifPresent(publisher::publishApprovalRequest);
+            return new Result(outcome, true);
         }
-        var finished = handle.handle(dispute);
-        CaseOutcome outcome = CaseOutcome.of(finished);
-        cases.save(finished, outcome);
+        var investigated = handle.handle(dispute);
+        CaseOutcome outcome = CaseOutcome.of(investigated);
+        Optional<ApprovalRequest> request = requestApproval.request(investigated);
+        cases.save(investigated, outcome);
         publisher.publish(outcome);
+        request.ifPresent(publisher::publishApprovalRequest);
         return new Result(outcome, false);
     }
 

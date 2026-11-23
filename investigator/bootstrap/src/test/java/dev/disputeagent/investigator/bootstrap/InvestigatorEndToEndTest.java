@@ -16,6 +16,7 @@ import dev.disputeagent.investigator.application.port.mcp.McpServer;
 import dev.disputeagent.investigator.application.port.mcp.McpTool;
 import dev.disputeagent.investigator.application.port.mcp.McpToolCall;
 import dev.disputeagent.investigator.application.port.mcp.McpToolPort;
+import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.application.port.mcp.McpToolResult;
 import dev.disputeagent.investigator.application.triage.TriageDispute;
 import dev.disputeagent.investigator.domain.CaseId;
@@ -211,6 +212,11 @@ class InvestigatorEndToEndTest {
 
     /** Every disputes.decided record for the dispute, from the start of the topic. */
     static List<String> decided(String disputeId) {
+        return records("disputes.decided", disputeId);
+    }
+
+    /** Every record of the topic for the dispute, from the start. */
+    static List<String> records(String topic, String disputeId) {
         Properties p = new Properties();
         p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapServers());
         p.put(ConsumerConfig.GROUP_ID_CONFIG, "test-" + UUID.randomUUID());
@@ -219,7 +225,7 @@ class InvestigatorEndToEndTest {
         p.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         List<String> out = new CopyOnWriteArrayList<>();
         try (var consumer = new KafkaConsumer<String, String>(p)) {
-            consumer.subscribe(List.of("disputes.decided"));
+            consumer.subscribe(List.of(topic));
             for (int i = 0; i < 5; i++) {
                 for (ConsumerRecord<String, String> r : consumer.poll(Duration.ofMillis(500))) {
                     if (disputeId.equals(r.key())) {
@@ -252,6 +258,19 @@ class InvestigatorEndToEndTest {
             assertThat(count(recording, "SELECT count(*) FROM investigation.cases")).isEqualTo(1);
             assertThat(count(recording, "SELECT count(*) FROM investigation.audit_events WHERE type = 'ModelCalled'"))
                     .isEqualTo(3);
+
+            // The decision proposes a credit: the case waits for a person (ADR 0005).
+            assertThat(recording.getBean(JdbcClient.class)
+                    .sql("SELECT state FROM investigation.cases WHERE dispute_id = :id").param("id", id)
+                    .query(String.class).single()).isEqualTo("AWAITING_APPROVAL");
+            await().atMost(Duration.ofSeconds(30)).until(() -> records("disputes.approval-requested", id).size() == 1);
+            assertThat(records("disputes.approval-requested", id).getFirst())
+                    .contains("\"dispute_id\":\"" + id + "\"")
+                    .contains("\"action\":{\"action\":\"issue_provisional_credit\",\"amount_minor\":42500");
+            var stored = recording.getBean(CaseStore.class).find(DISPUTE.disputeId()).orElseThrow();
+            assertThat(stored.disputeCase().state()).isEqualTo(CaseState.AWAITING_APPROVAL);
+            assertThat(stored.disputeCase().approvalRequest()).isPresent();
+            assertThat(stored.outcome()).isEqualTo(first);
             try (Stream<Path> files = Files.list(fixtures)) {
                 assertThat(files.filter(f -> f.toString().endsWith(".json")).count()).isEqualTo(3);
             }
@@ -260,6 +279,7 @@ class InvestigatorEndToEndTest {
             send(id, DisputeEvents.opened(DISPUTE));
             await().atMost(Duration.ofSeconds(30)).until(() -> decided(id).size() == 2);
             assertThat(decided(id).get(1)).isEqualTo(decided(id).getFirst());
+            await().atMost(Duration.ofSeconds(30)).until(() -> records("disputes.approval-requested", id).size() == 2);
             assertThat(LIVE_CALLS.get()).isEqualTo(3);
             assertThat(count(recording, "SELECT count(*) FROM investigation.cases")).isEqualTo(1);
         }
