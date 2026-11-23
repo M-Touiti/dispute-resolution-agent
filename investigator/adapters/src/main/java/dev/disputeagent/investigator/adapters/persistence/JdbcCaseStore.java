@@ -74,17 +74,22 @@ public final class JdbcCaseStore implements CaseStore {
     public void save(DisputeCase c, CaseOutcome outcome, List<OutgoingEvent> events) {
         transactions.executeWithoutResult(status -> {
             insert(c, outcome);
-            for (OutgoingEvent event : events) {
-                OutboxRow row = row(event);
-                jdbc.sql("""
-                        INSERT INTO investigation.outbox (dispute_id, type, payload)
-                        VALUES (:id, :type, :payload)""")
-                        .param("id", event.disputeId().value())
-                        .param("type", row.type())
-                        .param("payload", row.payload())
-                        .update();
-            }
+            outbox(events);
         });
+    }
+
+    /** Within the caller's transaction. */
+    private void outbox(List<OutgoingEvent> events) {
+        for (OutgoingEvent event : events) {
+            OutboxRow row = row(event);
+            jdbc.sql("""
+                    INSERT INTO investigation.outbox (dispute_id, type, payload)
+                    VALUES (:id, :type, :payload)""")
+                    .param("id", event.disputeId().value())
+                    .param("type", row.type())
+                    .param("payload", row.payload())
+                    .update();
+        }
     }
 
     /** The type the relay maps to a topic, and the event's wire payload. */
@@ -94,18 +99,20 @@ public final class JdbcCaseStore implements CaseStore {
     private static OutboxRow row(OutgoingEvent event) {
         return switch (event) {
             case OutgoingEvent.Decided decided -> new OutboxRow("DECIDED", DisputeEvents.decided(decided.outcome()));
+            case OutgoingEvent.Replay replay -> new OutboxRow("REPLAY", DisputeEvents.opened(replay.event()));
             case OutgoingEvent.ApprovalRequested requested ->
                     new OutboxRow("APPROVAL_REQUESTED", DisputeEvents.approvalRequested(requested.request()));
         };
     }
 
     @Override
-    public void park(DisputeCase parked, DisputeOpened event) {
+    public void park(DisputeCase parked, DisputeOpened event, Instant nextAttemptAt) {
         var s = parked.snapshot();
         jdbc.sql("""
                 INSERT INTO investigation.cases (dispute_id, state, reported_category, category, unsafe_proposal,
-                    history, replays, opened_event)
-                VALUES (:id, :state, :reported, :category, false, CAST(:history AS jsonb), :replays, :event)""")
+                    history, replays, opened_event, next_attempt_at)
+                VALUES (:id, :state, :reported, :category, false, CAST(:history AS jsonb), :replays, :event,
+                    :next)""")
                 .param("id", parked.id().value())
                 .param("state", s.state().name())
                 .param("reported", s.reportedCategory().name())
@@ -113,7 +120,88 @@ public final class JdbcCaseStore implements CaseStore {
                 .param("history", history(s.history()))
                 .param("replays", s.replays())
                 .param("event", DisputeEvents.opened(event))
+                .param("next", Timestamp.from(nextAttemptAt))
                 .update();
+    }
+
+    @Override
+    public List<ParkedCase> dueForReplay(Instant now, int limit) {
+        return jdbc.sql("""
+                SELECT dispute_id, state, history, outcome_event, replays, approval_requested_at, reviewer, review_note,
+                    reviewed_at, token_id, token_arguments_sha256, token_issued_at, token_expires_at, approval_token,
+                    action_detail, reported_category, category, opened_event, next_attempt_at
+                FROM investigation.cases WHERE state = 'AWAITING_RETRY' AND next_attempt_at <= :now
+                ORDER BY next_attempt_at, dispute_id LIMIT :limit""")
+                .param("now", Timestamp.from(now))
+                .param("limit", limit)
+                .query((rs, n) -> new ParkedCase(stored(new CaseId(rs.getString("dispute_id")), rs).disputeCase(),
+                        DisputeEvents.opened(rs.getString("opened_event")), instant(rs, "next_attempt_at")))
+                .list();
+    }
+
+    @Override
+    public boolean scheduleReplay(CaseId disputeId, DisputeOpened event, Instant now, Instant holdUntil) {
+        Boolean scheduled = transactions.execute(status -> {
+            int updated = jdbc.sql("""
+                    UPDATE investigation.cases SET next_attempt_at = :hold, updated_at = now()
+                    WHERE dispute_id = :id AND state = 'AWAITING_RETRY' AND next_attempt_at <= :now""")
+                    .param("id", disputeId.value())
+                    .param("hold", Timestamp.from(holdUntil))
+                    .param("now", Timestamp.from(now))
+                    .update();
+            if (updated == 0) {
+                return false;
+            }
+            outbox(List.of(new OutgoingEvent.Replay(event)));
+            return true;
+        });
+        return Boolean.TRUE.equals(scheduled);
+    }
+
+    @Override
+    public boolean repark(DisputeCase parked, Instant nextAttemptAt) {
+        var s = parked.snapshot();
+        return jdbc.sql("""
+                UPDATE investigation.cases SET history = CAST(:history AS jsonb), replays = :replays,
+                    category = :category, next_attempt_at = :next, updated_at = now()
+                WHERE dispute_id = :id AND state = 'AWAITING_RETRY'""")
+                .param("id", parked.id().value())
+                .param("history", history(s.history()))
+                .param("replays", s.replays())
+                .param("category", s.category().name())
+                .param("next", Timestamp.from(nextAttemptAt))
+                .update() == 1;
+    }
+
+    @Override
+    public boolean complete(DisputeCase finished, CaseOutcome outcome, List<OutgoingEvent> events) {
+        var s = finished.snapshot();
+        Boolean completed = transactions.execute(status -> {
+            int updated = jdbc.sql("""
+                    UPDATE investigation.cases SET state = :state, category = :category, outcome = :outcome,
+                        escalation_reason = :reason, unsafe_proposal = :unsafe, decided_at = :decidedAt,
+                        outcome_event = :event, history = CAST(:history AS jsonb), replays = :replays,
+                        approval_requested_at = :requestedAt, next_attempt_at = NULL, updated_at = now()
+                    WHERE dispute_id = :id AND state = 'AWAITING_RETRY'""")
+                    .param("id", finished.id().value())
+                    .param("state", s.state().name())
+                    .param("category", outcome.category().name())
+                    .param("outcome", outcome.decision() == null ? null : outcome.decision().outcome().name())
+                    .param("reason", outcome.escalationReason() == null ? null : outcome.escalationReason().name())
+                    .param("unsafe", outcome.unsafeProposal())
+                    .param("decidedAt", Timestamp.from(outcome.decidedAt()))
+                    .param("event", DisputeEvents.decided(outcome))
+                    .param("history", history(s.history()))
+                    .param("replays", s.replays())
+                    .param("requestedAt", timestamp(s.approvalRequestedAt()))
+                    .update();
+            if (updated == 0) {
+                return false;
+            }
+            outbox(events);
+            return true;
+        });
+        return Boolean.TRUE.equals(completed);
     }
 
     private void insert(DisputeCase c, CaseOutcome outcome) {

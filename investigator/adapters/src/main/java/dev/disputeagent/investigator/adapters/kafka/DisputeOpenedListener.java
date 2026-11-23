@@ -9,9 +9,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 
 /**
- * Consumes {@code disputes.opened} one record at a time and acknowledges it only after the case and its outgoing
- * events are committed; the outbox relay publishes them afterwards (ADR 0008), off this path. A malformed payload is acknowledged and logged (it would fail the same way forever; the
- * dead-letter topic comes in M2). Any other failure leaves the record unacknowledged for the error handler to retry.
+ * Consumes {@code disputes.opened} and {@code disputes.replay}, one record at a time, and acknowledges a record only
+ * after the case and its outgoing events are committed; the outbox relay publishes them afterwards (ADR 0008), off this
+ * path. A replay re-runs a parked case from the start; a replay for a case no longer parked is a duplicate and is done.
+ *
+ * <p>A malformed payload is thrown as {@link DisputeEvents.MalformedEvent}: the error handler does not retry it and
+ * sends it to {@code disputes.dlq} with the reason in its headers, so the partition moves on. Any other failure is
+ * retried by the error handler, then dead-lettered the same way.
  */
 public final class DisputeOpenedListener {
 
@@ -26,19 +30,22 @@ public final class DisputeOpenedListener {
     @KafkaListener(id = "disputes-opened", topics = "${investigator.kafka.opened-topic}",
             groupId = "${investigator.kafka.group-id}")
     public void onDisputeOpened(ConsumerRecord<String, String> record, Acknowledgment ack) {
-        DisputeOpened dispute;
-        try {
-            dispute = DisputeEvents.opened(record.value());
-        } catch (DisputeEvents.MalformedEvent e) {
-            log.error("skipping malformed disputes.opened at {}-{}@{}: {}", record.topic(), record.partition(),
-                    record.offset(), e.getMessage());
-            ack.acknowledge();
-            return;
-        }
-        var result = process.process(dispute);
-        log.info("dispute {} {}: {}{}", dispute.disputeId(), result.redelivery() ? "redelivered" : "investigated",
+        DisputeOpened dispute = DisputeEvents.opened(record.value());
+        log(dispute, process.process(dispute), "investigated");
+        ack.acknowledge();
+    }
+
+    @KafkaListener(id = "disputes-replay", topics = "${investigator.kafka.replay-topic}",
+            groupId = "${investigator.kafka.group-id}")
+    public void onReplay(ConsumerRecord<String, String> record, Acknowledgment ack) {
+        DisputeOpened dispute = DisputeEvents.opened(record.value());
+        log(dispute, process.processReplay(dispute), "replayed");
+        ack.acknowledge();
+    }
+
+    private static void log(DisputeOpened dispute, ProcessDisputeOpened.Result result, String what) {
+        log.info("dispute {} {}: {}{}", dispute.disputeId(), result.redelivery() ? "redelivered" : what,
                 result.state(), result.outcome() == null || result.outcome().escalationReason() == null ? ""
                         : " (" + result.outcome().escalationReason() + ")");
-        ack.acknowledge();
     }
 }

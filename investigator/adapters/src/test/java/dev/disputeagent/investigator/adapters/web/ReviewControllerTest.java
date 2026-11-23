@@ -35,8 +35,31 @@ class ReviewControllerTest {
         }
 
         @Override
-        public void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event) {
+        public void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event,
+                java.time.Instant nextAttemptAt) {
             throw new AssertionError("nothing is parked");
+        }
+
+        @Override
+        public java.util.List<ParkedCase> dueForReplay(java.time.Instant now, int limit) {
+            return List.of();
+        }
+
+        @Override
+        public boolean scheduleReplay(dev.disputeagent.investigator.domain.CaseId id, dev.disputeagent.investigator.application.intake.DisputeOpened event, java.time.Instant now,
+                java.time.Instant holdUntil) {
+            return false;
+        }
+
+        @Override
+        public boolean repark(DisputeCase parked, java.time.Instant nextAttemptAt) {
+            return false;
+        }
+
+        @Override
+        public boolean complete(DisputeCase finished, CaseOutcome outcome,
+                java.util.List<dev.disputeagent.investigator.application.port.events.OutgoingEvent> events) {
+            return false;
         }
 
         @Override

@@ -83,8 +83,24 @@ retry (3 attempts, exponential backoff with jitter), circuit breaker, bulkhead (
 
 When a retryable kind survives the retries, or the ledger cannot be read before the loop, the case is not escalated:
 it is parked as `AWAITING_RETRY`. It is stored with its `disputes.opened` event (Flyway `V4`) to be replayed from the
-start (task 2.10), and nothing is emitted yet. A configuration error in the tool servers (`Toolbox.InvalidToolset`)
-still escalates.
+start, and nothing is emitted yet. A configuration error in the tool servers (`Toolbox.InvalidToolset`) still
+escalates.
+
+The replay (task 2.10, `application/replay`):
+- A parked case is due at `next_attempt_at` (Flyway `V5`): 30 s after it parks, the wait doubling with each replay
+  up to 10 minutes.
+- `SweepParkedCases` runs every 10 s. While the model is available, it sends each due case's `disputes.opened` event
+  to `disputes.replay` through the outbox, and holds the case for 15 minutes while the replay runs.
+- The listener re-runs the case from the start (`HandleDisputeOpened.resume`). An outcome completes it; parking again
+  waits longer. A replay for a case no longer parked is ignored.
+- After 5 replays, a case that parks again escalates as `DEPENDENCY_UNAVAILABLE`.
+- "Available" asks the circuit breaker for a permit rather than reading its state: an open breaker moves to half-open
+  only when something tries a call, so a sweep that only read the state would wait forever once no new disputes
+  arrive.
+
+Dead letters: a malformed event is never retried, and an event that still fails after the error handler's two retries
+goes to `disputes.dlq`. Spring's headers record why (`kafka_dlt-exception-message`) and where it came from, and the
+partition moves on.
 
 `adapters/fixtures` (ADR 0006): `Fixtures` keys a request by the SHA-256 of its canonical JSON and stores
 `evals/fixtures/llm/<key>.json` (canonical request plus response, no timestamps); `RecordingAdapter` writes them
@@ -159,5 +175,5 @@ M1 done: the service runs one dispute category end to end on Kafka and PostgreSQ
 the golden set. M2 in progress: the approval gate works end to end (2.3 to 2.7): a decided case waits for a
 person, the reviewer API approves or rejects it, and an approved action runs once on actions-mcp with a signed token.
 Every event leaves through the outbox (2.8). The model call is wrapped in Resilience4j, and a case the model or
-the ledger cannot serve is parked instead of escalated (2.9). Next: the dead-letter topic and the replay of parked
-cases (2.10).
+the ledger cannot serve is parked instead of escalated (2.9). Parked cases are replayed and poison events
+dead-lettered (2.10). Next: traces, metrics and logs (2.11).

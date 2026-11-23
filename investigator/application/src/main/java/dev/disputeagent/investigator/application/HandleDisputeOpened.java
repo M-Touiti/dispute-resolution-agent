@@ -32,7 +32,23 @@ public final class HandleDisputeOpened {
         var received = disputeCase.history().getFirst();
         audit.record(new AuditEvent.StateChanged(dispute.disputeId(), received.at(), null, received.to(),
                 received.note()));
+        return run(disputeCase, dispute);
+    }
 
+    /**
+     * Replays a parked case from the start (ADR 0008): it goes back to {@code RECEIVED} with its history and its
+     * replay count, then through triage and the investigation as a new case would.
+     */
+    public DisputeCase resume(DisputeCase parked, DisputeOpened dispute) {
+        parked.replay(clock.instant());
+        var replayed = parked.history().getLast();
+        audit.record(new AuditEvent.CaseReplayed(parked.id(), replayed.at(), parked.replays()));
+        audit.record(new AuditEvent.StateChanged(parked.id(), replayed.at(), replayed.from(), replayed.to(),
+                replayed.note()));
+        return run(parked, dispute);
+    }
+
+    private DisputeCase run(DisputeCase disputeCase, DisputeOpened dispute) {
         DisputeCategory category = triage.triage(dispute);
         disputeCase.triaged(category, clock.instant());
         var triaged = disputeCase.history().getLast();

@@ -1,6 +1,7 @@
 package dev.disputeagent.investigator.application.port.events;
 
 import dev.disputeagent.investigator.application.CaseOutcome;
+import dev.disputeagent.investigator.application.intake.DisputeOpened;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.approval.ApprovalRequest;
 import java.util.Objects;
@@ -23,6 +24,18 @@ public sealed interface OutgoingEvent {
         @Override
         public CaseId disputeId() {
             return outcome.disputeId();
+        }
+    }
+
+    /** {@code disputes.replay}: a parked case's original event, sent again to re-run it from the start (ADR 0008). */
+    record Replay(DisputeOpened event) implements OutgoingEvent {
+        public Replay {
+            Objects.requireNonNull(event, "event");
+        }
+
+        @Override
+        public CaseId disputeId() {
+            return event.disputeId();
         }
     }
 

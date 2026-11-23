@@ -100,6 +100,12 @@ class InvestigatorEndToEndTest {
             "TXN-000100", DisputeCategory.UNAUTHORISED_TRANSACTION, Instant.parse("2026-10-30T10:00:00Z"),
             Money.eur(42_500), "I never made this payment.", List.of());
 
+    /** A second dispute, whose investigation meets an overloaded model until the test says otherwise. */
+    static final DisputeOpened PARKED = new DisputeOpened(new CaseId("DSP-E2E-0002"), "CH-000042", "CRD-000042",
+            "TXN-000100", DisputeCategory.UNAUTHORISED_TRANSACTION, Instant.parse("2026-10-30T11:00:00Z"),
+            Money.eur(42_500), "I did not make this payment either.", List.of());
+    static final java.util.concurrent.atomic.AtomicBoolean OVERLOADED = new java.util.concurrent.atomic.AtomicBoolean();
+
     static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer(
             DockerImageName.parse("pgvector/pgvector:0.8.7-pg18-trixie").asCompatibleSubstituteFor("postgres"))
             .withDatabaseName("disputes").withUsername("disputes").withPassword("disputes")
@@ -204,6 +210,11 @@ class InvestigatorEndToEndTest {
                     return response(StopReason.END_TURN, new ContentBlock.Text(
                             "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"never made it\"}"));
                 }
+                if (OVERLOADED.get() && request.messages().getFirst().toString().contains(PARKED.disputeId().value())) {
+                    throw new dev.disputeagent.investigator.application.port.llm.LlmCallException(
+                            dev.disputeagent.investigator.application.port.llm.LlmCallException.Kind.OVERLOADED,
+                            "529 overloaded (scripted)", null);
+                }
                 if (request.messages().size() == 1) {
                     return response(StopReason.TOOL_USE,
                             new ContentBlock.ToolUse("t1", "search_policy", "{\"query\":\"card not present\"}"),
@@ -275,6 +286,12 @@ class InvestigatorEndToEndTest {
                 Map.entry("investigator.approval.verify-key",
                         Base64.getEncoder().encodeToString(APPROVAL_KEYS.getPublic().getEncoded())),
                 Map.entry("investigator.reviewer.api-key", REVIEWER_KEY),
+                // Fast retries and replays, so the test does not wait minutes for what production spaces out.
+                Map.entry("investigator.resilience.first-backoff", "PT0.05S"),
+                Map.entry("investigator.resilience.max-backoff", "PT0.1S"),
+                Map.entry("investigator.replay.first-delay", "PT1S"),
+                Map.entry("investigator.replay.sweep-interval", "PT0.5S"),
+                Map.entry("investigator.resilience.breaker-open-for", "PT2S"),
                 Map.entry("investigator.skills-dir", "../../skills"));
         String[] args = settings.entrySet().stream().map(e -> "--" + e.getKey() + "=" + e.getValue())
                 .toArray(String[]::new);
@@ -316,6 +333,33 @@ class InvestigatorEndToEndTest {
             }
         }
         return out;
+    }
+
+    static String state(JdbcClient jdbc, String disputeId) {
+        return jdbc.sql("SELECT state FROM investigation.cases WHERE dispute_id = :id").param("id", disputeId)
+                .query(String.class).optional().orElse(null);
+    }
+
+    /** The reason header of the dead letter with this key, from the start of disputes.dlq. */
+    static String dlqReason(String key) {
+        Properties p = new Properties();
+        p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapServers());
+        p.put(ConsumerConfig.GROUP_ID_CONFIG, "test-" + UUID.randomUUID());
+        p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        p.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        p.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        try (var consumer = new KafkaConsumer<String, String>(p)) {
+            consumer.subscribe(List.of("disputes.dlq"));
+            for (int i = 0; i < 10; i++) {
+                for (ConsumerRecord<String, String> r : consumer.poll(Duration.ofMillis(500))) {
+                    var header = r.headers().lastHeader("kafka_dlt-exception-message");
+                    if (key.equals(r.key()) && header != null) {
+                        return new String(header.value(), java.nio.charset.StandardCharsets.UTF_8);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     static long count(ConfigurableApplicationContext ctx, String sql) {
@@ -405,7 +449,35 @@ class InvestigatorEndToEndTest {
             send(id, DisputeEvents.opened(DISPUTE));
             await().during(Duration.ofSeconds(3)).atMost(Duration.ofSeconds(30))
                     .until(() -> decided(id).size() == 1 && records("disputes.approval-requested", id).size() == 1);
+
+            // 3. Dead letters and replay (ADR 0008). The malformed event sent first is in disputes.dlq with its reason;
+            // the partition moved on (the dispute after it was decided above).
+            assertThat(dlqReason("garbage")).contains("not a valid disputes.opened event");
+
+            // A dispute the model cannot serve: every attempt is overloaded, so the case parks with its event.
+            String parked = PARKED.disputeId().value();
+            OVERLOADED.set(true);
+            send(parked, DisputeEvents.opened(PARKED));
+            JdbcClient jdbc = recording.getBean(JdbcClient.class);
+            await().atMost(Duration.ofSeconds(30)).until(() -> "AWAITING_RETRY".equals(state(jdbc, parked)));
+            assertThat(decided(parked)).as("nothing emitted while parked").isEmpty();
+
+            // The model recovers: the sweep sends it to disputes.replay, and the replay decides it.
+            OVERLOADED.set(false);
+            await().atMost(Duration.ofSeconds(60)).until(() -> "AWAITING_APPROVAL".equals(state(jdbc, parked)));
+            assertThat(decided(parked)).hasSize(1);
+            // The sweep may replay it once more while the model is still overloaded (timing), and that replay parks
+            // again; whatever the count, each replay event is one replay run, and every run but the last parked.
+            int replaysSent = records("disputes.replay", parked).size();
+            assertThat(replaysSent).isPositive();
+            assertThat(jdbc.sql("SELECT replays FROM investigation.cases WHERE dispute_id = :id").param("id", parked)
+                    .query(Integer.class).single()).isEqualTo(replaysSent);
+            assertThat(count(recording, "SELECT count(*) FROM investigation.audit_events WHERE type = 'CaseReplayed'"))
+                    .isEqualTo(replaysSent);
+            assertThat(count(recording, "SELECT count(*) FROM investigation.audit_events WHERE type = 'CaseParked'"))
+                    .isEqualTo(replaysSent);
         }
+        int liveAfterRecording = LIVE_CALLS.get();
 
         // 2. Replay instance: own database, own group, same topic from the start.
         try (var replay = instance("replay", "replay", "replay")) {
@@ -417,8 +489,11 @@ class InvestigatorEndToEndTest {
 
             assertThat(replayed.state()).isEqualTo(recorded.state());
             assertThat(replayed.decision()).isEqualTo(recorded.decision());
-            assertThat(LIVE_CALLS.get()).as("replay never calls the live model").isEqualTo(3);
-            assertThat(count(replay, "SELECT count(*) FROM investigation.cases")).isEqualTo(1);
+            assertThat(LIVE_CALLS.get()).as("replay never calls the live model").isEqualTo(liveAfterRecording);
+            // The second dispute decides straight from the fixtures its successful replay recorded; the old replay
+            // event finds it not parked and is ignored.
+            await().atMost(Duration.ofSeconds(60)).until(() -> decided(PARKED.disputeId().value()).size() == 2);
+            assertThat(count(replay, "SELECT count(*) FROM investigation.cases")).isEqualTo(2);
         }
     }
 }

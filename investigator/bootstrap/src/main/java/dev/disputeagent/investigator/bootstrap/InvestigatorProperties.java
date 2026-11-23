@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("investigator")
 public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budget, Policy policy, String skillsDir,
-        Approval approval, Reviewer reviewer, Outbox outbox, ResilientLlmPort.Settings resilience) {
+        Approval approval, Reviewer reviewer, Outbox outbox, ResilientLlmPort.Settings resilience, Replay replay) {
 
     // Directories are bound as strings and read with Path.of: Spring's String-to-Path conversion goes through the
     // resource loader, which rejects relative paths with '..' in a web application.
@@ -69,9 +69,16 @@ public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budge
     public record Reviewer(String apiKey) {
     }
 
-    public record Kafka(String openedTopic, String decidedTopic, String approvalRequestedTopic, String groupId,
-            int partitions,
-            Duration publishTimeout) {
+    public record Kafka(String openedTopic, String decidedTopic, String approvalRequestedTopic, String replayTopic,
+            String dlqTopic, String groupId, int partitions, Duration publishTimeout) {
+    }
+
+    /**
+     * The replay of parked cases (ADR 0008): how often the sweep runs and how many cases it takes, and the policy (cap,
+     * backoff, in-flight hold).
+     */
+    public record Replay(Duration sweepInterval, int batchSize, int maxReplays, Duration firstDelay, Duration maxDelay,
+            Duration inFlight) {
     }
 
     public record Budget(int maxModelCalls, int maxToolCalls, long maxTokens, Duration maxWallClock,
