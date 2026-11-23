@@ -1,6 +1,10 @@
 spring:
   application:
     name: investigator
+  # Secrets as files, one property per file (the compose stack mounts the approval keys here; Kubernetes secrets the
+  # same way). Absent on a developer's machine: then nothing is imported.
+  config:
+    import: optional:configtree:${APPROVAL_KEYS_DIR:/run/secrets/approval/}
   # The investigator's own schema; the role owns it and nothing else (deploy/compose/postgres/initdb/40-investigator.sh).
   datasource:
     url: ${INVESTIGATOR_DB_URL:jdbc:postgresql://localhost:5432/disputes}
