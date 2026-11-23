@@ -264,6 +264,11 @@ class ApprovalGateTest {
         }
 
         @Override
+        public java.util.List<StoredCase> awaitingApproval(int limit) {
+            return real.awaitingApproval(limit);
+        }
+
+        @Override
         public void save(DisputeCase c, CaseOutcome outcome) {
             real.save(c, outcome);
         }

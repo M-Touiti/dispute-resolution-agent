@@ -78,11 +78,6 @@ check_mcp policy-mcp 8082 "get_policy_section search_policy" \
 
 check_mcp actions-mcp 8083 "close_dispute issue_provisional_credit request_merchant_evidence"
 
-# The investigator: one dispute end to end. The disputes.opened event is built inside PostgreSQL from the seeded
-# intake tables (no CSV parsing in shell), published, and the matching disputes.decided awaited. The default is a
-# golden case, replayed from the recorded fixtures, and must come out DECIDED: Kafka in, the evidence read from
-# ledger-mcp, the model loop, the guard, the case and audit stored, Kafka out. Any other SMOKE_DISPUTE has no fixture
-# unless it is in the golden set; it then escalates (DEPENDENCY_UNAVAILABLE), which still proves the pipeline.
 curl -fsS -o /dev/null http://localhost:8080/actuator/health/readiness || fail "investigator: not ready"
 echo "ok   investigator ready"
 
@@ -105,8 +100,11 @@ migrated=$(docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\
 [[ "$migrated" -ge 1 ]] || fail "actions-mcp: the actions schema is not migrated"
 echo "ok   actions-mcp verifies tokens from key $signing only; actions schema migrated"
 
-dispute=${SMOKE_DISPUTE:-DSP-000018}
-event=$(docker compose exec -T postgres sh -c 'psql -tA -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d disputes' <<SQL
+# One dispute through the investigator: the disputes.opened event is built inside PostgreSQL from the seeded intake
+# tables (no CSV parsing in shell), published, and the matching disputes.decided awaited. Prints the decided event.
+investigate() {
+    local dispute=$1 event decided=""
+    event=$(docker compose exec -T postgres sh -c 'psql -tA -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d disputes' <<SQL
 SELECT json_build_object(
     'version', 1, 'dispute_id', d.dispute_id, 'cardholder_id', d.cardholder_id, 'card_id', d.card_id,
     'transaction_id', d.transaction_id, 'category', d.category,
@@ -119,27 +117,37 @@ SELECT json_build_object(
 FROM intake.disputes d WHERE d.dispute_id = '$dispute';
 SQL
 )
-[[ "$event" == "{"* ]] || fail "investigator: no dispute $dispute in intake.disputes"
+    [[ "$event" == "{"* ]] || fail "investigator: no dispute $dispute in intake.disputes"
 
-# "@@" separates key and value: it cannot occur in the generated statements.
-printf '%s@@%s\n' "$dispute" "$event" | docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-producer.sh \
-    --bootstrap-server kafka:19092 --topic disputes.opened --reader-property parse.key=true --reader-property key.separator=@@' \
-    || fail "investigator: could not publish disputes.opened"
+    # "@@" separates key and value: it cannot occur in the generated statements.
+    printf '%s@@%s\n' "$dispute" "$event" | docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-producer.sh \
+        --bootstrap-server kafka:19092 --topic disputes.opened --reader-property parse.key=true --reader-property key.separator=@@' \
+        || fail "investigator: could not publish disputes.opened"
 
-decided=""
-for _ in $(seq 1 24); do
-    decided=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:19092 \
-        --topic disputes.decided --from-beginning --timeout-ms 5000 --formatter-property print.key=true \
-        --formatter-property key.separator=@@ 2>/dev/null' | grep "^$dispute@@" | tail -1 || true)
-    [[ -n "$decided" ]] && break
-done
-[[ -n "$decided" ]] || fail "investigator: no disputes.decided for $dispute within two minutes"
+    for _ in $(seq 1 24); do
+        decided=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:19092 \
+            --topic disputes.decided --from-beginning --timeout-ms 5000 --formatter-property print.key=true \
+            --formatter-property key.separator=@@ 2>/dev/null' | grep "^$dispute@@" | tail -1 || true)
+        [[ -n "$decided" ]] && break
+    done
+    [[ -n "$decided" ]] || fail "investigator: no disputes.decided for $dispute within two minutes"
+    printf '%s' "$decided"
+}
+
+sql() {
+    docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -d disputes -c \"$1\""
+}
+
+# The default is a golden case, replayed from the recorded fixtures, and must come out DECIDED: Kafka in, the evidence
+# read from ledger-mcp, the model loop, the guard, the case and audit stored, Kafka out. Any other SMOKE_DISPUTE has
+# no fixture unless it is in the golden set; it then escalates (DEPENDENCY_UNAVAILABLE), which still proves the
+# pipeline.
+dispute=${SMOKE_DISPUTE:-DSP-000018}
+decided=$(investigate "$dispute")
 state=$(grep -oE '"state":"[A-Z]+"' <<<"$decided" | cut -d'"' -f4)
 reason=$(grep -oE '"escalation_reason":"[A-Z_]+"' <<<"$decided" | cut -d'"' -f4 || true)
-audit=$(docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -d disputes -c \
-    \"SELECT count(*) FILTER (WHERE type = 'ToolCalled'), count(*) FROM investigation.audit_events \
-      WHERE dispute_id = '$dispute'\"")
-IFS='|' read -r tool_rows audit_rows <<<"$audit"
+IFS='|' read -r tool_rows audit_rows <<<"$(sql "SELECT count(*) FILTER (WHERE type = 'ToolCalled'), count(*) \
+    FROM investigation.audit_events WHERE dispute_id = '$dispute'")"
 [[ "$tool_rows" -gt 0 ]] || fail "investigator: no tool calls audited for $dispute"
 if [[ -z "${SMOKE_DISPUTE:-}" && "$state" != "DECIDED" ]]; then
     fail "investigator: golden case $dispute ended $state${reason:+ ($reason)}, expected DECIDED (a fixture miss?)"
@@ -147,21 +155,55 @@ fi
 echo "ok   investigator $dispute -> $state${reason:+ ($reason)}; $audit_rows audit rows, $tool_rows tool calls"
 
 # A decided case's action waits for a person (ADR 0005): stored AWAITING_APPROVAL, one disputes.approval-requested.
-if [[ "$state" == "DECIDED" ]]; then
-    stored=$(docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -d disputes -c \
-        \"SELECT state FROM investigation.cases WHERE dispute_id = '$dispute'\"")
-    [[ "$stored" == "AWAITING_APPROVAL" || "$stored" == "DECIDED" ]] \
-        || fail "investigator: $dispute is stored $stored, expected AWAITING_APPROVAL"
-    requested=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:19092 \
-        --topic disputes.approval-requested --from-beginning --timeout-ms 5000 --formatter-property print.key=true \
-        --formatter-property key.separator=@@ 2>/dev/null' | grep "^$dispute@@" | tail -1 || true)
-    if [[ "$stored" == "AWAITING_APPROVAL" ]]; then
-        [[ -n "$requested" ]] || fail "investigator: no disputes.approval-requested for $dispute"
-        action=$(grep -oE '"action":\{"action":"[a-z_]+"' <<<"$requested" | cut -d'"' -f6)
-        echo "ok   investigator $dispute waits for approval: $action"
-    else
-        echo "ok   investigator $dispute was decided before the approval gate existed (stored DECIDED)"
-    fi
+# On a stack that already ran the smoke test the case is past that; it is reported, not re-reviewed.
+[[ "$state" == "DECIDED" ]] || { echo "smoke: all checks passed"; exit 0; }
+stored=$(sql "SELECT state FROM investigation.cases WHERE dispute_id = '$dispute'")
+if [[ "$stored" != "AWAITING_APPROVAL" ]]; then
+    echo "ok   investigator $dispute was reviewed on an earlier run (stored $stored)"
+    echo "smoke: all checks passed"
+    exit 0
 fi
+requested=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:19092 \
+    --topic disputes.approval-requested --from-beginning --timeout-ms 5000 --formatter-property print.key=true \
+    --formatter-property key.separator=@@ 2>/dev/null' | grep "^$dispute@@" | tail -1 || true)
+[[ -n "$requested" ]] || fail "investigator: no disputes.approval-requested for $dispute"
+action=$(grep -oE '"action":\{"action":"[a-z_]+"' <<<"$requested" | cut -d'"' -f6)
+echo "ok   investigator $dispute waits for approval: $action"
+
+# The reviewer API (task 2.7): the queue, an approval carried out by actions-mcp once, a rejection that does nothing.
+reviews=http://localhost:8080/reviews
+key=${REVIEWER_API_KEY:-local-reviewer-key}
+status=$(curl -s -o /dev/null -w '%{http_code}' "$reviews")
+[[ "$status" == "401" ]] || fail "reviewer API: $status without a key, expected 401"
+curl -fsS -H "X-Reviewer-Key: $key" "$reviews" | grep -qF "\"dispute_id\":\"$dispute\"" \
+    || fail "reviewer API: $dispute is not in the queue"
+
+approved=$(curl -sS -w '\n%{http_code}' -X POST "$reviews/$dispute/approve" -H "X-Reviewer-Key: $key" \
+    -H 'Content-Type: application/json' -d '{"reviewer":"smoke","note":"smoke test approval"}')
+[[ "$(tail -1 <<<"$approved")" == "200" && "$approved" == *'"state":"ACTED"'* ]] \
+    || fail "reviewer API: approving $dispute answered $approved"
+IFS='|' read -r tool amount <<<"$(sql "SELECT tool, amount_minor FROM actions.actions WHERE dispute_id = '$dispute'")"
+claimed=$(sql "SELECT claimed_amount_minor FROM intake.disputes WHERE dispute_id = '$dispute'")
+[[ "$tool" == "$action" ]] || fail "actions-mcp: recorded '$tool' for $dispute, expected $action"
+[[ "$tool" != "issue_provisional_credit" || "$amount" == "$claimed" ]] \
+    || fail "actions-mcp: credited $amount for $dispute, the decision was $claimed"
+[[ "$(sql "SELECT state FROM investigation.cases WHERE dispute_id = '$dispute'")" == "ACTED" ]] \
+    || fail "investigator: $dispute is not ACTED after the approval"
+again=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$reviews/$dispute/approve" -H "X-Reviewer-Key: $key" \
+    -H 'Content-Type: application/json' -d '{"reviewer":"smoke-2"}')
+[[ "$again" == "409" ]] || fail "reviewer API: a second approval of $dispute answered $again, expected 409"
+echo "ok   reviewer API: $dispute approved, actions-mcp verified the token and recorded $tool${amount:+ of $amount}; a second approval is 409"
+
+# A second golden case, a decline, rejected by the reviewer: nothing is carried out.
+second=DSP-000003
+second_decided=$(investigate "$second")
+[[ "$second_decided" == *'"state":"DECIDED"'* ]] || fail "investigator: golden case $second was not decided"
+rejected=$(curl -sS -w '\n%{http_code}' -X POST "$reviews/$second/reject" -H "X-Reviewer-Key: $key" \
+    -H 'Content-Type: application/json' -d '{"reviewer":"smoke","note":"smoke test rejection"}')
+[[ "$(tail -1 <<<"$rejected")" == "200" && "$rejected" == *'"state":"REJECTED"'* ]] \
+    || fail "reviewer API: rejecting $second answered $rejected"
+[[ "$(sql "SELECT count(*) FROM actions.actions WHERE dispute_id = '$second'")" == "0" ]] \
+    || fail "actions-mcp: an action was recorded for the rejected $second"
+echo "ok   reviewer API: $second rejected; actions-mcp recorded nothing"
 
 echo "smoke: all checks passed"

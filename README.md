@@ -9,7 +9,8 @@ touch money without a human, and is scored by an evaluation suite on every pull 
 
 > **Status: M1 (the agent loop) complete; M2 (the production half) in progress.** The agent investigates one dispute
 > category, unauthorised transactions, end to end, and every pull request replays 30 golden cases and grades them.
-> It cannot act yet: every outcome is a proposal until the approval gate lands in M2. The first numbers below come
+> Nothing it decides is carried out without a person: a decided case waits for a reviewer, and an approved action
+> runs on the write server only with a signed, single-use token that server verifies itself. The first numbers below come
 > from one category and 30 cases; the full results table replaces this notice at M3.
 > Progress: [docs/ROADMAP.md](docs/ROADMAP.md).
 
@@ -63,7 +64,7 @@ How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md)
 
 | Part | State | Tests |
 |---|---|---|
-| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine with its approval, action and parked states, and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand; the approval gate's use cases (a decided case waits for a person; approve signs a token and carries the action out once; reject); tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, recording and replay of model calls, the MCP client, JSON and schema validation, approval tokens signed with Ed25519 as a compact JWS (JDK only, pinned by shared test vectors), Kafka in and out, cases and audit in PostgreSQL; tested end to end on Testcontainers | 188 |
+| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine with its approval, action and parked states, and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand; the approval gate's use cases (a decided case waits for a person; approve signs a token and carries the action out once; reject); tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, recording and replay of model calls, the MCP client, JSON and schema validation, approval tokens signed with Ed25519 as a compact JWS (JDK only, pinned by shared test vectors), the reviewer API (queue, approve, reject) and the action port on actions-mcp, Kafka in and out, cases and audit in PostgreSQL; tested end to end on Testcontainers | 196 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation; the policy corpus, checked against the generator's rules. Same seed, same bytes | 52 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI | 32 |

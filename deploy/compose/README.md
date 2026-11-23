@@ -7,7 +7,7 @@
 | `ledger-mcp` | built from `mcp-servers/ledger-mcp` | `127.0.0.1:8081` | `http://ledger-mcp:8081/mcp` |
 | `policy-mcp` | built from `mcp-servers/policy-mcp` | `127.0.0.1:8082` | `http://policy-mcp:8082/mcp` |
 | `actions-mcp` | built from `mcp-servers/actions-mcp` | `127.0.0.1:8083` | `http://actions-mcp:8083/mcp` |
-| `investigator` | built from `investigator` | `127.0.0.1:8080` (health only) | consumes `disputes.opened`, publishes `disputes.decided` and `disputes.approval-requested` |
+| `investigator` | built from `investigator` | `127.0.0.1:8080` (health, reviewer API) | consumes `disputes.opened`, publishes `disputes.decided` and `disputes.approval-requested` |
 | `approval-keys` | `eclipse-temurin:21-jdk-noble`, runs once | none | generates the approval-token key pair on the first start into `approval-signing` (investigator) and `approval-verify` (public key only, for actions-mcp); see [docs/approval-token.md](../../docs/approval-token.md) |
 
 The host ports match `.env.example`, so the investigator can also run on the host against the stack. Prometheus and

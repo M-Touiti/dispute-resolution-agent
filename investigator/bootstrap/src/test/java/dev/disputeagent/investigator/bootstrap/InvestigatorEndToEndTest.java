@@ -3,9 +3,11 @@ package dev.disputeagent.investigator.bootstrap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+import dev.disputeagent.investigator.adapters.approval.McpActionPort;
 import dev.disputeagent.investigator.adapters.kafka.DisputeEvents;
 import dev.disputeagent.investigator.application.CaseOutcome;
 import dev.disputeagent.investigator.application.intake.DisputeOpened;
+import dev.disputeagent.investigator.application.port.approval.ActionPort;
 import dev.disputeagent.investigator.application.port.llm.ContentBlock;
 import dev.disputeagent.investigator.application.port.llm.LlmCost;
 import dev.disputeagent.investigator.application.port.llm.LlmRequest;
@@ -16,21 +18,31 @@ import dev.disputeagent.investigator.application.port.mcp.McpServer;
 import dev.disputeagent.investigator.application.port.mcp.McpTool;
 import dev.disputeagent.investigator.application.port.mcp.McpToolCall;
 import dev.disputeagent.investigator.application.port.mcp.McpToolPort;
-import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.application.port.mcp.McpToolResult;
+import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.application.triage.TriageDispute;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.DecisionOutcome;
 import dev.disputeagent.investigator.domain.DisputeCategory;
 import dev.disputeagent.investigator.domain.decision.Money;
+import dev.disputeagent.investigator.domain.decision.ProposedAction;
 import dev.disputeagent.investigator.domain.investigation.CaseState;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.Signature;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -68,6 +80,9 @@ import org.testcontainers.utility.MountableFile;
  * <ol>
  *   <li>A recording instance decides a dispute and writes fixtures; a malformed event before it is skipped; the same
  *       event delivered again is published again without a second investigation.</li>
+ *   <li>Its reviewer API approves the case over HTTP: the token is signed with the configured Ed25519 key and the
+ *       action port (a test double that verifies the signature) carries the action out once; a second approval is a
+ *       conflict, and a redelivery after the review asks no one again.</li>
  *   <li>A replay instance, with its own database and consumer group, reads the same events and reaches the same
  *       decision without a single live call.</li>
  * </ol>
@@ -94,6 +109,61 @@ class InvestigatorEndToEndTest {
     static final KafkaContainer KAFKA = new KafkaContainer("apache/kafka:4.4.0");
 
     static final AtomicInteger LIVE_CALLS = new AtomicInteger();
+
+    static final String REVIEWER_KEY = "test-reviewer-key";
+    static final KeyPair APPROVAL_KEYS = approvalKeys();
+    static final VerifyingActions ACTIONS = new VerifyingActions();
+
+    static KeyPair approvalKeys() {
+        try {
+            return KeyPairGenerator.getInstance("Ed25519").generateKeyPair();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /** Stands in for actions-mcp: accepts a call only if the token's signature and argument hash check out. */
+    static final class VerifyingActions implements ActionPort {
+        final List<String> tokens = new CopyOnWriteArrayList<>();
+
+        @Override
+        public String argumentsSha256(CaseId disputeId, ProposedAction action) {
+            return new McpActionPort(null).argumentsSha256(disputeId, action);
+        }
+
+        @Override
+        public Result execute(CaseId disputeId, ProposedAction action, String approvalToken) {
+            String[] parts = approvalToken.split("\\.");
+            try {
+                Signature verifier = Signature.getInstance("Ed25519");
+                verifier.initVerify(APPROVAL_KEYS.getPublic());
+                verifier.update((parts[0] + "." + parts[1]).getBytes(StandardCharsets.US_ASCII));
+                if (!verifier.verify(Base64.getUrlDecoder().decode(parts[2]))) {
+                    return new Result(false, "APPROVAL_REJECTED: BAD_SIGNATURE");
+                }
+            } catch (Exception e) {
+                return new Result(false, "APPROVAL_REJECTED: MALFORMED");
+            }
+            String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+            if (!payload.contains("\"args\":\"" + argumentsSha256(disputeId, action) + "\"")) {
+                return new Result(false, "APPROVAL_REJECTED: ARGUMENTS_MISMATCH");
+            }
+            tokens.add(approvalToken);
+            return new Result(true, "{\"status\":\"DONE\",\"dispute_id\":\"" + disputeId + "\"}");
+        }
+    }
+
+    static HttpResponse<String> http(String method, String url, String key, String body) throws Exception {
+        var request = HttpRequest.newBuilder(URI.create(url)).header("Content-Type", "application/json")
+                .method(method, body == null ? HttpRequest.BodyPublishers.noBody()
+                        : HttpRequest.BodyPublishers.ofString(body));
+        if (key != null) {
+            request.header("X-Reviewer-Key", key);
+        }
+        try (var client = HttpClient.newHttpClient()) {
+            return client.send(request.build(), HttpResponse.BodyHandlers.ofString());
+        }
+    }
 
     @TempDir
     static Path fixtures;
@@ -147,6 +217,11 @@ class InvestigatorEndToEndTest {
             return new CannedServers();
         }
 
+        @Bean
+        ActionPort actionPort() {
+            return ACTIONS;
+        }
+
         private static LlmResponse response(StopReason stop, ContentBlock... content) {
             return new LlmResponse("msg_" + LIVE_CALLS.get(), "claude-opus-5-5", stop, List.of(content),
                     new Usage(900, 120, 0, 0), null, new LlmCost(0, "test"));
@@ -194,6 +269,11 @@ class InvestigatorEndToEndTest {
                 Map.entry("investigator.mcp.client", "none"),
                 Map.entry("investigator.llm.fixtures-dir", fixtures.toString()),
                 Map.entry("investigator.kafka.group-id", group),
+                Map.entry("investigator.approval.signing-key",
+                        Base64.getEncoder().encodeToString(APPROVAL_KEYS.getPrivate().getEncoded())),
+                Map.entry("investigator.approval.verify-key",
+                        Base64.getEncoder().encodeToString(APPROVAL_KEYS.getPublic().getEncoded())),
+                Map.entry("investigator.reviewer.api-key", REVIEWER_KEY),
                 Map.entry("investigator.skills-dir", "../../skills"));
         String[] args = settings.entrySet().stream().map(e -> "--" + e.getKey() + "=" + e.getValue())
                 .toArray(String[]::new);
@@ -282,12 +362,50 @@ class InvestigatorEndToEndTest {
             await().atMost(Duration.ofSeconds(30)).until(() -> records("disputes.approval-requested", id).size() == 2);
             assertThat(LIVE_CALLS.get()).isEqualTo(3);
             assertThat(count(recording, "SELECT count(*) FROM investigation.cases")).isEqualTo(1);
+
+            // 2. The reviewer API (ADR 0005): the queue, then an approval carried out once.
+            String base = "http://localhost:" + recording.getEnvironment().getProperty("local.server.port") + "/reviews";
+            assertThat(http("GET", base, null, null).statusCode()).as("no key").isEqualTo(401);
+            assertThat(http("GET", base, "wrong", null).statusCode()).as("wrong key").isEqualTo(401);
+            var queue = http("GET", base, REVIEWER_KEY, null);
+            assertThat(queue.statusCode()).isEqualTo(200);
+            assertThat(queue.body()).contains("\"dispute_id\":\"" + id + "\"").contains("issue_provisional_credit")
+                    .contains("\"outcome\":\"APPROVE_PROVISIONAL_CREDIT\"");
+            assertThat(http("POST", base + "/" + id + "/approve", REVIEWER_KEY, "{\"note\":\"x\"}").statusCode())
+                    .as("no reviewer").isEqualTo(400);
+
+            var approved = http("POST", base + "/" + id + "/approve", REVIEWER_KEY,
+                    "{\"reviewer\":\"reviewer-1\",\"note\":\"evidence checked\"}");
+            assertThat(approved.statusCode()).as(approved.body()).isEqualTo(200);
+            assertThat(approved.body()).contains("\"state\":\"ACTED\"");
+            assertThat(ACTIONS.tokens).as("one call, with a token that verifies").hasSize(1);
+            assertThat(recording.getBean(JdbcClient.class)
+                    .sql("SELECT state FROM investigation.cases WHERE dispute_id = :id").param("id", id)
+                    .query(String.class).single()).isEqualTo("ACTED");
+            assertThat(count(recording, "SELECT count(*) FROM investigation.audit_events WHERE type = 'TokenIssued'"))
+                    .isEqualTo(1);
+            assertThat(count(recording, "SELECT count(*) FROM investigation.audit_events WHERE type = 'ActionCalled'"))
+                    .isEqualTo(1);
+            assertThat(count(recording, "SELECT count(*) FROM investigation.audit_events WHERE type = 'Reviewed'"))
+                    .isEqualTo(1);
+
+            var again = http("POST", base + "/" + id + "/approve", REVIEWER_KEY, "{\"reviewer\":\"reviewer-2\"}");
+            assertThat(again.statusCode()).isEqualTo(409);
+            assertThat(again.body()).contains("\"state\":\"ACTED\"");
+            assertThat(http("POST", base + "/DSP-NONE/reject", REVIEWER_KEY, "{\"reviewer\":\"r\"}").statusCode())
+                    .isEqualTo(404);
+            assertThat(ACTIONS.tokens).hasSize(1);
+
+            // A redelivery after the review: the outcome again, no new approval request.
+            send(id, DisputeEvents.opened(DISPUTE));
+            await().atMost(Duration.ofSeconds(30)).until(() -> decided(id).size() == 3);
+            assertThat(records("disputes.approval-requested", id)).hasSize(2);
         }
 
         // 2. Replay instance: own database, own group, same topic from the start.
         try (var replay = instance("replay", "replay", "replay")) {
-            await().atMost(Duration.ofSeconds(60)).until(() -> decided(id).size() == 4);
-            CaseOutcome replayed = DisputeEvents.decided(decided(id).get(2));
+            await().atMost(Duration.ofSeconds(60)).until(() -> decided(id).size() == 6);
+            CaseOutcome replayed = DisputeEvents.decided(decided(id).get(3));
             CaseOutcome recorded = DisputeEvents.decided(decided(id).getFirst());
 
             assertThat(replayed.state()).isEqualTo(recorded.state());

@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("investigator")
 public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budget, Policy policy, String skillsDir,
-        Approval approval) {
+        Approval approval, Reviewer reviewer) {
 
     // Directories are bound as strings and read with Path.of: Spring's String-to-Path conversion goes through the
     // resource loader, which rejects relative paths with '..' in a web application.
@@ -58,6 +58,10 @@ public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budge
         public boolean configured() {
             return signingKey != null && !signingKey.isBlank() && verifyKey != null && !verifyKey.isBlank();
         }
+    }
+
+    /** The reviewer API's static key (task 2.7), a stand-in for single sign-on; blank disables the API. */
+    public record Reviewer(String apiKey) {
     }
 
     public record Kafka(String openedTopic, String decidedTopic, String approvalRequestedTopic, String groupId,

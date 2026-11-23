@@ -4,6 +4,7 @@ import dev.disputeagent.investigator.application.CaseOutcome;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.investigation.CaseState;
 import dev.disputeagent.investigator.domain.investigation.DisputeCase;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +19,9 @@ public interface CaseStore {
     }
 
     Optional<StoredCase> find(CaseId disputeId);
+
+    /** The reviewer's queue: cases waiting for approval, oldest request first, at most {@code limit}. */
+    List<StoredCase> awaitingApproval(int limit);
 
     /** Stores a case whose investigation just ended, with its outcome, in one transaction. */
     void save(DisputeCase disputeCase, CaseOutcome outcome);

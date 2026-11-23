@@ -28,6 +28,14 @@ public final class MemoryCases implements CaseStore {
     }
 
     @Override
+    public synchronized java.util.List<StoredCase> awaitingApproval(int limit) {
+        return rows.keySet().stream().map(id -> find(id).orElseThrow())
+                .filter(s -> s.disputeCase().state() == CaseState.AWAITING_APPROVAL)
+                .sorted(java.util.Comparator.comparing(s -> s.disputeCase().approvalRequest().orElseThrow().requestedAt()))
+                .limit(limit).toList();
+    }
+
+    @Override
     public synchronized void save(DisputeCase c, CaseOutcome outcome) {
         if (rows.containsKey(c.id())) {
             throw new IllegalStateException("case " + c.id() + " is already stored");
