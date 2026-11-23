@@ -159,6 +159,9 @@ services:
       INVESTIGATOR_EFFORT: ${INVESTIGATOR_EFFORT:-medium}
       TRIAGE_MODEL: ${TRIAGE_MODEL:-claude-haiku-5-5}
       TRIAGE_EFFORT: ${TRIAGE_EFFORT:-low}
+      # The reviewer API's key (X-Reviewer-Key), a stand-in for single sign-on. The default is for this local stack
+      # only; set REVIEWER_API_KEY in .env to change it.
+      REVIEWER_API_KEY: ${REVIEWER_API_KEY:-local-reviewer-key}
     volumes:
       - ../../skills:/app/skills:ro
       - ../../evals/fixtures/llm:/app/fixtures
@@ -174,6 +177,9 @@ services:
       ledger-mcp:
         condition: service_healthy
       policy-mcp:
+        condition: service_healthy
+      # The investigator carries approved actions out on actions-mcp (ADR 0005).
+      actions-mcp:
         condition: service_healthy
     ports:
       - "127.0.0.1:8080:8080"

@@ -51,6 +51,19 @@ public final class JdbcCaseStore implements CaseStore {
     }
 
     @Override
+    public List<StoredCase> awaitingApproval(int limit) {
+        return jdbc.sql("""
+                SELECT dispute_id, state, history, outcome_event, replays, approval_requested_at, reviewer, review_note,
+                    reviewed_at, token_id, token_arguments_sha256, token_issued_at, token_expires_at, approval_token,
+                    action_detail
+                FROM investigation.cases WHERE state = 'AWAITING_APPROVAL'
+                ORDER BY approval_requested_at, dispute_id LIMIT :limit""")
+                .param("limit", limit)
+                .query((rs, n) -> stored(new CaseId(rs.getString("dispute_id")), rs))
+                .list();
+    }
+
+    @Override
     public void save(DisputeCase c, CaseOutcome outcome) {
         var s = c.snapshot();
         jdbc.sql("""

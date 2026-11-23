@@ -5,6 +5,7 @@ import dev.disputeagent.investigator.application.intake.DisputeOpened;
 import dev.disputeagent.investigator.application.port.events.DecisionPublisher;
 import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.domain.approval.ApprovalRequest;
+import dev.disputeagent.investigator.domain.investigation.CaseState;
 import java.util.Optional;
 
 /**
@@ -12,8 +13,8 @@ import java.util.Optional;
  * returns.
  *
  * <ol>
- *   <li>A case already stored is not investigated again: its stored outcome, and its approval request if it has one,
- *       are published again (a publish that failed after the save is completed by the redelivery) and the event is
+ *   <li>A case already stored is not investigated again: its stored outcome, and its approval request while it is
+ *       still waiting for one (not once a person has reviewed it), are published again (a publish that failed after the save is completed by the redelivery) and the event is
  *       done.</li>
  *   <li>Otherwise the dispute is triaged and investigated. A decided case's action goes before a person
  *       ({@code AWAITING_APPROVAL}); the case is saved, then the outcome and the approval request are published. A
@@ -41,7 +42,10 @@ public final class ProcessDisputeOpened {
         if (existing.isPresent()) {
             CaseOutcome outcome = existing.get().outcome();
             publisher.publish(outcome);
-            existing.get().disputeCase().approvalRequest().ifPresent(publisher::publishApprovalRequest);
+            var stored = existing.get().disputeCase();
+            if (stored.state() == CaseState.AWAITING_APPROVAL) {
+                stored.approvalRequest().ifPresent(publisher::publishApprovalRequest);
+            }
             return new Result(outcome, true);
         }
         var investigated = handle.handle(dispute);

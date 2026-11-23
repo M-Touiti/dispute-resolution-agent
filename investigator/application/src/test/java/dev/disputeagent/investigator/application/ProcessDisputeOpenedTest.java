@@ -141,6 +141,23 @@ class ProcessDisputeOpenedTest {
     }
 
     @Test
+    void aRedeliveryAfterTheReviewDoesNotAskForApprovalAgain() {
+        decides();
+        var process = process();
+        process.process(DISPUTE);
+        var reviewed = store.find(DISPUTE.disputeId()).orElseThrow().disputeCase();
+        reviewed.reject(new dev.disputeagent.investigator.domain.approval.Review("reviewer-1", "no",
+                Instant.parse("2026-11-21T09:00:00Z")), Instant.parse("2026-11-21T09:00:00Z"));
+        assertThat(store.update(reviewed, CaseState.AWAITING_APPROVAL, null)).isTrue();
+
+        var redelivered = process.process(DISPUTE);
+
+        assertThat(redelivered.redelivery()).isTrue();
+        assertThat(published).hasSize(2);
+        assertThat(requested).as("the case was reviewed; no one is asked again").hasSize(1);
+    }
+
+    @Test
     void anEscalatedCaseIsSavedAndPublishedWithoutARequest() {
         llm.then(StopReason.REFUSAL).then(StopReason.REFUSAL); // triage falls back, the investigation escalates
 

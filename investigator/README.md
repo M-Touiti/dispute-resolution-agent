@@ -99,8 +99,21 @@ A case is inserted when its investigation ends and then updated, each update gua
 `application/approval` (ADR 0005): `RequestApproval` puts a decided case's action before a person before the case is
 first saved; `ApproveAction` signs the token through `TokenSigner`, stores the case `APPROVED` with it, then calls
 `ActionPort` and records `ACTED` or `ACTION_FAILED` (approving an interrupted case again resends the same token);
-`RejectAction` ends it `REJECTED`. Approve and reject are wired once `actions-mcp` verifies (2.6) and the reviewer
-API (2.7) exist.
+`RejectAction` ends it `REJECTED`.
+
+`adapters/web`: `ReviewController`, the reviewer API on port 8080, every call with the `X-Reviewer-Key` header
+(`REVIEWER_API_KEY`; blank answers 503):
+
+```sh
+curl -H 'X-Reviewer-Key: local-reviewer-key' localhost:8080/reviews                     # the queue
+curl -X POST -H 'X-Reviewer-Key: local-reviewer-key' -H 'Content-Type: application/json' \
+     -d '{"reviewer":"me","note":"evidence checked"}' localhost:8080/reviews/DSP-000018/approve  # or /reject
+```
+
+200 says where the case ended (`ACTED`, `ACTION_FAILED`, `REJECTED`); 404 unknown case; 409 not waiting (another
+reviewer was first); 400 no reviewer; 401 wrong key; 503 no reviewer key, or no signing key for approvals.
+`adapters/approval/McpActionPort` calls actions-mcp through its own MCP client, which knows only that server and
+is given to nothing else: the investigation's client, and so the model, never reaches a write.
 
 `adapters/approval` ([docs/approval-token.md](../docs/approval-token.md)): `Ed25519TokenSigner` signs the token as a
 compact JWS with the JDK's Ed25519, header and payload in JCS (`Jcs`, RFC 8785), so tokens are deterministic;
@@ -127,6 +140,6 @@ Live check (off by default, never in CI, under one cent):
 ## Status
 
 M1 done: the service runs one dispute category end to end on Kafka and PostgreSQL, and the eval profile replays
-the golden set. M2 in progress: a decided case is stored `AWAITING_APPROVAL` and raises
-`disputes.approval-requested` (2.4); approving it needs the token signer (2.5), `actions-mcp` verification (2.6) and
-the reviewer API (2.7). Parking arrives with resilience (2.9).
+the golden set. M2 in progress: the approval gate works end to end (2.3 to 2.7): a decided case waits for a
+person, the reviewer API approves or rejects it, and an approved action runs once on actions-mcp with a signed token.
+Next: the outbox (2.8) and resilience with parked cases (2.9).

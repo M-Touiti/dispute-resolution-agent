@@ -36,6 +36,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
         </dependency>
+        <!-- web adapter: the reviewer API (task 2.7) -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
         <!-- kafka adapter -->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
