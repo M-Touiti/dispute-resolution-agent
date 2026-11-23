@@ -117,6 +117,16 @@ services:
       start_period: 20s
 
 
+  # One-shot: the approval-token key pair (ADR 0005), generated on the first start and kept in two volumes. The
+  # investigator gets the private key; actions-mcp gets only the public key. JDK only, single-file launcher.
+  approval-keys:
+    image: eclipse-temurin:21-jdk-noble
+    command: ["java", "/scripts/GenerateApprovalKeys.java", "/keys/signing", "/keys/verify"]
+    volumes:
+      - ./approval-keys:/scripts:ro
+      - approval-signing:/keys/signing
+      - approval-verify:/keys/verify
+
   # The agent. LLM_ADAPTER=replay (default) serves evals/fixtures/llm and needs no key; recording and anthropic call
   # the live API with ANTHROPIC_API_KEY from the environment. Skills and fixtures are mounted from the repository.
   investigator:
@@ -139,7 +149,11 @@ services:
     volumes:
       - ../../skills:/app/skills:ro
       - ../../evals/fixtures/llm:/app/fixtures
+      # Spring config tree: each file is a property (investigator.approval.signing-key, ...verify-key).
+      - approval-signing:/run/secrets/approval:ro
     depends_on:
+      approval-keys:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       kafka:
@@ -159,3 +173,5 @@ services:
 
 volumes:
   postgres-data:
+  approval-signing:
+  approval-verify:

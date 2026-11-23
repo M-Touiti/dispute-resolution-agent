@@ -99,8 +99,15 @@ A case is inserted when its investigation ends and then updated, each update gua
 `application/approval` (ADR 0005): `RequestApproval` puts a decided case's action before a person before the case is
 first saved; `ApproveAction` signs the token through `TokenSigner`, stores the case `APPROVED` with it, then calls
 `ActionPort` and records `ACTED` or `ACTION_FAILED` (approving an interrupted case again resends the same token);
-`RejectAction` ends it `REJECTED`. Approve and reject are wired once the signer (2.5), `actions-mcp` (2.6) and the
-reviewer API (2.7) exist.
+`RejectAction` ends it `REJECTED`. Approve and reject are wired once `actions-mcp` verifies (2.6) and the reviewer
+API (2.7) exist.
+
+`adapters/approval` ([docs/approval-token.md](../docs/approval-token.md)): `Ed25519TokenSigner` signs the token as a
+compact JWS with the JDK's Ed25519, header and payload in JCS (`Jcs`, RFC 8785), so tokens are deterministic;
+`ApprovalKeys` reads the base64 keys and derives the key id. The signer refuses a private and public key that are not
+a pair. Its bean exists when `investigator.approval.signing-key` is set; compose mounts both keys as a Spring config
+tree at `/run/secrets/approval` (`APPROVAL_KEYS_DIR`). `ApprovalTokenVectorsTest` checks the signer and JCS against
+`docs/approval-token/vectors.json` and checks every verdict there with a reference verifier.
 
 `bootstrap`: `InvestigatorProperties` binds `investigator.*`; `InvestigatorConfiguration` wires adapters to ports and
 use cases. `LLM_ADAPTER` picks `replay` (default, no key), `recording` or `anthropic`. `ProcessDisputeOpened` is

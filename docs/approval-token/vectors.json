@@ -1,0 +1,412 @@
+{
+  "format" : 1,
+  "about" : "Shared approval-token vectors (ADR 0005, docs/approval-token.md). TEST KEYS ONLY: they sign nothing outside the tests of the investigator and actions-mcp. Regenerate with -Dvectors.update=true in investigator/adapters (ApprovalTokenVectorsTest).",
+  "keys" : {
+    "signing_key_pkcs8" : "MC4CAQAwBQYDK2VwBCIEIF0G0aKwTsmbG9B9ggjybklfDIo+s7vkWCoR2+F/UzpC",
+    "verify_key_x509" : "MCowBQYDK2VwAyEAJLPY8eOj+YyMqfVpe7z2bkJG4V0BsyipzWEPSgJki7M=",
+    "kid" : "1db0a4de7ff81f1c"
+  },
+  "other_key" : {
+    "signing_key_pkcs8" : "MC4CAQAwBQYDK2VwBCIEIAx1WFb+OvzIc34KiFjcTy/0KJ6mGv2oQMAde9p148Qv",
+    "verify_key_x509" : "MCowBQYDK2VwAyEAJDj2+8GhnbHZ78DoV9sb9uNV2Esm9OuY25qLr+6JffE=",
+    "kid" : "1d1ffb78c80dea03"
+  },
+  "arguments" : [ {
+    "name" : "issue_provisional_credit",
+    "arguments" : {
+      "dispute_id" : "DSP-000018",
+      "amount_minor" : 110056,
+      "currency" : "EUR"
+    },
+    "canonical" : "{\"amount_minor\":110056,\"currency\":\"EUR\",\"dispute_id\":\"DSP-000018\"}",
+    "sha256" : "a002705b6bedcddb2aa1048200331d3279b93b95d48589c22f0ab719a4c9f5b9"
+  }, {
+    "name" : "request_merchant_evidence",
+    "arguments" : {
+      "dispute_id" : "DSP-000018",
+      "evidence" : [ "RECEIPT", "PROOF_OF_DELIVERY" ],
+      "note" : "Please send the signed delivery record for order 4471."
+    },
+    "canonical" : "{\"dispute_id\":\"DSP-000018\",\"evidence\":[\"RECEIPT\",\"PROOF_OF_DELIVERY\"],\"note\":\"Please send the signed delivery record for order 4471.\"}",
+    "sha256" : "897969411b98c799e8ede8c8b6455bd3d63eebfaa4f0c0e1eecb6085dae13743"
+  }, {
+    "name" : "close_dispute",
+    "arguments" : {
+      "dispute_id" : "DSP-000003",
+      "reason" : "Chip and PIN at a terminal in the cardholder's city; the card was present.",
+      "policy_section_ids" : [ "unauthorised-chip-and-pin", "time-limits" ]
+    },
+    "canonical" : "{\"dispute_id\":\"DSP-000003\",\"policy_section_ids\":[\"unauthorised-chip-and-pin\",\"time-limits\"],\"reason\":\"Chip and PIN at a terminal in the cardholder's city; the card was present.\"}",
+    "sha256" : "9f01c9475b379a71586495acb55c73907316d4f98bba0cf6ec75b95fc362b7ee"
+  }, {
+    "name" : "jcs_string_escapes",
+    "arguments" : {
+      "quote" : "say \"no\"",
+      "backslash" : "a\\b",
+      "controls" : "tab\tnew\nline\u0001\u001F",
+      "unicode" : "café € 😀 ／",
+      "slash" : "a/b"
+    },
+    "canonical" : "{\"backslash\":\"a\\\\b\",\"controls\":\"tab\\tnew\\nline\\u0001\\u001f\",\"quote\":\"say \\\"no\\\"\",\"slash\":\"a/b\",\"unicode\":\"café € 😀 ／\"}",
+    "sha256" : "87204daeae90959aab063b20592556a5392ab5c79ff78596ff2559d7bbd06aa3"
+  }, {
+    "name" : "jcs_member_order_utf16",
+    "arguments" : {
+      "b" : 1,
+      "a" : 2,
+      "B" : 3,
+      "é" : 4,
+      "€" : 5,
+      "😀" : 6,
+      "！" : 7,
+      "aa" : 8
+    },
+    "canonical" : "{\"B\":3,\"a\":2,\"aa\":8,\"b\":1,\"é\":4,\"€\":5,\"😀\":6,\"！\":7}",
+    "sha256" : "12a9fcb91a0eaccf4c8da256957d3cf2ec3975cf32d557545e044b37fb28cb4c"
+  }, {
+    "name" : "jcs_values",
+    "arguments" : {
+      "max_safe" : 9007199254740991,
+      "min_safe" : -9007199254740991,
+      "zero" : 0,
+      "negative" : -42,
+      "yes" : true,
+      "no" : false,
+      "nothing" : null,
+      "empty" : [ ],
+      "nested" : {
+        "list" : [ 3, "x", {
+          "k" : "v"
+        } ]
+      }
+    },
+    "canonical" : "{\"empty\":[],\"max_safe\":9007199254740991,\"min_safe\":-9007199254740991,\"negative\":-42,\"nested\":{\"list\":[3,\"x\",{\"k\":\"v\"}]},\"no\":false,\"nothing\":null,\"yes\":true,\"zero\":0}",
+    "sha256" : "ad55ce389082b225c283293545a354a2d786ec7c462879b56052e18c95ca3989"
+  } ],
+  "tokens" : [ {
+    "name" : "valid",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "claims" : {
+      "v" : 1,
+      "jti" : "6f1c2a2e-4b7d-4c1e-9f3a-0d5b8e7c1a42",
+      "sub" : "DSP-000018",
+      "act" : "issue_provisional_credit",
+      "args" : "a002705b6bedcddb2aa1048200331d3279b93b95d48589c22f0ab719a4c9f5b9",
+      "rev" : "reviewer-1",
+      "iat" : 1795424400,
+      "exp" : 1795424700
+    },
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "ACCEPT"
+  }, {
+    "name" : "valid_within_expiry_skew",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "claims" : {
+      "v" : 1,
+      "jti" : "6f1c2a2e-4b7d-4c1e-9f3a-0d5b8e7c1a42",
+      "sub" : "DSP-000018",
+      "act" : "issue_provisional_credit",
+      "args" : "a002705b6bedcddb2aa1048200331d3279b93b95d48589c22f0ab719a4c9f5b9",
+      "rev" : "reviewer-1",
+      "iat" : 1795424400,
+      "exp" : 1795424700
+    },
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:05:29Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "ACCEPT"
+  }, {
+    "name" : "valid_issued_slightly_ahead_of_the_verifiers_clock",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "claims" : {
+      "v" : 1,
+      "jti" : "6f1c2a2e-4b7d-4c1e-9f3a-0d5b8e7c1a42",
+      "sub" : "DSP-000018",
+      "act" : "issue_provisional_credit",
+      "args" : "a002705b6bedcddb2aa1048200331d3279b93b95d48589c22f0ab719a4c9f5b9",
+      "rev" : "reviewer-1",
+      "iat" : 1795424400,
+      "exp" : 1795424700
+    },
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T08:59:31Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "ACCEPT"
+  }, {
+    "name" : "valid_request_merchant_evidence",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJyZXF1ZXN0X21lcmNoYW50X2V2aWRlbmNlIiwiYXJncyI6Ijg5Nzk2OTQxMWI5OGM3OTllOGVkZThjOGI2NDU1YmQzZDYzZWViZmFhNGYwYzBlMWVlY2I2MDg1ZGFlMTM3NDMiLCJleHAiOjE3OTU0MjQ3MDAsImlhdCI6MTc5NTQyNDQwMCwianRpIjoiMGI2ZTRmMWQtMmMzYS00ZTVmLThhOWItN2M2ZDVlNGYzYTIxIiwicmV2IjoicmV2aWV3ZXItMiIsInN1YiI6IkRTUC0wMDAwMTgiLCJ2IjoxfQ.R2t5Z0ayrkMmnB6QxzJefbVjztWPVlAX7Av9I0alSlu7P1hvHqBTjt3fFcKxrAguurD0m-bTu7N7pvj6ltZbAQ",
+    "claims" : {
+      "v" : 1,
+      "jti" : "0b6e4f1d-2c3a-4e5f-8a9b-7c6d5e4f3a21",
+      "sub" : "DSP-000018",
+      "act" : "request_merchant_evidence",
+      "args" : "897969411b98c799e8ede8c8b6455bd3d63eebfaa4f0c0e1eecb6085dae13743",
+      "rev" : "reviewer-2",
+      "iat" : 1795424400,
+      "exp" : 1795424700
+    },
+    "check" : {
+      "tool" : "request_merchant_evidence",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:01:00Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "evidence" : [ "RECEIPT", "PROOF_OF_DELIVERY" ],
+        "note" : "Please send the signed delivery record for order 4471.",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJyZXF1ZXN0X21lcmNoYW50X2V2aWRlbmNlIiwiYXJncyI6Ijg5Nzk2OTQxMWI5OGM3OTllOGVkZThjOGI2NDU1YmQzZDYzZWViZmFhNGYwYzBlMWVlY2I2MDg1ZGFlMTM3NDMiLCJleHAiOjE3OTU0MjQ3MDAsImlhdCI6MTc5NTQyNDQwMCwianRpIjoiMGI2ZTRmMWQtMmMzYS00ZTVmLThhOWItN2M2ZDVlNGYzYTIxIiwicmV2IjoicmV2aWV3ZXItMiIsInN1YiI6IkRTUC0wMDAwMTgiLCJ2IjoxfQ.R2t5Z0ayrkMmnB6QxzJefbVjztWPVlAX7Av9I0alSlu7P1hvHqBTjt3fFcKxrAguurD0m-bTu7N7pvj6ltZbAQ"
+      }
+    },
+    "verdict" : "ACCEPT"
+  }, {
+    "name" : "expired",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:05:30Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "REJECT:EXPIRED"
+  }, {
+    "name" : "not_yet_valid",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T08:59:29Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "REJECT:NOT_YET_VALID"
+  }, {
+    "name" : "wrong_tool",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "check" : {
+      "tool" : "close_dispute",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "REJECT:WRONG_TOOL"
+  }, {
+    "name" : "wrong_dispute",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000019",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000019",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "REJECT:WRONG_DISPUTE"
+  }, {
+    "name" : "arguments_changed_after_approval",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110057,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "REJECT:ARGUMENTS_MISMATCH"
+  }, {
+    "name" : "payload_changed_after_signing",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJjbG9zZV9kaXNwdXRlIiwiYXJncyI6ImEwMDI3MDViNmJlZGNkZGIyYWExMDQ4MjAwMzMxZDMyNzliOTNiOTVkNDg1ODljMjJmMGFiNzE5YTRjOWY1YjkiLCJleHAiOjE3OTU0MjQ3MDAsImlhdCI6MTc5NTQyNDQwMCwianRpIjoiNmYxYzJhMmUtNGI3ZC00YzFlLTlmM2EtMGQ1YjhlN2MxYTQyIiwicmV2IjoicmV2aWV3ZXItMSIsInN1YiI6IkRTUC0wMDAwMTgiLCJ2IjoxfQ.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "check" : {
+      "tool" : "close_dispute",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJjbG9zZV9kaXNwdXRlIiwiYXJncyI6ImEwMDI3MDViNmJlZGNkZGIyYWExMDQ4MjAwMzMxZDMyNzliOTNiOTVkNDg1ODljMjJmMGFiNzE5YTRjOWY1YjkiLCJleHAiOjE3OTU0MjQ3MDAsImlhdCI6MTc5NTQyNDQwMCwianRpIjoiNmYxYzJhMmUtNGI3ZC00YzFlLTlmM2EtMGQ1YjhlN2MxYTQyIiwicmV2IjoicmV2aWV3ZXItMSIsInN1YiI6IkRTUC0wMDAwMTgiLCJ2IjoxfQ.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "REJECT:BAD_SIGNATURE"
+  }, {
+    "name" : "signed_by_another_key_under_our_key_id",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.Z6PwZ-I6XgjvW0t9zKGUuy12SI5lsEKn_SV6XCffNL1lFf5un_2zrmh9l76v14WnUfJQVAMQGgketSXoOoy7Ag",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.Z6PwZ-I6XgjvW0t9zKGUuy12SI5lsEKn_SV6XCffNL1lFf5un_2zrmh9l76v14WnUfJQVAMQGgketSXoOoy7Ag"
+      }
+    },
+    "verdict" : "REJECT:BAD_SIGNATURE"
+  }, {
+    "name" : "unknown_key_id",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkMWZmYjc4YzgwZGVhMDMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.eD0OsLLiVqCjcAnUqYxPaT4rDgVP-AfHlkmOFOBVkURTYyge0NmEtTokfMW-BYk3dwixz7afKfueLD9T7OszCg",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkMWZmYjc4YzgwZGVhMDMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.eD0OsLLiVqCjcAnUqYxPaT4rDgVP-AfHlkmOFOBVkURTYyge0NmEtTokfMW-BYk3dwixz7afKfueLD9T7OszCg"
+      }
+    },
+    "verdict" : "REJECT:UNKNOWN_KEY"
+  }, {
+    "name" : "alg_not_eddsa",
+    "token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.JxsX5P8b6bAorwSfRY89tkEuOi4XEqvoNBpfVcDwyQ9Yck8TUfImo9sLW0vc2gpjbIFwreFU8C_q_MZ6OyIEBg",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.JxsX5P8b6bAorwSfRY89tkEuOi4XEqvoNBpfVcDwyQ9Yck8TUfImo9sLW0vc2gpjbIFwreFU8C_q_MZ6OyIEBg"
+      }
+    },
+    "verdict" : "REJECT:UNSUPPORTED"
+  }, {
+    "name" : "typ_not_approval",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJKV1QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.V_Q-SbK7RHxxulrreGca23N6uiliGh7369CYBXA_DrlQcBFsc_kGB03iZNDK1L0lwSufmnmKAkwuxfyDbejYCQ",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJKV1QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.V_Q-SbK7RHxxulrreGca23N6uiliGh7369CYBXA_DrlQcBFsc_kGB03iZNDK1L0lwSufmnmKAkwuxfyDbejYCQ"
+      }
+    },
+    "verdict" : "REJECT:UNSUPPORTED"
+  }, {
+    "name" : "version_2",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjJ9.lWP0p8iUPK8DROrYp9Lln3xk5f-apksU4bPx7fcucNeQnYCczhDVaBipoGaK-LCULlRiTDlzmQqOf_stMq_oCQ",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjJ9.lWP0p8iUPK8DROrYp9Lln3xk5f-apksU4bPx7fcucNeQnYCczhDVaBipoGaK-LCULlRiTDlzmQqOf_stMq_oCQ"
+      }
+    },
+    "verdict" : "REJECT:UNSUPPORTED"
+  }, {
+    "name" : "missing_exp",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImlhdCI6MTc5NTQyNDQwMCwianRpIjoiNmYxYzJhMmUtNGI3ZC00YzFlLTlmM2EtMGQ1YjhlN2MxYTQyIiwicmV2IjoicmV2aWV3ZXItMSIsInN1YiI6IkRTUC0wMDAwMTgiLCJ2IjoxfQ.9g9T95X7i8LXBT41qsuUWOSzekDIrEDXMVmdupp51kq1LbMnzA1zEz5PpNB3o2OSjgdm-_Dlid0QF_WQmCnrBw",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImlhdCI6MTc5NTQyNDQwMCwianRpIjoiNmYxYzJhMmUtNGI3ZC00YzFlLTlmM2EtMGQ1YjhlN2MxYTQyIiwicmV2IjoicmV2aWV3ZXItMSIsInN1YiI6IkRTUC0wMDAwMTgiLCJ2IjoxfQ.9g9T95X7i8LXBT41qsuUWOSzekDIrEDXMVmdupp51kq1LbMnzA1zEz5PpNB3o2OSjgdm-_Dlid0QF_WQmCnrBw"
+      }
+    },
+    "verdict" : "REJECT:MALFORMED"
+  }, {
+    "name" : "two_segments",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9"
+      }
+    },
+    "verdict" : "REJECT:MALFORMED"
+  }, {
+    "name" : "base64_padding",
+    "token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA==",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "eyJhbGciOiJFZERTQSIsImtpZCI6IjFkYjBhNGRlN2ZmODFmMWMiLCJ0eXAiOiJhcHByb3ZhbCtqd3QifQ.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA=="
+      }
+    },
+    "verdict" : "REJECT:MALFORMED"
+  }, {
+    "name" : "header_not_json",
+    "token" : "bm90IGpzb24.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA",
+    "check" : {
+      "tool" : "issue_provisional_credit",
+      "dispute_id" : "DSP-000018",
+      "now" : "2026-11-23T09:00:10Z",
+      "arguments" : {
+        "dispute_id" : "DSP-000018",
+        "amount_minor" : 110056,
+        "currency" : "EUR",
+        "approval_token" : "bm90IGpzb24.eyJhY3QiOiJpc3N1ZV9wcm92aXNpb25hbF9jcmVkaXQiLCJhcmdzIjoiYTAwMjcwNWI2YmVkY2RkYjJhYTEwNDgyMDAzMzFkMzI3OWI5M2I5NWQ0ODU4OWMyMmYwYWI3MTlhNGM5ZjViOSIsImV4cCI6MTc5NTQyNDcwMCwiaWF0IjoxNzk1NDI0NDAwLCJqdGkiOiI2ZjFjMmEyZS00YjdkLTRjMWUtOWYzYS0wZDViOGU3YzFhNDIiLCJyZXYiOiJyZXZpZXdlci0xIiwic3ViIjoiRFNQLTAwMDAxOCIsInYiOjF9.MiFQIPykmj8-8ieiUPjICmasWVc7OGw5YwN288oZsfPySq3tfwBxhLb4UsMz9dAxxjNdY3JJ4kNJd7YSR_PODA"
+      }
+    },
+    "verdict" : "REJECT:MALFORMED"
+  } ]
+}

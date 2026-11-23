@@ -19,6 +19,9 @@ open a public issue for a vulnerability.
 - The policy guard that validates every decision deterministically.
 - Prompt-injection defences around untrusted content (dispute text, merchant data, policy text).
 - Secrets handling: environment variables locally, Kubernetes secrets in the manifests, nothing in the repository.
+  The approval-token keys are generated on the first start of the compose stack and never committed. The keys in
+  `docs/approval-token/vectors.json` are test keys, published on purpose so both implementations can check the same
+  vectors; they sign nothing outside tests.
 
 ## Automated checks
 

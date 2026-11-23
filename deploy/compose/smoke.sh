@@ -86,6 +86,18 @@ check_mcp actions-mcp 8083 "close_dispute issue_provisional_credit request_merch
 curl -fsS -o /dev/null http://localhost:8080/actuator/health/readiness || fail "investigator: not ready"
 echo "ok   investigator ready"
 
+# Approval-token keys (ADR 0005): generated once by approval-keys; the investigator signs with that pair, and the
+# volume actions-mcp gets holds the public key only.
+generated=$(docker compose logs --no-log-prefix approval-keys 2>/dev/null | grep -oE 'key id [0-9a-f]{16}' | tail -1)
+signing=$(docker compose logs --no-log-prefix investigator 2>/dev/null \
+    | grep -oE 'approval tokens are signed with Ed25519 key [0-9a-f]{16}' | tail -1 | grep -oE '[0-9a-f]{16}$')
+[[ -n "$generated" && "$generated" == "key id $signing" ]] \
+    || fail "approval keys: generated '${generated:-none}', investigator signs with '${signing:-none}'"
+verify_files=$(docker compose run --rm --no-deps --entrypoint sh approval-keys -c 'ls /keys/verify' 2>/dev/null | tr -d '\r')
+[[ "$verify_files" == "actions-mcp.approval.verify-keys" ]] \
+    || fail "approval keys: the verify volume holds '$verify_files', expected the public key only"
+echo "ok   approval keys: the investigator signs with $signing; actions-mcp's volume holds the public key only"
+
 dispute=${SMOKE_DISPUTE:-DSP-000018}
 event=$(docker compose exec -T postgres sh -c 'psql -tA -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d disputes' <<SQL
 SELECT json_build_object(

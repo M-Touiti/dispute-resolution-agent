@@ -11,7 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * configuration, never in code). Bound once at start-up; a missing value fails start-up.
  */
 @ConfigurationProperties("investigator")
-public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budget, Policy policy, String skillsDir) {
+public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budget, Policy policy, String skillsDir,
+        Approval approval) {
 
     // Directories are bound as strings and read with Path.of: Spring's String-to-Path conversion goes through the
     // resource loader, which rejects relative paths with '..' in a web application.
@@ -47,6 +48,16 @@ public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budge
     /** The ledger and policy servers; the actions server is configured but never connected in M1. */
     public record Mcp(URI ledgerUrl, URI policyUrl, URI actionsUrl, Duration connectTimeout, Duration requestTimeout,
             int maxResponseBytes) {
+    }
+
+    /**
+     * The approval-token keys (ADR 0005), base64 PKCS#8 and X.509, from the config tree the compose stack mounts (or
+     * the environment). Both absent: no signer, approvals cannot be signed. Never in application.yml or the repository.
+     */
+    public record Approval(String signingKey, String verifyKey) {
+        public boolean configured() {
+            return signingKey != null && !signingKey.isBlank() && verifyKey != null && !verifyKey.isBlank();
+        }
     }
 
     public record Kafka(String openedTopic, String decidedTopic, String approvalRequestedTopic, String groupId,
