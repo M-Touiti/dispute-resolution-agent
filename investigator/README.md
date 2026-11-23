@@ -98,6 +98,26 @@ The replay (task 2.10, `application/replay`):
   only when something tries a call, so a sweep that only read the state would wait forever once no new disputes
   arrive.
 
+Observability (task 2.11, `adapters/otel`, ADR 0008): decorators on Micrometer's vendor-neutral API. The bootstrap
+connects them to OpenTelemetry (Boot's starter: the Micrometer Tracing bridge and OTLP, no Java agent) and to
+Prometheus.
+
+- **Traces:** one trace per case. The listener (and the eval runner) opens `dispute.case`; children are a span per
+  model attempt (`ObservedLlmPort`, inside the retries: model, effort, stop reason, failure kind, tokens, cost), per
+  tool call (`ObservedMcpToolPort`: server, tool, outcome, a hash of the arguments) and per action
+  (`ObservedActionPort`).
+- **Context across threads:** both virtual-thread executors (tool calls, model attempts) carry the case's context.
+- **OTLP export** is off unless `OTEL_TRACES_EXPORT=true` and an endpoint are set (compose, task 2.12).
+- **Metrics** on `/actuator/prometheus`: `MeteredAuditLog` derives them from the audit trail:
+  - cases by outcome and reason, unsafe proposals, parked and replayed cases;
+  - tokens by model and type (the cache hit ratio is `cache_read` over `input` plus `cache_read`), cost;
+  - tokens and cost per case run (histograms), approval latency.
+
+  The observations add `dispute_llm_call_seconds` and `dispute_tool_call_seconds` (latency, and the error rate by
+  `outcome`). Gauges cover outbox unsent rows and lag, parked cases, and the breaker.
+- **Logs:** JSON (ECS) on stdout, with the dispute id, trace id and span id on every line. `MaskingLogCustomizer`
+  masks anything shaped like a card number (Luhn-checked) in every string. `LOG_FORMAT=` (empty) gives plain text.
+
 Dead letters: a malformed event is never retried, and an event that still fails after the error handler's two retries
 goes to `disputes.dlq`. Spring's headers record why (`kafka_dlt-exception-message`) and where it came from, and the
 partition moves on.
@@ -176,4 +196,5 @@ the golden set. M2 in progress: the approval gate works end to end (2.3 to 2.7):
 person, the reviewer API approves or rejects it, and an approved action runs once on actions-mcp with a signed token.
 Every event leaves through the outbox (2.8). The model call is wrapped in Resilience4j, and a case the model or
 the ledger cannot serve is parked instead of escalated (2.9). Parked cases are replayed and poison events
-dead-lettered (2.10). Next: traces, metrics and logs (2.11).
+dead-lettered (2.10). Traces, metrics and JSON logs come from decorators
+around the ports (2.11). Next: Prometheus, Tempo and Grafana in compose (2.12).

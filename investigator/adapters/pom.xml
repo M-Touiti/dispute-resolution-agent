@@ -53,6 +53,24 @@
             <groupId>io.github.resilience4j</groupId>
             <artifactId>resilience4j-timelimiter</artifactId>
         </dependency>
+        <!-- otel adapter: Micrometer Observation and meters, vendor-neutral (ADR 0008); OpenTelemetry stays in bootstrap -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-observation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>context-propagation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-observation-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- web adapter: the reviewer API (task 2.7) -->
         <dependency>
             <groupId>org.springframework</groupId>

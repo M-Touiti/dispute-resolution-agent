@@ -2,8 +2,11 @@ package dev.disputeagent.investigator.bootstrap;
 
 import dev.disputeagent.investigator.adapters.approval.McpActionPort;
 import dev.disputeagent.investigator.adapters.mcpclient.McpClientAdapter;
+import dev.disputeagent.investigator.adapters.otel.ObservedActionPort;
+import dev.disputeagent.investigator.adapters.otel.ObservedMcpToolPort;
 import dev.disputeagent.investigator.application.port.mcp.McpServer;
 import dev.disputeagent.investigator.application.port.mcp.McpToolPort;
+import io.micrometer.observation.ObservationRegistry;
 import java.util.Map;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -20,18 +23,20 @@ import org.springframework.context.annotation.Configuration;
 class McpConfiguration {
 
     @Bean(destroyMethod = "close")
-    McpToolPort mcpToolPort(InvestigatorProperties properties) {
+    McpToolPort mcpToolPort(InvestigatorProperties properties, ObservationRegistry observations) {
         var mcp = properties.mcp();
-        return new McpClientAdapter(
+        return new ObservedMcpToolPort(new McpClientAdapter(
                 Map.of(McpServer.LEDGER, mcp.ledgerUrl(), McpServer.POLICY, mcp.policyUrl()),
-                new McpClientAdapter.Settings(mcp.connectTimeout(), mcp.requestTimeout(), mcp.maxResponseBytes()));
+                new McpClientAdapter.Settings(mcp.connectTimeout(), mcp.requestTimeout(), mcp.maxResponseBytes())),
+                observations);
     }
 
     /** Not a McpToolPort bean: the actions-only client exists inside the action port and nowhere else. */
     @Bean(destroyMethod = "close")
-    McpActionPort actionPort(InvestigatorProperties properties) {
+    ObservedActionPort actionPort(InvestigatorProperties properties, ObservationRegistry observations) {
         var mcp = properties.mcp();
-        return new McpActionPort(new McpClientAdapter(Map.of(McpServer.ACTIONS, mcp.actionsUrl()),
-                new McpClientAdapter.Settings(mcp.connectTimeout(), mcp.requestTimeout(), mcp.maxResponseBytes())));
+        return new ObservedActionPort(new McpActionPort(new McpClientAdapter(Map.of(McpServer.ACTIONS, mcp.actionsUrl()),
+                new McpClientAdapter.Settings(mcp.connectTimeout(), mcp.requestTimeout(), mcp.maxResponseBytes()))),
+                observations);
     }
 }

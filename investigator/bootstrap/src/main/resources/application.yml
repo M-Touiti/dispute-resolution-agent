@@ -36,11 +36,41 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        # The Prometheus scrape endpoint (ADR 0008) next to the probes.
+        include: health,prometheus
   endpoint:
     health:
       probes:
         enabled: true
+  # One trace per case, every case (ADR 0008). OTLP export is off unless switched on with its endpoint (compose does,
+  # task 2.12: OTEL_TRACES_EXPORT=true and MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT). An empty endpoint
+  # is not "no endpoint": Boot would build the exporter and fail, so the endpoint is left undefined here.
+  tracing:
+    sampling:
+      probability: 1.0
+    export:
+      otlp:
+        enabled: ${OTEL_TRACES_EXPORT:false}
+  # Logs stay on stdout as JSON; no OTLP log export.
+  logging:
+    export:
+      otlp:
+        enabled: false
+  metrics:
+    tags:
+      application: investigator
+
+# JSON logs (ECS): the trace and span ids and the dispute id (MDC) on every line; card numbers masked in every string.
+# LOG_FORMAT= (empty) gives plain text for reading locally.
+logging:
+  structured:
+    format:
+      console: ${LOG_FORMAT:ecs}
+    ecs:
+      service:
+        version: '@project.version@'
+    json:
+      customizer: dev.disputeagent.investigator.bootstrap.MaskingLogCustomizer
 
 # Model ids, effort, token caps and prices live here and in the environment, never in code (ADR 0001).
 investigator:

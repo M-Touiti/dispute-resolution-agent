@@ -116,6 +116,8 @@ class InvestigatorEndToEndTest {
     static final KafkaContainer KAFKA = new KafkaContainer("apache/kafka:4.4.0");
 
     static final AtomicInteger LIVE_CALLS = new AtomicInteger();
+    static final io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter SPANS =
+            io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter.create();
 
     static final String REVIEWER_KEY = "test-reviewer-key";
     static final KeyPair APPROVAL_KEYS = approvalKeys();
@@ -234,6 +236,12 @@ class InvestigatorEndToEndTest {
             return ACTIONS;
         }
 
+        /** Every span the instance exports, next to OTLP (ADR 0008). */
+        @Bean
+        io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter spanExporter() {
+            return SPANS;
+        }
+
         private static LlmResponse response(StopReason stop, ContentBlock... content) {
             return new LlmResponse("msg_" + LIVE_CALLS.get(), "claude-opus-5-5", stop, List.of(content),
                     new Usage(900, 120, 0, 0), null, new LlmCost(0, "test"));
@@ -288,6 +296,7 @@ class InvestigatorEndToEndTest {
                 Map.entry("investigator.reviewer.api-key", REVIEWER_KEY),
                 // Fast retries and replays, so the test does not wait minutes for what production spaces out.
                 Map.entry("investigator.resilience.first-backoff", "PT0.05S"),
+                Map.entry("management.opentelemetry.tracing.export.schedule-delay", "PT0.2S"),
                 Map.entry("investigator.resilience.max-backoff", "PT0.1S"),
                 Map.entry("investigator.replay.first-delay", "PT1S"),
                 Map.entry("investigator.replay.sweep-interval", "PT0.5S"),
@@ -403,6 +412,30 @@ class InvestigatorEndToEndTest {
             assertThat(count(recording, "SELECT count(*) FROM investigation.outbox WHERE sent_at IS NULL"))
                     .as("the relay sent both outbox rows").isZero();
             assertThat(count(recording, "SELECT count(*) FROM investigation.outbox")).isEqualTo(2);
+
+            // Traces (ADR 0008): one trace for the case; its model calls are children of the case span.
+            await().atMost(Duration.ofSeconds(10)).until(() -> SPANS.getFinishedSpanItems().stream()
+                    .anyMatch(span -> span.getName().equals("case " + id)));
+            var spans = SPANS.getFinishedSpanItems();
+            var caseSpan = spans.stream().filter(span -> span.getName().equals("case " + id)).findFirst().orElseThrow();
+            var modelSpans = spans.stream().filter(span -> span.getName().startsWith("llm ")
+                    && span.getTraceId().equals(caseSpan.getTraceId())).toList();
+            assertThat(modelSpans).as("triage, the tool turn and the decision").hasSize(3);
+            assertThat(modelSpans).allSatisfy(span -> {
+                assertThat(span.getParentSpanId()).isEqualTo(caseSpan.getSpanId());
+                assertThat(span.getAttributes().asMap().keySet().stream().map(Object::toString))
+                        .contains("tokens.input", "cost.micro_usd", "model", "stop_reason");
+            });
+
+            // Metrics (ADR 0008), from the Prometheus endpoint.
+            String base0 = "http://localhost:" + recording.getEnvironment().getProperty("local.server.port");
+            var scrape = http("GET", base0 + "/actuator/prometheus", null, null);
+            assertThat(scrape.statusCode()).isEqualTo(200);
+            assertThat(scrape.body())
+                    .contains("dispute_cases_total{application=\"investigator\",outcome=\"decided\",reason=\"none\"} 1.0")
+                    .contains("dispute_llm_call_seconds_count{")
+                    .contains("dispute_outbox_unsent{")
+                    .contains("dispute_llm_tokens_total{");
 
             // The same event again: not investigated again, and nothing emitted again (the outbox already did).
             send(id, DisputeEvents.opened(DISPUTE));

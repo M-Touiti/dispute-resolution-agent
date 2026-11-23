@@ -5,6 +5,8 @@ import dev.disputeagent.investigator.adapters.fixtures.Fixtures;
 import dev.disputeagent.investigator.adapters.fixtures.RecordingAdapter;
 import dev.disputeagent.investigator.adapters.fixtures.ReplayAdapter;
 import dev.disputeagent.investigator.adapters.json.JacksonJsonAdapter;
+import dev.disputeagent.investigator.adapters.otel.MeteredAuditLog;
+import dev.disputeagent.investigator.adapters.otel.ObservedLlmPort;
 import dev.disputeagent.investigator.adapters.resilience.ResilientLlmPort;
 import dev.disputeagent.investigator.adapters.skills.FileSkillLibrary;
 import dev.disputeagent.investigator.application.HandleDisputeOpened;
@@ -20,6 +22,10 @@ import dev.disputeagent.investigator.application.triage.TriageDispute;
 import dev.disputeagent.investigator.domain.decision.Money;
 import dev.disputeagent.investigator.domain.guard.PolicyLimits;
 import dev.disputeagent.investigator.domain.investigation.LoopBudget;
+import io.micrometer.context.ContextExecutorService;
+import io.micrometer.context.ContextSnapshotFactory;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
 import java.time.Clock;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -54,14 +60,18 @@ class InvestigatorConfiguration {
     @Bean(destroyMethod = "shutdownNow")
     @Qualifier("toolExecutor")
     ExecutorService toolExecutor() {
-        return Executors.newVirtualThreadPerTaskExecutor();
+        // Carries the current observation to the thread, so work there stays in its case's trace (ADR 0008).
+        return ContextExecutorService.wrap(Executors.newVirtualThreadPerTaskExecutor(),
+                ContextSnapshotFactory.builder().build());
     }
 
     /** Runs each model attempt, so the time limiter can cancel it (ADR 0008); virtual threads. */
     @Bean(destroyMethod = "shutdownNow")
     @Qualifier("llmAttempts")
     ExecutorService llmAttempts() {
-        return Executors.newVirtualThreadPerTaskExecutor();
+        // Carries the current observation to the thread, so work there stays in its case's trace (ADR 0008).
+        return ContextExecutorService.wrap(Executors.newVirtualThreadPerTaskExecutor(),
+                ContextSnapshotFactory.builder().build());
     }
 
     @Bean
@@ -80,7 +90,7 @@ class InvestigatorConfiguration {
     @Bean
     @Primary
     LlmPort llmPort(InvestigatorProperties properties, PriceTable prices, ObjectProvider<LiveLlm> live, Clock clock,
-            @Qualifier("llmAttempts") ExecutorService attempts) {
+            @Qualifier("llmAttempts") ExecutorService attempts, ObservationRegistry observations) {
         var fixtures = new Fixtures(properties.llm().fixturesPath());
         String adapter = properties.llm().adapter();
         log.info("model adapter: {} (fixtures {})", adapter, fixtures.dir().toAbsolutePath().normalize());
@@ -93,7 +103,18 @@ class InvestigatorConfiguration {
         };
         // Every adapter, replay included, goes through the same decorator (ADR 0008); replay never fails with a
         // transient kind, so there it passes through and the fixtures see the same requests.
-        return new ResilientLlmPort(port, properties.resilience(), clock, attempts);
+        // Resilience outside, observation inside: a retried call shows one span per attempt (ADR 0008).
+        return new ResilientLlmPort(new ObservedLlmPort(port, observations), properties.resilience(), clock, attempts);
+    }
+
+    /**
+     * The audit log every use case writes to: the profile's own log (JDBC for the service, in memory for the
+     * evaluation), with the case metrics derived on the way (ADR 0008).
+     */
+    @Bean
+    @Primary
+    AuditLog auditLog(@Qualifier("rawAuditLog") AuditLog raw, MeterRegistry meters) {
+        return new MeteredAuditLog(raw, meters);
     }
 
     @Bean
