@@ -212,7 +212,7 @@ services:
   # Distroless: no shell for a healthcheck; smoke.sh polls /ready from the host. Traces on a tmpfs owned by Tempo's
   # user (10001): they live as long as the stack does.
   tempo:
-    image: grafana/tempo:2.10.10
+    image: grafana/tempo:3.1.1
     command: ["-config.file=/etc/tempo/tempo.yaml"]
     volumes:
       - ./observability/tempo.yaml:/etc/tempo/tempo.yaml:ro
