@@ -248,6 +248,41 @@ services:
       timeout: 3s
       retries: 30
 
+  # Load test (task 2.13), only with the "perf" profile: performance/run.sh starts these. The shim publishes the golden
+  # disputes and awaits their decisions; k6 drives it. The shim connects as the database owner: it deletes cases.
+  load-shim:
+    profiles: [perf]
+    build: ../../performance/shim
+    image: dispute-agent/load-shim:dev
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+      SHIM_DB_URL: postgresql://${POSTGRES_USER:-disputes}:${POSTGRES_PASSWORD:-disputes}@postgres:5432/disputes
+      GOLDEN_SET: /golden/unauthorised-v1.json
+      PROMETHEUS_URL: http://prometheus:9090
+    volumes:
+      - ../../evals/golden:/golden:ro
+    depends_on:
+      investigator:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8090:8090"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  k6:
+    profiles: [perf]
+    image: grafana/k6:1.8.3
+    volumes:
+      - ../../performance/k6:/scripts:ro
+    depends_on:
+      load-shim:
+        condition: service_healthy
+
 volumes:
   postgres-data:
   approval-signing:

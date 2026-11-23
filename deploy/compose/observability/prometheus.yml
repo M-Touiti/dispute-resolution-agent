@@ -5,10 +5,14 @@ global:
   evaluation_interval: 5s
 
 scrape_configs:
+  # Every replica: compose's DNS answers "investigator" with one address per container (the load test scales it).
   - job_name: investigator
     metrics_path: /actuator/prometheus
-    static_configs:
-      - targets: ["investigator:8080"]
+    dns_sd_configs:
+      - names: ["investigator"]
+        type: A
+        port: 8080
+        refresh_interval: 5s
   - job_name: ledger-mcp
     metrics_path: /actuator/prometheus
     static_configs:

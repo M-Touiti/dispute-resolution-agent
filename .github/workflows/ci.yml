@@ -64,7 +64,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [data, evals, mcp-servers/policy-mcp]
+        project: [data, evals, mcp-servers/policy-mcp, performance/shim]
     defaults:
       run:
         working-directory: ${{ matrix.project }}
@@ -173,6 +173,10 @@ jobs:
       - name: Smoke test
         working-directory: deploy/compose
         run: ./smoke.sh
+      # The load test runs on a laptop (performance/README.md); CI only checks that its shim's image builds.
+      - name: Build the load-test shim
+        working-directory: deploy/compose
+        run: docker compose --profile perf build load-shim
       - name: Logs
         if: failure()
         working-directory: deploy/compose
