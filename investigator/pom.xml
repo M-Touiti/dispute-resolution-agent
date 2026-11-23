@@ -35,7 +35,7 @@
         <mcp.version>2.2.0</mcp.version>
         <!-- The JSON Schema validator mcp-json-jackson3 2.2.0 uses for tool inputs; keep the two in step so the
              client and the servers validate with the same library and version. -->
-        <json-schema-validator.version>3.0.8</json-schema-validator.version>
+        <json-schema-validator.version>3.0.9</json-schema-validator.version>
         <resilience4j.version>2.4.0</resilience4j.version>
         <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
     </properties>
