@@ -104,7 +104,7 @@ class ApprovalGateTest {
         assertThat(request.get().action()).isEqualTo(CREDIT);
         assertThat(c.state()).isEqualTo(CaseState.AWAITING_APPROVAL);
         assertThat(outcome.state()).as("the published outcome is the investigation's").isEqualTo(CaseState.DECIDED);
-        cases.save(c, outcome);
+        cases.save(c, outcome, java.util.List.of());
         audit.events.clear();
     }
 
@@ -269,8 +269,9 @@ class ApprovalGateTest {
         }
 
         @Override
-        public void save(DisputeCase c, CaseOutcome outcome) {
-            real.save(c, outcome);
+        public void save(DisputeCase c, CaseOutcome outcome,
+                java.util.List<dev.disputeagent.investigator.application.port.events.OutgoingEvent> events) {
+            real.save(c, outcome, events);
         }
 
         @Override

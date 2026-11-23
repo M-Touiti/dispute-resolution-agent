@@ -9,8 +9,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 
 /**
- * Consumes {@code disputes.opened} one record at a time and acknowledges it only after the case is stored and its
- * outcome published. A malformed payload is acknowledged and logged (it would fail the same way forever; the
+ * Consumes {@code disputes.opened} one record at a time and acknowledges it only after the case and its outgoing
+ * events are committed; the outbox relay publishes them afterwards (ADR 0008), off this path. A malformed payload is acknowledged and logged (it would fail the same way forever; the
  * dead-letter topic comes in M2). Any other failure leaves the record unacknowledged for the error handler to retry.
  */
 public final class DisputeOpenedListener {

@@ -87,12 +87,14 @@ the servers it is constructed with exist: the bootstrap gives it the ledger and 
 
 `adapters/kafka`: `DisputeEvents` (the versioned JSON of `disputes.opened`, `disputes.decided` and
 `disputes.approval-requested`),
-`DisputeOpenedListener` (one record per poll, acknowledged after the case is stored and its outcome published; a
-malformed event is logged and skipped), `KafkaDecisionPublisher` (both outgoing topics, keyed by dispute id, waits
-for the broker).
+`DisputeOpenedListener` (one record per poll, acknowledged once the case and its outgoing events are committed; a
+malformed event is logged and skipped), `OutboxRelay` (ADR 0008: claims unsent outbox rows with
+`FOR UPDATE SKIP LOCKED`, sends them in id order keyed by dispute id, marks each one sent; a failed send records the
+error and ends the batch, and the next poll, every `OUTBOX_POLL_INTERVAL`, default 200 ms, tries again).
 `adapters/persistence`: `JdbcCaseStore` and `JdbcAuditLog` on `JdbcClient` in the `investigation` schema (Flyway
-`V1`, `V2` for approval), owned by the `investigator` role, which cannot read the ledger, intake or policy schemas.
-A case is inserted when its investigation ends and then updated, each update guarded by the state the writer read
+`V1`, `V2` for approval, `V3` the outbox), owned by the `investigator` role, which cannot read the ledger, intake or
+policy schemas. A case is inserted when its investigation ends, with its outgoing events in `investigation.outbox`,
+in one transaction, and then updated, each update guarded by the state the writer read
 (`WHERE state = :expected`), so two reviewers cannot both act; a stored case is restored through
 `DisputeCase.restore`. Plain JDBC, not JPA: two tables and one guarded update need no ORM.
 
@@ -142,4 +144,4 @@ Live check (off by default, never in CI, under one cent):
 M1 done: the service runs one dispute category end to end on Kafka and PostgreSQL, and the eval profile replays
 the golden set. M2 in progress: the approval gate works end to end (2.3 to 2.7): a decided case waits for a
 person, the reviewer API approves or rejects it, and an approved action runs once on actions-mcp with a signed token.
-Next: the outbox (2.8) and resilience with parked cases (2.9).
+Every event leaves through the outbox (2.8). Next: resilience with parked cases (2.9).

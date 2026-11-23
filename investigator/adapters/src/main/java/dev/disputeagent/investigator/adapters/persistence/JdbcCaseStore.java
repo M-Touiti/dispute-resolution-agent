@@ -2,6 +2,7 @@ package dev.disputeagent.investigator.adapters.persistence;
 
 import dev.disputeagent.investigator.adapters.kafka.DisputeEvents;
 import dev.disputeagent.investigator.application.CaseOutcome;
+import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.approval.ApprovalToken;
@@ -18,24 +19,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.support.TransactionTemplate;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ArrayNode;
 
 /**
- * {@link CaseStore} on PostgreSQL ({@code investigation.cases}, Flyway {@code V1} and {@code V2}). A case is inserted
- * when its investigation ends and updated after that, each update guarded by the state the caller read. The outcome
- * is kept as the exact {@code disputes.decided} payload (text, not JSONB, which would reorder keys), so a redelivery
- * publishes the same bytes; it also carries the decision and the guard's verdict a stored case is restored with.
+ * {@link CaseStore} on PostgreSQL ({@code investigation.cases} and {@code investigation.outbox}, Flyway {@code V1} to
+ * {@code V3}). A case is inserted when its investigation ends, together with its outgoing events in the outbox, in one
+ * transaction (ADR 0008); it is updated after that, each update guarded by the state the caller read. The outcome is
+ * kept as the exact {@code disputes.decided} payload (text, not JSONB, which would reorder keys); it also carries the
+ * decision and the guard's verdict a stored case is restored with.
  */
 public final class JdbcCaseStore implements CaseStore {
 
     private static final JsonMapper JSON = JsonMapper.builder().build();
 
     private final JdbcClient jdbc;
+    private final TransactionTemplate transactions;
 
-    public JdbcCaseStore(JdbcClient jdbc) {
+    public JdbcCaseStore(JdbcClient jdbc, TransactionTemplate transactions) {
         this.jdbc = jdbc;
+        this.transactions = transactions;
     }
 
     @Override
@@ -64,7 +69,35 @@ public final class JdbcCaseStore implements CaseStore {
     }
 
     @Override
-    public void save(DisputeCase c, CaseOutcome outcome) {
+    public void save(DisputeCase c, CaseOutcome outcome, List<OutgoingEvent> events) {
+        transactions.executeWithoutResult(status -> {
+            insert(c, outcome);
+            for (OutgoingEvent event : events) {
+                OutboxRow row = row(event);
+                jdbc.sql("""
+                        INSERT INTO investigation.outbox (dispute_id, type, payload)
+                        VALUES (:id, :type, :payload)""")
+                        .param("id", event.disputeId().value())
+                        .param("type", row.type())
+                        .param("payload", row.payload())
+                        .update();
+            }
+        });
+    }
+
+    /** The type the relay maps to a topic, and the event's wire payload. */
+    private record OutboxRow(String type, String payload) {
+    }
+
+    private static OutboxRow row(OutgoingEvent event) {
+        return switch (event) {
+            case OutgoingEvent.Decided decided -> new OutboxRow("DECIDED", DisputeEvents.decided(decided.outcome()));
+            case OutgoingEvent.ApprovalRequested requested ->
+                    new OutboxRow("APPROVAL_REQUESTED", DisputeEvents.approvalRequested(requested.request()));
+        };
+    }
+
+    private void insert(DisputeCase c, CaseOutcome outcome) {
         var s = c.snapshot();
         jdbc.sql("""
                 INSERT INTO investigation.cases (dispute_id, state, reported_category, category, outcome,

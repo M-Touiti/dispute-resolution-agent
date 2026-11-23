@@ -29,7 +29,8 @@ class ReviewControllerTest {
         }
 
         @Override
-        public void save(DisputeCase disputeCase, CaseOutcome outcome) {
+        public void save(DisputeCase disputeCase, CaseOutcome outcome,
+                List<dev.disputeagent.investigator.application.port.events.OutgoingEvent> events) {
             throw new AssertionError("nothing is saved");
         }
 

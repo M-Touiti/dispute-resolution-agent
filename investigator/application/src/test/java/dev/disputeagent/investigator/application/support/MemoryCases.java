@@ -1,6 +1,7 @@
 package dev.disputeagent.investigator.application.support;
 
 import dev.disputeagent.investigator.application.CaseOutcome;
+import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.investigation.CaseState;
@@ -19,6 +20,8 @@ public final class MemoryCases implements CaseStore {
     }
 
     private final Map<CaseId, Row> rows = new HashMap<>();
+    /** Every event saved with a case, in order: what the outbox would publish. */
+    public final java.util.List<OutgoingEvent> outbox = new java.util.ArrayList<>();
     public int updates;
 
     @Override
@@ -36,11 +39,12 @@ public final class MemoryCases implements CaseStore {
     }
 
     @Override
-    public synchronized void save(DisputeCase c, CaseOutcome outcome) {
+    public synchronized void save(DisputeCase c, CaseOutcome outcome, java.util.List<OutgoingEvent> events) {
         if (rows.containsKey(c.id())) {
             throw new IllegalStateException("case " + c.id() + " is already stored");
         }
         rows.put(c.id(), new Row(c.snapshot(), outcome, null));
+        outbox.addAll(events);
     }
 
     @Override
