@@ -2,7 +2,8 @@
 
 Java 21, Spring Boot 4.2.0, Maven multi-module (hexagonal):
 
-- `domain`: entities, value objects, case state machine. No dependencies outside the JDK; a Maven enforcer rule
+- `domain`: entities, value objects, the case state machine (investigation, parking and replay, approval and
+  action), approval values (`ApprovalRequest`, `Review`, `ApprovalToken`). No dependencies outside the JDK; a Maven enforcer rule
   fails the build otherwise.
 - `application`: ports (`LlmPort`, `McpToolPort`, repositories, clock) and use cases (triage, investigate, guard,
   act). Depends on `domain` only, also enforced.
@@ -108,5 +109,6 @@ Live check (off by default, never in CI, under one cent):
 
 ## Status
 
-M1 in progress: domain to wiring (1.7 to 1.13) done: the service runs end to end on Kafka and PostgreSQL. Next:
-the investigator in compose (1.14) and the evaluation runner (1.15).
+M1 done: the service runs one dispute category end to end on Kafka and PostgreSQL, and the eval profile replays
+the golden set. M2 in progress: the domain knows the approval, action and parked states (2.3); the use cases that
+drive them arrive with the approval gate (2.4) and resilience (2.9).

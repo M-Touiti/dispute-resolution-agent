@@ -32,8 +32,8 @@ public record CaseOutcome(
         Objects.requireNonNull(category, "category");
         Objects.requireNonNull(decidedAt, "decidedAt");
         guardViolations = List.copyOf(guardViolations);
-        if (!state.isTerminal()) {
-            throw new IllegalArgumentException("an outcome is for a finished case, got " + state);
+        if (!state.endsInvestigation()) {
+            throw new IllegalArgumentException("an outcome is for a finished investigation, got " + state);
         }
         if ((state == CaseState.ESCALATED) != (escalationReason != null)) {
             throw new IllegalArgumentException("an escalated case, and only one, has an escalation reason");
@@ -44,7 +44,7 @@ public record CaseOutcome(
     }
 
     public static CaseOutcome of(DisputeCase finished) {
-        if (!finished.state().isTerminal()) {
+        if (!finished.state().endsInvestigation()) {
             throw new IllegalStateException("case " + finished.id() + " is still " + finished.state());
         }
         return new CaseOutcome(finished.id(), finished.state(), finished.reportedCategory(), finished.category(),
