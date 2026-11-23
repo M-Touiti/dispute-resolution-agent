@@ -71,8 +71,9 @@ public sealed interface AuditEvent {
     record ApprovalRequested(CaseId caseId, Instant at, String action) implements AuditEvent {
     }
 
-    /** A person approved or rejected the action. */
-    record Reviewed(CaseId caseId, Instant at, boolean approved, String reviewer, String note) implements AuditEvent {
+    /** A person approved or rejected the action; {@code requestedAt} is when it was put before them. */
+    record Reviewed(CaseId caseId, Instant at, boolean approved, String reviewer, String note, Instant requestedAt)
+            implements AuditEvent {
     }
 
     /** An approval token was signed. Its id and claims are recorded, never the token itself. */

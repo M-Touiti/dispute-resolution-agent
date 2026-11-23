@@ -8,6 +8,8 @@ import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.DisputeCategory;
 import dev.disputeagent.investigator.domain.decision.Money;
 import dev.disputeagent.investigator.domain.investigation.DisputeCase;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -50,12 +52,13 @@ public final class EvalRunner implements ApplicationRunner {
     private final Path out;
     private final String adapter;
     private final long maxCostMicroUsd;
+    private final ObservationRegistry observations;
 
     /**
      * @param maxCostMicroUsd stop before the next case once the run has cost this much (live runs); 0 for no cap
      */
     public EvalRunner(HandleDisputeOpened handle, EvalAuditLog audit, Path golden, Path dataDir, Path out,
-            String adapter, long maxCostMicroUsd) {
+            String adapter, long maxCostMicroUsd, ObservationRegistry observations) {
         this.handle = handle;
         this.audit = audit;
         this.golden = golden;
@@ -63,6 +66,7 @@ public final class EvalRunner implements ApplicationRunner {
         this.out = out;
         this.adapter = adapter;
         this.maxCostMicroUsd = maxCostMicroUsd;
+        this.observations = observations;
     }
 
     @Override
@@ -88,7 +92,13 @@ public final class EvalRunner implements ApplicationRunner {
             if (dispute == null) {
                 throw new IllegalStateException(id + " is in the golden set but not in " + dataDir);
             }
-            DisputeCase finished = handle.handle(dispute);
+            // The same case span as the service's listener, so an evaluation run is traced like production.
+            DisputeCase finished = Observation.createNotStarted("dispute.case", observations)
+                    .contextualName("case " + id)
+                    .lowCardinalityKeyValue("source", "eval")
+                    .lowCardinalityKeyValue("category", dispute.category().name().toLowerCase())
+                    .highCardinalityKeyValue("dispute.id", id)
+                    .observe(() -> handle.handle(dispute));
             Map<String, Object> result = result(dispute, finished, audit.take(dispute.disputeId()));
             write(out.resolve(id + ".json"), result);
             states.merge(finished.state() + finished.escalationReason().map(r -> " " + r).orElse(""), 1, Integer::sum);

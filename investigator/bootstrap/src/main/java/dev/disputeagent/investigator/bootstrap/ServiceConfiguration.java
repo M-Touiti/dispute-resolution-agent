@@ -14,6 +14,9 @@ import dev.disputeagent.investigator.application.port.llm.LlmPort;
 import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.application.replay.ReplayPolicy;
 import dev.disputeagent.investigator.application.replay.SweepParkedCases;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.observation.ObservationRegistry;
 import java.time.Clock;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -21,6 +24,7 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -44,8 +48,34 @@ class ServiceConfiguration {
     private static final Logger log = LoggerFactory.getLogger(ServiceConfiguration.class);
 
     @Bean
-    AuditLog auditLog(JdbcClient jdbc) {
+    @Qualifier("rawAuditLog")
+    AuditLog jdbcAuditLog(JdbcClient jdbc) {
         return new JdbcAuditLog(jdbc);
+    }
+
+    /**
+     * Gauges read on each scrape (ADR 0008): unsent outbox rows and the age of the oldest (outbox lag), parked cases,
+     * and whether the model's circuit breaker is holding the model off.
+     */
+    @Bean
+    MeterBinder investigatorGauges(JdbcClient jdbc, LlmPort llm) {
+        return registry -> {
+            Gauge.builder("dispute.outbox.unsent", () -> jdbc.sql(
+                    "SELECT count(*) FROM investigation.outbox WHERE sent_at IS NULL").query(Long.class).single())
+                    .description("Outbox rows not yet sent").register(registry);
+            Gauge.builder("dispute.outbox.lag", () -> jdbc.sql("""
+                    SELECT COALESCE(EXTRACT(EPOCH FROM now() - min(created_at)), 0)
+                    FROM investigation.outbox WHERE sent_at IS NULL""").query(Double.class).single())
+                    .baseUnit("seconds").description("Age of the oldest unsent outbox row").register(registry);
+            Gauge.builder("dispute.cases.awaiting_retry", () -> jdbc.sql(
+                    "SELECT count(*) FROM investigation.cases WHERE state = 'AWAITING_RETRY'").query(Long.class)
+                    .single()).description("Parked cases waiting for a replay").register(registry);
+            if (llm instanceof ResilientLlmPort resilient) {
+                Gauge.builder("dispute.llm.breaker.open", () -> resilient.breakerState()
+                        == io.github.resilience4j.circuitbreaker.CircuitBreaker.State.OPEN ? 1 : 0)
+                        .description("1 while the model's circuit breaker is open").register(registry);
+            }
+        };
     }
 
     @Bean
@@ -103,8 +133,8 @@ class ServiceConfiguration {
     }
 
     @Bean
-    DisputeOpenedListener disputeOpenedListener(ProcessDisputeOpened process) {
-        return new DisputeOpenedListener(process);
+    DisputeOpenedListener disputeOpenedListener(ProcessDisputeOpened process, ObservationRegistry observations) {
+        return new DisputeOpenedListener(process, observations);
     }
 
     @Bean

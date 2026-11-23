@@ -73,7 +73,7 @@ public final class ApproveAction {
         if (!cases.update(c, CaseState.AWAITING_APPROVAL, token)) {
             throw new ReviewException.Conflict(disputeId, cases.find(disputeId).orElseThrow().disputeCase().state());
         }
-        audit.record(new AuditEvent.Reviewed(disputeId, review.at(), true, reviewer, note));
+        audit.record(new AuditEvent.Reviewed(disputeId, review.at(), true, reviewer, note, request.requestedAt()));
         audit.record(new AuditEvent.TokenIssued(disputeId, claims.issuedAt(), claims.tokenId(), claims.action(),
                 claims.argumentsSha256(), claims.expiresAt()));
         Transitions.since(c, mark).forEach(audit::record);

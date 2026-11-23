@@ -32,7 +32,8 @@ public final class RejectAction {
         if (!cases.update(c, CaseState.AWAITING_APPROVAL, null)) {
             throw new ReviewException.Conflict(disputeId, cases.find(disputeId).orElseThrow().disputeCase().state());
         }
-        audit.record(new AuditEvent.Reviewed(disputeId, review.at(), false, reviewer, note));
+        audit.record(new AuditEvent.Reviewed(disputeId, review.at(), false, reviewer, note,
+                c.approvalRequest().orElseThrow().requestedAt()));
         Transitions.since(c, mark).forEach(audit::record);
         return new ReviewResult(disputeId, c.state(), note);
     }

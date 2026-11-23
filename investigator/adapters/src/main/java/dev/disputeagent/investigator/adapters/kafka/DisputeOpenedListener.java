@@ -2,9 +2,12 @@ package dev.disputeagent.investigator.adapters.kafka;
 
 import dev.disputeagent.investigator.application.ProcessDisputeOpened;
 import dev.disputeagent.investigator.application.intake.DisputeOpened;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 
@@ -21,17 +24,22 @@ public final class DisputeOpenedListener {
 
     private static final Logger log = LoggerFactory.getLogger(DisputeOpenedListener.class);
 
-    private final ProcessDisputeOpened process;
+    /** The span around one case (ADR 0008): every model, tool and action span of the case is a child of it. */
+    public static final String CASE_SPAN = "dispute.case";
 
-    public DisputeOpenedListener(ProcessDisputeOpened process) {
+    private final ProcessDisputeOpened process;
+    private final ObservationRegistry observations;
+
+    public DisputeOpenedListener(ProcessDisputeOpened process, ObservationRegistry observations) {
         this.process = process;
+        this.observations = observations;
     }
 
     @KafkaListener(id = "disputes-opened", topics = "${investigator.kafka.opened-topic}",
             groupId = "${investigator.kafka.group-id}")
     public void onDisputeOpened(ConsumerRecord<String, String> record, Acknowledgment ack) {
         DisputeOpened dispute = DisputeEvents.opened(record.value());
-        log(dispute, process.process(dispute), "investigated");
+        observed(dispute, "opened", () -> log(dispute, process.process(dispute), "investigated"));
         ack.acknowledge();
     }
 
@@ -39,8 +47,20 @@ public final class DisputeOpenedListener {
             groupId = "${investigator.kafka.group-id}")
     public void onReplay(ConsumerRecord<String, String> record, Acknowledgment ack) {
         DisputeOpened dispute = DisputeEvents.opened(record.value());
-        log(dispute, process.processReplay(dispute), "replayed");
+        observed(dispute, "replay", () -> log(dispute, process.processReplay(dispute), "replayed"));
         ack.acknowledge();
+    }
+
+    /** Runs one case inside its span, with the dispute id in the logging context (every JSON log line carries it). */
+    private void observed(DisputeOpened dispute, String source, Runnable work) {
+        try (var mdc = MDC.putCloseable("dispute_id", dispute.disputeId().value())) {
+            Observation.createNotStarted(CASE_SPAN, observations)
+                    .contextualName("case " + dispute.disputeId().value())
+                    .lowCardinalityKeyValue("source", source)
+                    .lowCardinalityKeyValue("category", dispute.category().name().toLowerCase())
+                    .highCardinalityKeyValue("dispute.id", dispute.disputeId().value())
+                    .observe(work);
+        }
     }
 
     private static void log(DisputeOpened dispute, ProcessDisputeOpened.Result result, String what) {
