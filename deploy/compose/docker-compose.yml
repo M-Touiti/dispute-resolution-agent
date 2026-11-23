@@ -133,7 +133,7 @@ services:
   # One-shot: the approval-token key pair (ADR 0005), generated on the first start and kept in two volumes. The
   # investigator gets the private key; actions-mcp gets only the public key. JDK only, single-file launcher.
   approval-keys:
-    image: eclipse-temurin:21-jdk-noble
+    image: eclipse-temurin:25-jdk-noble
     command: ["java", "/scripts/GenerateApprovalKeys.java", "/keys/signing", "/keys/verify"]
     volumes:
       - ./approval-keys:/scripts:ro
