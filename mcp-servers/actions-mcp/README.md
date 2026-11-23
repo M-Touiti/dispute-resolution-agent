@@ -18,8 +18,25 @@ Input schemas are in `src/main/resources/tools/` and stay inside the subset that
 `ToolSchemaRulesTest` enforces this and that every tool requires `dispute_id` and `approval_token`. The server
 also validates inputs against the schemas, so a call without a token never reaches a handler.
 
-**M0 status:** token verification does not exist yet, so every handler rejects every call with `isError: true`
-and `APPROVAL_REJECTED`, and nothing changes. M2 adds verification and the writes.
+**Verification and writes (task 2.6, [docs/approval-token.md](../../docs/approval-token.md)):** `ApprovalVerifier`
+checks the token without the database (format, key, Ed25519 signature, time, tool, dispute, argument hash, in that
+order). `ActionService` then holds a lock on the dispute and, in one transaction:
+1. returns the stored answer if the token was used before;
+2. checks the limits (the dispute exists and is open, credits add up to at most the disputed amount, evidence
+   listed once);
+3. records the action with the token id.
+
+A refusal is `isError` with `APPROVAL_REJECTED: <REASON>: <detail>` and changes nothing.
+
+The server holds only public keys (`actions-mcp.approval.verify-keys`, base64 X.509, a list for rotation; in
+compose a config-tree file). It connects as `actions_service`, which owns the `actions` schema (Flyway) and can read
+`intake.disputes` and nothing else. In this deployment the row in `actions.actions` is the effect: there is no
+card system behind it.
+
+Tests: `ApprovalVerifierVectorsTest` checks every verdict of the shared vectors. `ActionToolsDatabaseTest` runs
+the tools over MCP against PostgreSQL with the seed (Docker and `data/generated` needed), with tokens signed by
+the vectors' test key: once-only, retries, cumulative limits, closed disputes, concurrent approvals, and the
+role's grants.
 
 ## Run and test
 

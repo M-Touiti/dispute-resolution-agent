@@ -1,5 +1,6 @@
 package dev.disputeagent.actions.mcp;
 
+import dev.disputeagent.actions.action.ActionService;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
@@ -12,11 +13,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The three write tools. Each one requires an {@code approval_token}, and this server, not the client, decides
- * whether the token is valid (ADR 0005, M2). Until token verification exists, every call is rejected and nothing
- * changes.
+ * whether the token is valid (ADR 0005): {@link ActionService} verifies it, checks the limits and carries the action
+ * out once. A refusal is a tool result with {@code isError} and {@code APPROVAL_REJECTED: <reason>}; nothing changes.
  *
  * <p>Input schemas live in {@code src/main/resources/tools/<name>.schema.json} and stay usable as strict Messages API
  * tools. Changing a name, description or schema changes {@code tools/list}: update the contract file in the same pull
@@ -35,11 +37,9 @@ public enum ActionTools {
             "Ask the merchant, through the card scheme, for the listed evidence about the disputed transaction. "
                     + "Requires an approval_token for exactly this dispute and these arguments.");
 
-    /** Every call is refused before M2; the text says plainly that nothing happened. */
-    static final String APPROVAL_REJECTED =
-            "APPROVAL_REJECTED: approval tokens cannot be verified until milestone M2. No action was taken.";
-
     static final String APPROVAL_TOKEN = "approval_token";
+
+    private static final JsonMapper ARGUMENTS = JsonMapper.builder().build();
 
     private final String toolName;
     private final String title;
@@ -84,16 +84,18 @@ public enum ActionTools {
                 .build();
     }
 
-    /** Tool specifications sorted by name, each with a handler that rejects every call until M2. */
-    static List<SyncToolSpecification> specifications(McpJsonMapper jsonMapper) {
+    /** Tool specifications sorted by name, each handled by the service. */
+    static List<SyncToolSpecification> specifications(McpJsonMapper jsonMapper, ActionService service) {
         return Arrays.stream(values())
                 .sorted(Comparator.comparing(ActionTools::toolName))
                 .map(t -> SyncToolSpecification.builder()
                         .tool(t.tool(jsonMapper))
-                        .callHandler((exchange, request) -> CallToolResult.builder()
-                                .addTextContent(APPROVAL_REJECTED)
-                                .isError(true)
-                                .build())
+                        .callHandler((exchange, request) -> {
+                            ActionService.Outcome outcome = service.execute(t.toolName,
+                                    ARGUMENTS.valueToTree(request.arguments()));
+                            return CallToolResult.builder().addTextContent(outcome.text()).isError(!outcome.ok())
+                                    .build();
+                        })
                         .build())
                 .toList();
     }

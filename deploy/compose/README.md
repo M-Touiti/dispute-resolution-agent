@@ -31,7 +31,10 @@ docker compose down                            # stop; add -v to drop the databa
   `LEDGER_READER_PASSWORD`. `ledger-mcp` starts after `postgres` is healthy and its readiness includes the database.
   `30-policy-service.sh` creates `policy_service`, which owns the `policy` schema only; `policy-mcp` ingests the
   corpus there at start-up (mounted read-only from `data/policy-corpus`). Its password defaults to
-  `policy_service`; override it with `POLICY_SERVICE_PASSWORD`.
+  `policy_service`; override it with `POLICY_SERVICE_PASSWORD`. `50-actions-service.sh` creates `actions_service`,
+  which owns the `actions` schema (actions-mcp migrates it) and may read `intake.disputes` and nothing else;
+  override its password with `ACTIONS_SERVICE_PASSWORD`. After pulling this script, run `docker compose down -v`:
+  init scripts run only on an empty volume.
   `40-investigator.sh` creates `investigator`, which owns the `investigation` schema (cases and audit, migrated by
   Flyway) and nothing else; the investigator joins the stack in M1 task 1.14.
 - **Investigator:** `LLM_ADAPTER` selects `replay` (default: serves `evals/fixtures/llm`, needs no key), `recording`

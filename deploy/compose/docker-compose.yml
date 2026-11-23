@@ -107,6 +107,19 @@ services:
   actions-mcp:
     build: ../../mcp-servers/actions-mcp
     image: dispute-agent/actions-mcp:dev
+    environment:
+      # Owns the actions schema, reads intake.disputes only (postgres/initdb/50-actions-service.sh).
+      ACTIONS_DB_URL: jdbc:postgresql://postgres:5432/disputes
+      ACTIONS_DB_USER: actions_service
+      ACTIONS_DB_PASSWORD: ${ACTIONS_SERVICE_PASSWORD:-actions_service}
+    volumes:
+      # The public approval key only (ADR 0005): this server verifies tokens and cannot sign one.
+      - approval-verify:/run/secrets/approval:ro
+    depends_on:
+      approval-keys:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
     ports:
       - "127.0.0.1:8083:8083"
     healthcheck:
