@@ -138,6 +138,27 @@ sql() {
     docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -d disputes -c \"$1\""
 }
 
+# Dead letters (ADR 0008): a malformed disputes.opened goes to disputes.dlq with its reason, and the partition moves on
+# (the golden case below is sent after it and must still be decided).
+poison="smoke-poison-$(date +%s)"
+printf '%s@@%s\n' "$poison" '{"this is":"not a dispute"}' | docker compose exec -T kafka sh -c \
+    '/opt/kafka/bin/kafka-console-producer.sh --bootstrap-server kafka:19092 --topic disputes.opened \
+    --reader-property parse.key=true --reader-property key.separator=@@' || fail "could not publish the poison event"
+dead=""
+for _ in $(seq 1 12); do
+    # A record may span lines (the exception message does) and binary headers carry null bytes: end each record with
+    # a marker, join the lines, split on the marker, then pick the poison's record.
+    dead=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:19092 \
+        --topic disputes.dlq --from-beginning --timeout-ms 5000 --formatter-property print.key=true \
+        --formatter-property print.headers=true --formatter-property key.separator=@@ \
+        --formatter-property line.separator=@@END@@ 2>/dev/null' \
+        | tr -d '\000' | tr '\n' ' ' | sed 's/@@END@@/\n/g' | grep -aF "$poison" | tail -1 || true)
+    [[ -n "$dead" ]] && break
+done
+[[ "$dead" == *"kafka_dlt-exception-message:"*"not a valid disputes.opened event"* ]] \
+    || fail "dead letters: the malformed event is not in disputes.dlq with its reason (${dead:-nothing})"
+echo "ok   dead letters: a malformed disputes.opened is in disputes.dlq with its reason"
+
 # The default is a golden case, replayed from the recorded fixtures, and must come out DECIDED: Kafka in, the evidence
 # read from ledger-mcp, the model loop, the guard, the case and audit stored, Kafka out. Any other SMOKE_DISPUTE has
 # no fixture unless it is in the golden set; it then escalates (DEPENDENCY_UNAVAILABLE), which still proves the

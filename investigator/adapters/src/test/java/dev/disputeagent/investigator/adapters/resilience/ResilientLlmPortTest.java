@@ -172,6 +172,27 @@ class ResilientLlmPortTest {
     }
 
     @Test
+    void anOpenBreakerBecomesAvailableAgainWithoutAnyoneCallingTheModel() {
+        var resilient = resilient(settings(1, Duration.ofSeconds(5), 4));
+        port.otherwise = () -> {
+            throw failure(Kind.CONNECTION);
+        };
+        for (int i = 0; i < 4; i++) {
+            assertThatThrownBy(() -> resilient.send(REQUEST)).isInstanceOf(LlmCallException.class);
+        }
+        int calls = port.calls.get();
+        assertThat(resilient.available()).isFalse();
+
+        clock.advance(Duration.ofSeconds(31));
+
+        assertThat(resilient.available()).as("the wait is over: the sweep may replay").isTrue();
+        assertThat(resilient.breakerState()).isEqualTo(CircuitBreaker.State.HALF_OPEN);
+        assertThat(port.calls).as("asking did not call the model").hasValue(calls);
+        port.otherwise = () -> OK;
+        assertThat(resilient.send(REQUEST)).as("the permit was given back").isSameAs(OK);
+    }
+
+    @Test
     void anOpenBreakerIsNotRetriedHere() {
         var resilient = resilient(settings(5, Duration.ofSeconds(5), 4));
         port.otherwise = () -> {

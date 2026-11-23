@@ -52,12 +52,61 @@ public final class MemoryCases implements CaseStore {
     }
 
     @Override
-    public synchronized void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event) {
+    public synchronized void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event, java.time.Instant nextAttemptAt) {
         if (rows.containsKey(parked.id())) {
             throw new IllegalStateException("case " + parked.id() + " is already stored");
         }
         rows.put(parked.id(), new Row(parked.snapshot(), null, null));
         parkedEvents.put(parked.id(), event);
+        nextAttempts.put(parked.id(), nextAttemptAt);
+    }
+
+    /** When each parked case may next be replayed. */
+    public final Map<CaseId, java.time.Instant> nextAttempts = new HashMap<>();
+
+    @Override
+    public synchronized java.util.List<ParkedCase> dueForReplay(java.time.Instant now, int limit) {
+        return rows.keySet().stream().sorted()
+                .filter(id -> rows.get(id).snapshot().state() == CaseState.AWAITING_RETRY)
+                .filter(id -> !nextAttempts.get(id).isAfter(now))
+                .limit(limit)
+                .map(id -> new ParkedCase(DisputeCase.restore(rows.get(id).snapshot()), parkedEvents.get(id),
+                        nextAttempts.get(id)))
+                .toList();
+    }
+
+    @Override
+    public synchronized boolean scheduleReplay(CaseId id, dev.disputeagent.investigator.application.intake.DisputeOpened event, java.time.Instant now, java.time.Instant holdUntil) {
+        Row row = rows.get(id);
+        if (row == null || row.snapshot().state() != CaseState.AWAITING_RETRY || nextAttempts.get(id).isAfter(now)) {
+            return false;
+        }
+        nextAttempts.put(id, holdUntil);
+        outbox.add(new OutgoingEvent.Replay(event));
+        return true;
+    }
+
+    @Override
+    public synchronized boolean repark(DisputeCase parked, java.time.Instant nextAttemptAt) {
+        Row row = rows.get(parked.id());
+        if (row == null || row.snapshot().state() != CaseState.AWAITING_RETRY) {
+            return false;
+        }
+        rows.put(parked.id(), new Row(parked.snapshot(), null, null));
+        nextAttempts.put(parked.id(), nextAttemptAt);
+        return true;
+    }
+
+    @Override
+    public synchronized boolean complete(DisputeCase finished, CaseOutcome outcome, java.util.List<OutgoingEvent> events) {
+        Row row = rows.get(finished.id());
+        if (row == null || row.snapshot().state() != CaseState.AWAITING_RETRY) {
+            return false;
+        }
+        rows.put(finished.id(), new Row(finished.snapshot(), outcome, null));
+        nextAttempts.remove(finished.id());
+        outbox.addAll(events);
+        return true;
     }
 
     @Override

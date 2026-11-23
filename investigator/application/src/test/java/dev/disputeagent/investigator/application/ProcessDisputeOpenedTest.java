@@ -48,10 +48,15 @@ class ProcessDisputeOpenedTest {
             List.of("unauthorised-card-not-present"),
             List.of(new ProposedAction.IssueProvisionalCredit(Money.eur(1_000))));
 
+    static final dev.disputeagent.investigator.application.replay.ReplayPolicy POLICY =
+            new dev.disputeagent.investigator.application.replay.ReplayPolicy(5, Duration.ofSeconds(30),
+                    Duration.ofMinutes(10), Duration.ofMinutes(15));
+
     final ScriptedLlm llm = new ScriptedLlm();
     final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     final MemoryCases store = new MemoryCases();
     final RecordingAudit audit = new RecordingAudit();
+    final TickingClock clock = new TickingClock(Instant.parse("2026-11-20T09:00:00Z"));
 
     @AfterEach
     void stop() {
@@ -59,6 +64,10 @@ class ProcessDisputeOpenedTest {
     }
 
     ProcessDisputeOpened process() {
+        return process(POLICY);
+    }
+
+    ProcessDisputeOpened process(dev.disputeagent.investigator.application.replay.ReplayPolicy policy) {
         var mcp = new FakeMcp()
                 .tool(McpServer.LEDGER, "get_transaction", a -> new McpToolResult(
                         "{\"transaction_id\":\"TXN-000100\",\"card_id\":\"CRD-000042\",\"auth_id\":\"AUTH-000100\","
@@ -69,12 +78,11 @@ class ProcessDisputeOpenedTest {
                         "{\"items\":[{\"auth_id\":\"AUTH-000100\",\"fraud_flag\":true}]}", false))
                 .tool(McpServer.POLICY, "search_policy", a -> new McpToolResult(
                         "{\"results\":[{\"section_id\":\"unauthorised-card-not-present\"}]}", false));
-        var clock = new TickingClock(Instant.parse("2026-11-20T09:00:00Z"));
         var settings = Fakes.settings(new LoopBudget(8, 20, 200_000, Duration.ofMinutes(5)));
         var json = new FakeJson().decision("decision-approve", APPROVE);
         var handle = new HandleDisputeOpened(new TriageDispute(llm, json, audit, clock, settings),
                 new InvestigateDispute(llm, mcp, json, audit, clock, executor, settings, Fakes.SKILLS), audit, clock);
-        return new ProcessDisputeOpened(handle, new RequestApproval(audit, clock), store);
+        return new ProcessDisputeOpened(handle, new RequestApproval(audit, clock), store, policy, clock);
     }
 
     void decides() {
@@ -131,6 +139,123 @@ class ProcessDisputeOpenedTest {
         var redelivered = process().process(DISPUTE);
         assertThat(redelivered.redelivery()).isTrue();
         assertThat(redelivered.state()).isEqualTo(CaseState.AWAITING_RETRY);
+    }
+
+    // Replay of parked cases (ADR 0008) -------------------------------------------------------------------------
+
+    void overloaded() {
+        llm.then(StopReason.REFUSAL)
+                .thenThrow(new dev.disputeagent.investigator.application.port.llm.LlmCallException(
+                        dev.disputeagent.investigator.application.port.llm.LlmCallException.Kind.OVERLOADED,
+                        "529", null));
+    }
+
+    dev.disputeagent.investigator.application.replay.SweepParkedCases sweep(
+            dev.disputeagent.investigator.application.replay.ReplayPolicy policy, boolean modelAvailable) {
+        return new dev.disputeagent.investigator.application.replay.SweepParkedCases(store, policy, audit, clock,
+                () -> modelAvailable);
+    }
+
+    List<OutgoingEvent.Replay> replaysSent() {
+        return store.outbox.stream().filter(OutgoingEvent.Replay.class::isInstance)
+                .map(OutgoingEvent.Replay.class::cast).toList();
+    }
+
+    @Test
+    void aParkedCaseIsReplayedWhenDueOnceAndDecidedByTheReplay() {
+        overloaded();
+        var process = process();
+        process.process(DISPUTE);
+        var sweep = sweep(POLICY, true);
+
+        assertThat(sweep.sweep(10).replayed()).as("not due yet").isZero();
+        clock.advance(Duration.ofSeconds(31));
+        assertThat(sweep.sweep(10).replayed()).isEqualTo(1);
+        assertThat(replaysSent()).singleElement().satisfies(r -> assertThat(r.event()).isEqualTo(DISPUTE));
+        assertThat(sweep.sweep(10).replayed()).as("held while the replay runs").isZero();
+
+        decides();
+        var replayed = process.processReplay(DISPUTE);
+
+        assertThat(replayed.state()).isEqualTo(CaseState.AWAITING_APPROVAL);
+        assertThat(replayed.outcome().state()).isEqualTo(CaseState.DECIDED);
+        var stored = store.find(DISPUTE.disputeId()).orElseThrow().disputeCase();
+        assertThat(stored.replays()).isEqualTo(1);
+        assertThat(stored.history()).extracting(dev.disputeagent.investigator.domain.investigation.DisputeCase.StateChange::to)
+                .containsSubsequence(CaseState.AWAITING_RETRY, CaseState.RECEIVED, CaseState.DECIDED,
+                        CaseState.AWAITING_APPROVAL);
+        assertThat(store.outbox).filteredOn(e -> !(e instanceof OutgoingEvent.Replay))
+                .hasSize(2).first().isInstanceOf(OutgoingEvent.Decided.class);
+        assertThat(audit.of(dev.disputeagent.investigator.application.port.audit.AuditEvent.CaseReplayed.class))
+                .singleElement().satisfies(r -> assertThat(r.replay()).isEqualTo(1));
+
+        var duplicate = process.processReplay(DISPUTE);
+        assertThat(duplicate.redelivery()).as("the case is no longer parked").isTrue();
+        assertThat(store.outbox).filteredOn(e -> !(e instanceof OutgoingEvent.Replay)).hasSize(2);
+    }
+
+    @Test
+    void aReplayThatParksAgainWaitsTwiceAsLong() {
+        overloaded();
+        var process = process();
+        process.process(DISPUTE);
+        clock.advance(Duration.ofSeconds(31));
+        sweep(POLICY, true).sweep(10);
+
+        overloaded();
+        var again = process.processReplay(DISPUTE);
+
+        assertThat(again.state()).isEqualTo(CaseState.AWAITING_RETRY);
+        assertThat(store.find(DISPUTE.disputeId()).orElseThrow().disputeCase().replays()).isEqualTo(1);
+        var wait = Duration.between(clock.instant(), store.nextAttempts.get(DISPUTE.disputeId()));
+        assertThat(wait).isBetween(Duration.ofSeconds(50), Duration.ofSeconds(60));
+    }
+
+    @Test
+    void afterTheLastReplayTheSweepEscalatesTheCase() {
+        var twice = new dev.disputeagent.investigator.application.replay.ReplayPolicy(2, Duration.ofSeconds(1),
+                Duration.ofSeconds(1), Duration.ofSeconds(1));
+        var process = process(twice);
+        overloaded();
+        process.process(DISPUTE);
+        for (int i = 0; i < 2; i++) {
+            clock.advance(Duration.ofSeconds(5));
+            assertThat(sweep(twice, true).sweep(10).replayed()).isEqualTo(1);
+            overloaded();
+            process.processReplay(DISPUTE);
+        }
+        clock.advance(Duration.ofSeconds(5));
+
+        var swept = sweep(twice, true).sweep(10);
+
+        assertThat(swept.escalated()).isEqualTo(1);
+        var c = store.find(DISPUTE.disputeId()).orElseThrow();
+        assertThat(c.disputeCase().state()).isEqualTo(CaseState.ESCALATED);
+        assertThat(c.disputeCase().escalationReason()).contains(EscalationReason.DEPENDENCY_UNAVAILABLE);
+        assertThat(store.outbox).filteredOn(OutgoingEvent.Decided.class::isInstance).singleElement()
+                .satisfies(e -> assertThat(((OutgoingEvent.Decided) e).outcome().state())
+                        .isEqualTo(CaseState.ESCALATED));
+    }
+
+    @Test
+    void whileTheModelIsUnavailableTheSweepHoldsCasesBack() {
+        overloaded();
+        process().process(DISPUTE);
+        clock.advance(Duration.ofSeconds(31));
+
+        var swept = sweep(POLICY, false).sweep(10);
+
+        assertThat(swept.heldBack()).isEqualTo(1);
+        assertThat(replaysSent()).isEmpty();
+    }
+
+    @Test
+    void aReplayForACaseNeverParkedIsIgnored() {
+        var result = process().processReplay(DISPUTE);
+
+        assertThat(result.redelivery()).isTrue();
+        assertThat(result.state()).isNull();
+        assertThat(llm.requests).isEmpty();
     }
 
     @Test

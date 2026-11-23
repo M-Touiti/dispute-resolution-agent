@@ -275,8 +275,31 @@ class ApprovalGateTest {
         }
 
         @Override
-        public void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event) {
-            real.park(parked, event);
+        public void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event,
+                java.time.Instant nextAttemptAt) {
+            real.park(parked, event, nextAttemptAt);
+        }
+
+        @Override
+        public java.util.List<ParkedCase> dueForReplay(java.time.Instant now, int limit) {
+            return real.dueForReplay(now, limit);
+        }
+
+        @Override
+        public boolean scheduleReplay(dev.disputeagent.investigator.domain.CaseId id, dev.disputeagent.investigator.application.intake.DisputeOpened event, java.time.Instant now,
+                java.time.Instant holdUntil) {
+            return real.scheduleReplay(id, event, now, holdUntil);
+        }
+
+        @Override
+        public boolean repark(DisputeCase parked, java.time.Instant nextAttemptAt) {
+            return real.repark(parked, nextAttemptAt);
+        }
+
+        @Override
+        public boolean complete(DisputeCase finished, CaseOutcome outcome,
+                java.util.List<dev.disputeagent.investigator.application.port.events.OutgoingEvent> events) {
+            return real.complete(finished, outcome, events);
         }
 
         @Override

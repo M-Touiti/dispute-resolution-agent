@@ -41,7 +41,7 @@ public final class DisputeEvents {
     private DisputeEvents() {
     }
 
-    /** A malformed {@code disputes.opened} payload: not retried, logged and skipped (dead-letter topic in M2). */
+    /** A malformed {@code disputes.opened} payload: never retried, sent to {@code disputes.dlq} (ADR 0008). */
     public static final class MalformedEvent extends RuntimeException {
         MalformedEvent(String message, Throwable cause) {
             super(message, cause);

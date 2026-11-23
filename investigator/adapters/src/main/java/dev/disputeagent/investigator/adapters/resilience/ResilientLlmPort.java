@@ -150,4 +150,19 @@ public final class ResilientLlmPort implements LlmPort {
     public CircuitBreaker.State breakerState() {
         return breaker.getState();
     }
+
+    /**
+     * False while the breaker holds the model off: the replay sweep waits rather than park cases again.
+     *
+     * <p>It asks the breaker for a permit and gives it back at once, rather than reading its state. Resilience4j moves
+     * an open breaker to half-open only when a call is attempted after the wait; reading the state would leave a breaker
+     * open forever when the sweep is the only caller (no new disputes), and parked cases would never be replayed.
+     */
+    public boolean available() {
+        if (breaker.tryAcquirePermission()) {
+            breaker.releasePermission();
+            return true;
+        }
+        return false;
+    }
 }

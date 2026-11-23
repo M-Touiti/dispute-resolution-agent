@@ -94,6 +94,16 @@ investigator:
     breaker-failure-rate: 50
     breaker-open-for: PT30S
     breaker-half-open-calls: 3
+  # The replay of parked cases (ADR 0008): every sweep-interval, due cases go to disputes.replay (held in-flight while
+  # they run); the wait after a park starts at first-delay and doubles, up to max-delay; after max-replays a case that
+  # parks again escalates.
+  replay:
+    sweep-interval: ${REPLAY_SWEEP_INTERVAL:PT10S}
+    batch-size: 50
+    max-replays: 5
+    first-delay: ${REPLAY_FIRST_DELAY:PT30S}
+    max-delay: PT10M
+    in-flight: PT15M
   # The outbox relay (ADR 0008): events are saved with the case and published from investigation.outbox.
   outbox:
     poll-interval: ${OUTBOX_POLL_INTERVAL:PT0.2S}
@@ -105,6 +115,10 @@ investigator:
     opened-topic: disputes.opened
     decided-topic: disputes.decided
     approval-requested-topic: disputes.approval-requested
+    # Parked cases re-run from the start (ADR 0008).
+    replay-topic: disputes.replay
+    # Malformed events, and events still failing after the error handler's retries, with the reason in headers.
+    dlq-topic: disputes.dlq
     group-id: investigator
     partitions: 3
     publish-timeout: PT10S

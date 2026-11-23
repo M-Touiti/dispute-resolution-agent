@@ -6,6 +6,7 @@ import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.investigation.CaseState;
 import dev.disputeagent.investigator.domain.investigation.DisputeCase;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,11 +35,35 @@ public interface CaseStore {
      */
     void save(DisputeCase disputeCase, CaseOutcome outcome, List<OutgoingEvent> events);
 
+    /** A parked case with the event it came from, and when it may be replayed. */
+    record ParkedCase(DisputeCase disputeCase, DisputeOpened event, Instant nextAttemptAt) {
+    }
+
     /**
      * Stores a case parked before its investigation ended ({@code AWAITING_RETRY}, ADR 0008) with the event it came
-     * from, so it can be replayed from the start. No outcome and no outgoing event yet.
+     * from, so it can be replayed from the start, not before {@code nextAttemptAt}. No outcome and no event yet.
      */
-    void park(DisputeCase parked, DisputeOpened event);
+    void park(DisputeCase parked, DisputeOpened event, Instant nextAttemptAt);
+
+    /** Parked cases whose next attempt is due at {@code now}, oldest first, at most {@code limit}. */
+    List<ParkedCase> dueForReplay(Instant now, int limit);
+
+    /**
+     * Sends a parked case's event to the replay topic through the outbox, and holds the case until {@code holdUntil}
+     * so the next sweep does not send it again, in one transaction.
+     *
+     * @return false when the case is no longer parked or no longer due (another sweep took it)
+     */
+    boolean scheduleReplay(CaseId disputeId, DisputeOpened event, Instant now, Instant holdUntil);
+
+    /** A replay that parked again: its history and replay count, due again at {@code nextAttemptAt}. */
+    boolean repark(DisputeCase parked, Instant nextAttemptAt);
+
+    /**
+     * A parked case whose replay reached an outcome (or that escalated at the replay cap): written as a finished case
+     * with its outcome and events, in one transaction. False when the case is no longer parked.
+     */
+    boolean complete(DisputeCase finished, CaseOutcome outcome, List<OutgoingEvent> events);
 
     /**
      * Writes the case's new state, history, review, token and action result, if it is still in {@code expected}.

@@ -153,7 +153,7 @@ class JdbcCaseStoreTest {
         var event = new dev.disputeagent.investigator.application.intake.DisputeOpened(c.id(), "CH-1", "CRD-1",
                 "TXN-1", DisputeCategory.UNAUTHORISED_TRANSACTION, T0, Money.eur(100), "never made it", List.of());
 
-        store.park(c, event);
+        store.park(c, event, T0.plusSeconds(30));
 
         var stored = store.find(c.id()).orElseThrow();
         assertThat(stored.disputeCase().state()).isEqualTo(CaseState.AWAITING_RETRY);
@@ -163,6 +163,81 @@ class JdbcCaseStoreTest {
                 .query(String.class).single()).contains("\"dispute_id\":\"DSP-000105\"").contains("never made it");
         assertThat(jdbc.sql("SELECT count(*) FROM investigation.outbox WHERE dispute_id = 'DSP-000105'")
                 .query(Long.class).single()).as("nothing to publish yet").isZero();
+    }
+
+    static dev.disputeagent.investigator.application.intake.DisputeOpened event(String id) {
+        return new dev.disputeagent.investigator.application.intake.DisputeOpened(new CaseId(id), "CH-1", "CRD-1",
+                "TXN-1", DisputeCategory.UNAUTHORISED_TRANSACTION, T0, Money.eur(100), "never made it", List.of());
+    }
+
+    static DisputeCase parked(String id) {
+        var c = new DisputeCase(new CaseId(id), DisputeCategory.UNAUTHORISED_TRANSACTION, T0);
+        c.triaged(DisputeCategory.UNAUTHORISED_TRANSACTION, T0.plusSeconds(1));
+        c.investigationStarted(T0.plusSeconds(2));
+        c.park(T0.plusSeconds(3), "OVERLOADED");
+        store.park(c, event(id), T0.plusSeconds(30));
+        return c;
+    }
+
+    static long outboxRows(String id, String type) {
+        return jdbc.sql("SELECT count(*) FROM investigation.outbox WHERE dispute_id = :id AND type = :type")
+                .param("id", id).param("type", type).query(Long.class).single();
+    }
+
+    @Test
+    void aParkedCaseIsDueOnTimeScheduledOnceThenHeld() {
+        parked("DSP-000110");
+
+        assertThat(store.dueForReplay(T0.plusSeconds(29), 100)).extracting(p -> p.disputeCase().id().value())
+                .doesNotContain("DSP-000110");
+        var due = store.dueForReplay(T0.plusSeconds(30), 100).stream()
+                .filter(p -> p.disputeCase().id().value().equals("DSP-000110")).findFirst().orElseThrow();
+        assertThat(due.event()).isEqualTo(event("DSP-000110"));
+        assertThat(due.disputeCase().state()).isEqualTo(CaseState.AWAITING_RETRY);
+
+        assertThat(store.scheduleReplay(due.disputeCase().id(), due.event(), T0.plusSeconds(30),
+                T0.plusSeconds(930))).isTrue();
+        assertThat(store.scheduleReplay(due.disputeCase().id(), due.event(), T0.plusSeconds(30),
+                T0.plusSeconds(930))).as("a second sweep finds it held").isFalse();
+        assertThat(outboxRows("DSP-000110", "REPLAY")).isEqualTo(1);
+        assertThat(jdbc.sql("SELECT payload FROM investigation.outbox WHERE dispute_id = 'DSP-000110'")
+                .query(String.class).single()).contains("\"dispute_id\":\"DSP-000110\"");
+        assertThat(store.dueForReplay(T0.plusSeconds(60), 100)).extracting(p -> p.disputeCase().id().value())
+                .doesNotContain("DSP-000110");
+    }
+
+    @Test
+    void aReplayThatParksAgainKeepsItsCountAndAReplayThatDecidesCompletesTheCase() {
+        var c = parked("DSP-000111");
+        var restored = store.find(c.id()).orElseThrow().disputeCase();
+        restored.replay(T0.plusSeconds(40));
+        restored.triaged(DisputeCategory.UNAUTHORISED_TRANSACTION, T0.plusSeconds(41));
+        restored.investigationStarted(T0.plusSeconds(42));
+        restored.park(T0.plusSeconds(43), "OVERLOADED again");
+        assertThat(store.repark(restored, T0.plusSeconds(120))).isTrue();
+        assertThat(store.find(c.id()).orElseThrow().disputeCase().replays()).isEqualTo(1);
+
+        var again = store.find(c.id()).orElseThrow().disputeCase();
+        again.replay(T0.plusSeconds(130));
+        again.triaged(DisputeCategory.UNAUTHORISED_TRANSACTION, T0.plusSeconds(131));
+        again.investigationStarted(T0.plusSeconds(132));
+        again.decided(new Decision(DecisionOutcome.APPROVE_PROVISIONAL_CREDIT, Confidence.HIGH, "r",
+                List.of("TXN-1"), List.of("s"), List.of(CREDIT)), new GuardResult(List.of()), T0.plusSeconds(140));
+        var outcome = CaseOutcome.of(again);
+        var request = again.requestApproval(T0.plusSeconds(141));
+        assertThat(store.complete(again, outcome, List.of(new OutgoingEvent.Decided(outcome),
+                new OutgoingEvent.ApprovalRequested(request)))).isTrue();
+
+        var done = store.find(c.id()).orElseThrow();
+        assertThat(done.disputeCase().state()).isEqualTo(CaseState.AWAITING_APPROVAL);
+        assertThat(done.disputeCase().replays()).isEqualTo(2);
+        assertThat(done.outcome()).isEqualTo(outcome);
+        assertThat(outboxRows("DSP-000111", "DECIDED")).isEqualTo(1);
+        assertThat(outboxRows("DSP-000111", "APPROVAL_REQUESTED")).isEqualTo(1);
+        assertThat(store.complete(again, outcome, List.of(new OutgoingEvent.Decided(outcome))))
+                .as("no longer parked").isFalse();
+        assertThat(store.repark(again, T0)).isFalse();
+        assertThat(outboxRows("DSP-000111", "DECIDED")).isEqualTo(1);
     }
 
     @Test
