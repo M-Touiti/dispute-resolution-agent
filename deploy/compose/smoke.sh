@@ -127,4 +127,22 @@ if [[ -z "${SMOKE_DISPUTE:-}" && "$state" != "DECIDED" ]]; then
 fi
 echo "ok   investigator $dispute -> $state${reason:+ ($reason)}; $audit_rows audit rows, $tool_rows tool calls"
 
+# A decided case's action waits for a person (ADR 0005): stored AWAITING_APPROVAL, one disputes.approval-requested.
+if [[ "$state" == "DECIDED" ]]; then
+    stored=$(docker compose exec -T postgres sh -c "psql -tA -U \"\$POSTGRES_USER\" -d disputes -c \
+        \"SELECT state FROM investigation.cases WHERE dispute_id = '$dispute'\"")
+    [[ "$stored" == "AWAITING_APPROVAL" || "$stored" == "DECIDED" ]] \
+        || fail "investigator: $dispute is stored $stored, expected AWAITING_APPROVAL"
+    requested=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:19092 \
+        --topic disputes.approval-requested --from-beginning --timeout-ms 5000 --formatter-property print.key=true \
+        --formatter-property key.separator=@@ 2>/dev/null' | grep "^$dispute@@" | tail -1 || true)
+    if [[ "$stored" == "AWAITING_APPROVAL" ]]; then
+        [[ -n "$requested" ]] || fail "investigator: no disputes.approval-requested for $dispute"
+        action=$(grep -oE '"action":\{"action":"[a-z_]+"' <<<"$requested" | cut -d'"' -f6)
+        echo "ok   investigator $dispute waits for approval: $action"
+    else
+        echo "ok   investigator $dispute was decided before the approval gate existed (stored DECIDED)"
+    fi
+fi
+
 echo "smoke: all checks passed"

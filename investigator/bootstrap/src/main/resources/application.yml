@@ -76,6 +76,7 @@ investigator:
   kafka:
     opened-topic: disputes.opened
     decided-topic: disputes.decided
+    approval-requested-topic: disputes.approval-requested
     group-id: investigator
     partitions: 3
     publish-timeout: PT10S

@@ -7,7 +7,7 @@
 | `ledger-mcp` | built from `mcp-servers/ledger-mcp` | `127.0.0.1:8081` | `http://ledger-mcp:8081/mcp` |
 | `policy-mcp` | built from `mcp-servers/policy-mcp` | `127.0.0.1:8082` | `http://policy-mcp:8082/mcp` |
 | `actions-mcp` | built from `mcp-servers/actions-mcp` | `127.0.0.1:8083` | `http://actions-mcp:8083/mcp` |
-| `investigator` | built from `investigator` | `127.0.0.1:8080` (health only) | consumes `disputes.opened`, publishes `disputes.decided` |
+| `investigator` | built from `investigator` | `127.0.0.1:8080` (health only) | consumes `disputes.opened`, publishes `disputes.decided` and `disputes.approval-requested` |
 
 The host ports match `.env.example`, so the investigator can also run on the host against the stack. Prometheus and
 Grafana join in M2.

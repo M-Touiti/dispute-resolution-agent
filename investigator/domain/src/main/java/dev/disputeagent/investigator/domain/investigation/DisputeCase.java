@@ -10,6 +10,7 @@ import dev.disputeagent.investigator.domain.decision.Decision;
 import dev.disputeagent.investigator.domain.guard.GuardResult;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,6 +39,62 @@ public final class DisputeCase {
     private Review review;
     private ApprovalToken token;
     private String actionDetail;
+
+    /**
+     * Everything a stored case holds, to restore it ({@link #restore}). Optional parts are null when the case has not
+     * reached them.
+     */
+    public record Snapshot(CaseId id, DisputeCategory reportedCategory, DisputeCategory category, CaseState state,
+            Decision decision, GuardResult guardResult, EscalationReason escalationReason, int replays,
+            Instant approvalRequestedAt, Review review, ApprovalToken token, String actionDetail,
+            List<StateChange> history) {
+
+        public Snapshot {
+            history = List.copyOf(history);
+        }
+    }
+
+    /**
+     * A stored case, as it was. The snapshot must be consistent: the state is the last transition of the history, a
+     * case past its decision has the decision with its one action, and an approved case has its review and token.
+     */
+    public static DisputeCase restore(Snapshot s) {
+        Objects.requireNonNull(s, "snapshot");
+        if (s.history().isEmpty() || s.history().getLast().to() != s.state()) {
+            throw new IllegalArgumentException("case " + s.id() + ": the state " + s.state()
+                    + " is not the last transition of its history");
+        }
+        var c = new DisputeCase(s.id(), s.reportedCategory(), s.history().getFirst().at());
+        c.history.clear();
+        c.history.addAll(s.history());
+        c.state = s.state();
+        c.category = Objects.requireNonNull(s.category(), "category");
+        c.decision = s.decision();
+        c.guardResult = s.guardResult();
+        c.escalationReason = s.escalationReason();
+        c.replays = s.replays();
+        c.review = s.review();
+        c.token = s.token();
+        c.actionDetail = s.actionDetail();
+        boolean pastDecision = EnumSet.of(CaseState.AWAITING_APPROVAL, CaseState.APPROVED, CaseState.REJECTED,
+                CaseState.ACTED, CaseState.ACTION_FAILED).contains(s.state());
+        if (pastDecision) {
+            if (s.decision() == null || s.decision().proposedActions().size() != 1 || s.approvalRequestedAt() == null) {
+                throw new IllegalArgumentException("case " + s.id() + " is " + s.state()
+                        + " without a decision, its action or the time approval was requested");
+            }
+            c.approvalRequest = new ApprovalRequest(s.id(), s.decision().proposedActions().getFirst(),
+                    s.approvalRequestedAt());
+        }
+        if (EnumSet.of(CaseState.APPROVED, CaseState.ACTED, CaseState.ACTION_FAILED).contains(s.state())
+                && (s.review() == null || s.token() == null)) {
+            throw new IllegalArgumentException("case " + s.id() + " is " + s.state() + " without its review and token");
+        }
+        if ((s.state() == CaseState.ESCALATED) != (s.escalationReason() != null)) {
+            throw new IllegalArgumentException("case " + s.id() + ": an escalated case, and only one, has a reason");
+        }
+        return c;
+    }
 
     public DisputeCase(CaseId id, DisputeCategory reportedCategory, Instant receivedAt) {
         this.id = Objects.requireNonNull(id, "id");
@@ -210,6 +267,12 @@ public final class DisputeCase {
 
     public Optional<EscalationReason> escalationReason() {
         return Optional.ofNullable(escalationReason);
+    }
+
+    /** Everything the case holds, for storage; {@link #restore} is the inverse. */
+    public Snapshot snapshot() {
+        return new Snapshot(id, reportedCategory, category, state, decision, guardResult, escalationReason, replays,
+                approvalRequest == null ? null : approvalRequest.requestedAt(), review, token, actionDetail, history);
     }
 
     /** How many times the case was replayed after being parked. */

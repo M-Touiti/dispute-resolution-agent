@@ -85,12 +85,22 @@ the servers it is constructed with exist: the bootstrap gives it the ledger and 
 `McpClientAdapterTest` runs against an in-process server on the SDK's servlet transport; `McpStackTest`
 (`MCP_STACK_TEST=1`, compose stack running) checks the client against ledger-mcp and the Python policy-mcp.
 
-`adapters/kafka`: `DisputeEvents` (the versioned JSON of `disputes.opened` and `disputes.decided`),
+`adapters/kafka`: `DisputeEvents` (the versioned JSON of `disputes.opened`, `disputes.decided` and
+`disputes.approval-requested`),
 `DisputeOpenedListener` (one record per poll, acknowledged after the case is stored and its outcome published; a
-malformed event is logged and skipped), `KafkaDecisionPublisher` (keyed by dispute id, waits for the broker).
+malformed event is logged and skipped), `KafkaDecisionPublisher` (both outgoing topics, keyed by dispute id, waits
+for the broker).
 `adapters/persistence`: `JdbcCaseStore` and `JdbcAuditLog` on `JdbcClient` in the `investigation` schema (Flyway
-`V1`), owned by the `investigator` role, which cannot read the ledger, intake or policy schemas. Plain JDBC, not JPA:
-two tables written whole and appended to need no ORM.
+`V1`, `V2` for approval), owned by the `investigator` role, which cannot read the ledger, intake or policy schemas.
+A case is inserted when its investigation ends and then updated, each update guarded by the state the writer read
+(`WHERE state = :expected`), so two reviewers cannot both act; a stored case is restored through
+`DisputeCase.restore`. Plain JDBC, not JPA: two tables and one guarded update need no ORM.
+
+`application/approval` (ADR 0005): `RequestApproval` puts a decided case's action before a person before the case is
+first saved; `ApproveAction` signs the token through `TokenSigner`, stores the case `APPROVED` with it, then calls
+`ActionPort` and records `ACTED` or `ACTION_FAILED` (approving an interrupted case again resends the same token);
+`RejectAction` ends it `REJECTED`. Approve and reject are wired once the signer (2.5), `actions-mcp` (2.6) and the
+reviewer API (2.7) exist.
 
 `bootstrap`: `InvestigatorProperties` binds `investigator.*`; `InvestigatorConfiguration` wires adapters to ports and
 use cases. `LLM_ADAPTER` picks `replay` (default, no key), `recording` or `anthropic`. `ProcessDisputeOpened` is
@@ -110,5 +120,6 @@ Live check (off by default, never in CI, under one cent):
 ## Status
 
 M1 done: the service runs one dispute category end to end on Kafka and PostgreSQL, and the eval profile replays
-the golden set. M2 in progress: the domain knows the approval, action and parked states (2.3); the use cases that
-drive them arrive with the approval gate (2.4) and resilience (2.9).
+the golden set. M2 in progress: a decided case is stored `AWAITING_APPROVAL` and raises
+`disputes.approval-requested` (2.4); approving it needs the token signer (2.5), `actions-mcp` verification (2.6) and
+the reviewer API (2.7). Parking arrives with resilience (2.9).
