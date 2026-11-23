@@ -52,7 +52,7 @@ uv run python -m evaltools.grade              # writes runs/latest/summary.json,
 The `eval` profile has no Kafka and no database: it builds each golden dispute from `data/generated` (exactly as the
 smoke test builds the `disputes.opened` event, so the model requests and fixture keys are the same), runs the same
 triage and investigation as the service, and writes `runs/latest/<dispute id>.json` (the outcome as published, the
-model and tool calls, tokens, cost, schema retries) and `run.json`. `LLM_ADAPTER=replay` (default) serves the
+model and tool calls, tokens, cost, schema retries, and every other audit event counted by type) and `run.json`. `LLM_ADAPTER=replay` (default) serves the
 fixtures; `LLM_ADAPTER=recording` records them.
 
 **Recording** (`evals/record.sh`, from the repository root, compose stack up, `ANTHROPIC_API_KEY` in the environment or

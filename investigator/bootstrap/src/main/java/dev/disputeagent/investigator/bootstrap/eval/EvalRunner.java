@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,6 +146,11 @@ public final class EvalRunner implements ApplicationRunner {
         int decisionRejections = 0;
         List<String> skills = new ArrayList<>();
         boolean triageFellBack = false;
+        // Events the evaluation does not measure, counted by type. Approval, action and parking never happen in an
+        // evaluation run (it ends at the investigation's outcome, and replay never fails with a retryable kind), so
+        // their counts show here if that ever changes. The switch stays exhaustive: a new event type fails the build
+        // until it is handled.
+        Map<String, Integer> otherEvents = new TreeMap<>();
         for (AuditEvent e : events) {
             switch (e) {
                 case AuditEvent.ModelCalled m -> {
@@ -167,26 +173,25 @@ public final class EvalRunner implements ApplicationRunner {
                                 "is_error", t.isError()));
                     }
                 }
-                case AuditEvent.DecisionRejected d -> decisionRejections++;
+                // Attempts are numbered from 1 within a run, so the highest is the number of rejections.
+                case AuditEvent.DecisionRejected rejected ->
+                        decisionRejections = Math.max(decisionRejections, rejected.attempt());
                 case AuditEvent.SkillLoaded s -> skills.add(s.skill());
-                case AuditEvent.TriageFellBack t -> triageFellBack = true;
-                case AuditEvent.StateChanged s -> {
+                case AuditEvent.TriageFellBack fellBack -> {
+                    triageFellBack = true;
+                    count(otherEvents, fellBack);
                 }
-                case AuditEvent.DecisionChecked d -> {
+                case AuditEvent.CaseParked parked -> {
+                    modelFailures.add("PARKED: " + parked.reason());
+                    count(otherEvents, parked);
                 }
-                // Approval, action and parking do not happen in an evaluation run (M2): the run ends at the
-                // investigation's outcome and replay never fails with a retryable kind.
-                case AuditEvent.CaseParked parked -> modelFailures.add("PARKED: " + parked.reason());
-                case AuditEvent.CaseReplayed replayed -> {
-                }
-                case AuditEvent.ApprovalRequested requested -> {
-                }
-                case AuditEvent.Reviewed reviewed -> {
-                }
-                case AuditEvent.TokenIssued issued -> {
-                }
-                case AuditEvent.ActionCalled called -> {
-                }
+                case AuditEvent.StateChanged changed -> count(otherEvents, changed);
+                case AuditEvent.DecisionChecked checked -> count(otherEvents, checked);
+                case AuditEvent.CaseReplayed replayed -> count(otherEvents, replayed);
+                case AuditEvent.ApprovalRequested requested -> count(otherEvents, requested);
+                case AuditEvent.Reviewed reviewed -> count(otherEvents, reviewed);
+                case AuditEvent.TokenIssued issued -> count(otherEvents, issued);
+                case AuditEvent.ActionCalled called -> count(otherEvents, called);
             }
         }
         Map<String, Object> usage = new LinkedHashMap<>();
@@ -204,7 +209,12 @@ public final class EvalRunner implements ApplicationRunner {
         r.put("decision_rejections", decisionRejections);
         r.put("triage_fell_back", triageFellBack);
         r.put("model_failures", modelFailures);
+        r.put("other_events", otherEvents);
         return r;
+    }
+
+    private static void count(Map<String, Integer> counts, AuditEvent event) {
+        counts.merge(event.getClass().getSimpleName(), 1, Integer::sum);
     }
 
     private static void write(Path file, Object value) {
