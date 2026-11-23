@@ -209,12 +209,59 @@ class InvestigateDisputeTest {
     }
 
     @Test
-    void anUnreachableModelEscalates() {
-        llm.thenThrow(new IllegalStateException("connect timed out"));
+    void aModelFailureOfUnknownKindEscalates() {
+        llm.thenThrow(new IllegalStateException("something unexpected"));
         DisputeCase c = run();
 
         assertEscalated(c, EscalationReason.DEPENDENCY_UNAVAILABLE);
         assertThat(audit.of(AuditEvent.ModelCallFailed.class)).hasSize(1);
+    }
+
+    // Parking (ADR 0008) ---------------------------------------------------------------------------------------
+
+    @Test
+    void aModelThatStaysOverloadedAfterTheRetriesParksTheCase() {
+        llm.thenThrow(new dev.disputeagent.investigator.application.port.llm.LlmCallException(
+                dev.disputeagent.investigator.application.port.llm.LlmCallException.Kind.OVERLOADED,
+                "529 after 3 attempts", null));
+
+        DisputeCase c = run();
+
+        assertThat(c.state()).isEqualTo(CaseState.AWAITING_RETRY);
+        assertThat(c.escalationReason()).isEmpty();
+        assertThat(audit.of(AuditEvent.CaseParked.class)).singleElement()
+                .satisfies(p -> assertThat(p.reason()).contains("OVERLOADED"));
+    }
+
+    @Test
+    void anOpenBreakerParksTheCase() {
+        llm.thenThrow(new dev.disputeagent.investigator.application.port.llm.LlmCallException(
+                dev.disputeagent.investigator.application.port.llm.LlmCallException.Kind.UNAVAILABLE,
+                "the model's circuit breaker is open", null));
+
+        assertThat(run().state()).isEqualTo(CaseState.AWAITING_RETRY);
+    }
+
+    @Test
+    void aPermanentModelFailureStillEscalatesAtOnce() {
+        llm.thenThrow(new dev.disputeagent.investigator.application.port.llm.LlmCallException(
+                dev.disputeagent.investigator.application.port.llm.LlmCallException.Kind.FIXTURE_MISSING,
+                "no fixture", null));
+
+        assertEscalated(run(), EscalationReason.DEPENDENCY_UNAVAILABLE);
+        assertThat(audit.of(AuditEvent.CaseParked.class)).isEmpty();
+    }
+
+    @Test
+    void anUnreachableLedgerBeforeTheLoopParksTheCase() {
+        mcp.answering("get_transaction", args -> {
+            throw new IllegalStateException("connection refused");
+        });
+
+        DisputeCase c = run();
+
+        assertThat(c.state()).isEqualTo(CaseState.AWAITING_RETRY);
+        assertThat(llm.requests).as("the model is not called without the evidence").isEmpty();
     }
 
     // The decision -----------------------------------------------------------------------------------------------

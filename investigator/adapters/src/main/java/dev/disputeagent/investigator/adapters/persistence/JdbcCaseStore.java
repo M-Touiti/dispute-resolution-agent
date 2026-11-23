@@ -2,9 +2,11 @@ package dev.disputeagent.investigator.adapters.persistence;
 
 import dev.disputeagent.investigator.adapters.kafka.DisputeEvents;
 import dev.disputeagent.investigator.application.CaseOutcome;
+import dev.disputeagent.investigator.application.intake.DisputeOpened;
 import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.application.port.store.CaseStore;
 import dev.disputeagent.investigator.domain.CaseId;
+import dev.disputeagent.investigator.domain.DisputeCategory;
 import dev.disputeagent.investigator.domain.approval.ApprovalToken;
 import dev.disputeagent.investigator.domain.approval.Review;
 import dev.disputeagent.investigator.domain.guard.GuardResult;
@@ -48,7 +50,7 @@ public final class JdbcCaseStore implements CaseStore {
         return jdbc.sql("""
                 SELECT state, history, outcome_event, replays, approval_requested_at, reviewer, review_note,
                     reviewed_at, token_id, token_arguments_sha256, token_issued_at, token_expires_at, approval_token,
-                    action_detail
+                    action_detail, reported_category, category
                 FROM investigation.cases WHERE dispute_id = :id""")
                 .param("id", disputeId.value())
                 .query((rs, n) -> stored(disputeId, rs))
@@ -60,7 +62,7 @@ public final class JdbcCaseStore implements CaseStore {
         return jdbc.sql("""
                 SELECT dispute_id, state, history, outcome_event, replays, approval_requested_at, reviewer, review_note,
                     reviewed_at, token_id, token_arguments_sha256, token_issued_at, token_expires_at, approval_token,
-                    action_detail
+                    action_detail, reported_category, category
                 FROM investigation.cases WHERE state = 'AWAITING_APPROVAL'
                 ORDER BY approval_requested_at, dispute_id LIMIT :limit""")
                 .param("limit", limit)
@@ -95,6 +97,23 @@ public final class JdbcCaseStore implements CaseStore {
             case OutgoingEvent.ApprovalRequested requested ->
                     new OutboxRow("APPROVAL_REQUESTED", DisputeEvents.approvalRequested(requested.request()));
         };
+    }
+
+    @Override
+    public void park(DisputeCase parked, DisputeOpened event) {
+        var s = parked.snapshot();
+        jdbc.sql("""
+                INSERT INTO investigation.cases (dispute_id, state, reported_category, category, unsafe_proposal,
+                    history, replays, opened_event)
+                VALUES (:id, :state, :reported, :category, false, CAST(:history AS jsonb), :replays, :event)""")
+                .param("id", parked.id().value())
+                .param("state", s.state().name())
+                .param("reported", s.reportedCategory().name())
+                .param("category", s.category().name())
+                .param("history", history(s.history()))
+                .param("replays", s.replays())
+                .param("event", DisputeEvents.opened(event))
+                .update();
     }
 
     private void insert(DisputeCase c, CaseOutcome outcome) {
@@ -151,8 +170,16 @@ public final class JdbcCaseStore implements CaseStore {
     }
 
     private static StoredCase stored(CaseId id, ResultSet rs) throws SQLException {
-        CaseOutcome outcome = DisputeEvents.decided(rs.getString("outcome_event"));
         CaseState state = CaseState.valueOf(rs.getString("state"));
+        String outcomeEvent = rs.getString("outcome_event");
+        if (outcomeEvent == null) {
+            // Parked before its investigation ended: no outcome, no decision, no approval yet.
+            var parked = new DisputeCase.Snapshot(id, DisputeCategory.valueOf(rs.getString("reported_category")),
+                    DisputeCategory.valueOf(rs.getString("category")), state, null, null, null, rs.getInt("replays"),
+                    null, null, null, null, history(rs.getString("history")));
+            return new StoredCase(DisputeCase.restore(parked), null, Optional.empty());
+        }
+        CaseOutcome outcome = DisputeEvents.decided(outcomeEvent);
         String reviewer = rs.getString("reviewer");
         Review review = reviewer == null ? null
                 : new Review(reviewer, rs.getString("review_note"), instant(rs, "reviewed_at"));

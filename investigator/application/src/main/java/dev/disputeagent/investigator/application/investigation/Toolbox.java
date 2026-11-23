@@ -19,6 +19,16 @@ import java.util.Set;
 final class Toolbox {
 
     /** The servers the investigating model may reach in M1. */
+    /**
+     * The servers' tools cannot be offered to the model (a write server, a reserved or duplicate name, no tools): a
+     * configuration error, not an outage. The case escalates; replaying it would fail the same way.
+     */
+    static final class InvalidToolset extends IllegalStateException {
+        InvalidToolset(String message) {
+            super(message);
+        }
+    }
+
     static final Set<McpServer> ALLOWED = Set.of(McpServer.LEDGER, McpServer.POLICY);
 
     private final Map<String, McpTool> byName;
@@ -33,22 +43,22 @@ final class Toolbox {
         servers.sort(Comparator.naturalOrder());
         for (McpServer server : servers) {
             if (server.writes()) {
-                throw new IllegalStateException("a write server must never be offered to the model: " + server);
+                throw new InvalidToolset("a write server must never be offered to the model: " + server);
             }
             for (McpTool tool : mcp.listTools(server)) {
                 if (reservedNames.contains(tool.name())) {
-                    throw new IllegalStateException(server + " offers " + tool.name() + ", a name the investigator "
+                    throw new InvalidToolset(server + " offers " + tool.name() + ", a name the investigator "
                             + "keeps for its own tool");
                 }
                 McpTool previous = byName.putIfAbsent(tool.name(), tool);
                 if (previous != null) {
-                    throw new IllegalStateException("tool " + tool.name() + " offered by " + previous.server()
+                    throw new InvalidToolset("tool " + tool.name() + " offered by " + previous.server()
                             + " and " + tool.server());
                 }
             }
         }
         if (byName.isEmpty()) {
-            throw new IllegalStateException("no tools discovered");
+            throw new InvalidToolset("no tools discovered");
         }
         return new Toolbox(byName);
     }

@@ -19,6 +19,10 @@ public final class MemoryCases implements CaseStore {
     private record Row(DisputeCase.Snapshot snapshot, CaseOutcome outcome, String token) {
     }
 
+    /** The events parked cases came from, for replay. */
+    public final Map<CaseId, dev.disputeagent.investigator.application.intake.DisputeOpened> parkedEvents =
+            new HashMap<>();
+
     private final Map<CaseId, Row> rows = new HashMap<>();
     /** Every event saved with a case, in order: what the outbox would publish. */
     public final java.util.List<OutgoingEvent> outbox = new java.util.ArrayList<>();
@@ -45,6 +49,15 @@ public final class MemoryCases implements CaseStore {
         }
         rows.put(c.id(), new Row(c.snapshot(), outcome, null));
         outbox.addAll(events);
+    }
+
+    @Override
+    public synchronized void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event) {
+        if (rows.containsKey(parked.id())) {
+            throw new IllegalStateException("case " + parked.id() + " is already stored");
+        }
+        rows.put(parked.id(), new Row(parked.snapshot(), null, null));
+        parkedEvents.put(parked.id(), event);
     }
 
     @Override

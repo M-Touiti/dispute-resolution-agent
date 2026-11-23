@@ -30,8 +30,8 @@ import java.util.Objects;
  * package; failures leave as {@link LlmCallException} with a provider-neutral kind (most specific SDK exception
  * first), so retryable and non-retryable failures are told apart without SDK types.
  *
- * <p>Retries are configured in exactly one place. In M1 that is the SDK ({@code maxRetries}); when Resilience4j wraps
- * the port in M2, the SDK's retries are set to 0.
+ * <p>Retries are configured in exactly one place: {@code ResilientLlmPort} around this adapter (ADR 0008). The SDK's
+ * {@code maxRetries} is 0 in configuration.
  */
 public final class AnthropicAdapter implements LlmPort {
 

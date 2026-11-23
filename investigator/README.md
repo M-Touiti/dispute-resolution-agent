@@ -70,7 +70,21 @@ sent explicitly, `output_config` with the effort and the JSON schema format, str
 the system block, assistant turns passed back block for block; never `tool_choice`, sampling parameters or a
 thinking budget. Responses carry a cost from `PriceTable` (configured in `application.yml`, versioned). SDK
 exceptions become `LlmCallException` kinds (rate limited, overloaded, timeout, server error, bad request,
-authentication); retries live in the SDK (`max-retries`) until Resilience4j takes over in M2.
+authentication); the SDK does not retry (`max-retries: 0`): retries live in one place, around the port.
+
+`adapters/resilience/ResilientLlmPort` (ADR 0008) wraps every model adapter, replay included, outermost first:
+retry (3 attempts, exponential backoff with jitter), circuit breaker, bulkhead (8 concurrent calls), time limiter
+(4 minutes per attempt, the attempt cancelled at the limit). Settings are under `investigator.resilience`.
+
+- **Transient kinds** (rate limited, overloaded, server error, timeout, connection) are retried and count against
+  the breaker.
+- **Permanent kinds** (bad request, authentication, fixture missing) are neither retried nor counted.
+- **An open breaker or a full bulkhead** is a new kind, `UNAVAILABLE`.
+
+When a retryable kind survives the retries, or the ledger cannot be read before the loop, the case is not escalated:
+it is parked as `AWAITING_RETRY`. It is stored with its `disputes.opened` event (Flyway `V4`) to be replayed from the
+start (task 2.10), and nothing is emitted yet. A configuration error in the tool servers (`Toolbox.InvalidToolset`)
+still escalates.
 
 `adapters/fixtures` (ADR 0006): `Fixtures` keys a request by the SHA-256 of its canonical JSON and stores
 `evals/fixtures/llm/<key>.json` (canonical request plus response, no timestamps); `RecordingAdapter` writes them
@@ -144,4 +158,6 @@ Live check (off by default, never in CI, under one cent):
 M1 done: the service runs one dispute category end to end on Kafka and PostgreSQL, and the eval profile replays
 the golden set. M2 in progress: the approval gate works end to end (2.3 to 2.7): a decided case waits for a
 person, the reviewer API approves or rejects it, and an approved action runs once on actions-mcp with a signed token.
-Every event leaves through the outbox (2.8). Next: resilience with parked cases (2.9).
+Every event leaves through the outbox (2.8). The model call is wrapped in Resilience4j, and a case the model or
+the ledger cannot serve is parked instead of escalated (2.9). Next: the dead-letter topic and the replay of parked
+cases (2.10).

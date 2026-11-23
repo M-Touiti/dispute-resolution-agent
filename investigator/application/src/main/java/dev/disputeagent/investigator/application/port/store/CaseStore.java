@@ -1,6 +1,7 @@
 package dev.disputeagent.investigator.application.port.store;
 
 import dev.disputeagent.investigator.application.CaseOutcome;
+import dev.disputeagent.investigator.application.intake.DisputeOpened;
 import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.investigation.CaseState;
@@ -15,7 +16,10 @@ import java.util.Optional;
  */
 public interface CaseStore {
 
-    /** A stored case: as it is now, its investigation outcome as published, and the signed approval token if any. */
+    /**
+     * A stored case: as it is now, its investigation outcome as published (null while it is parked), and the signed
+     * approval token if any.
+     */
     record StoredCase(DisputeCase disputeCase, CaseOutcome outcome, Optional<String> approvalToken) {
     }
 
@@ -29,6 +33,12 @@ public interface CaseStore {
      * events go to the outbox and are published from there (ADR 0008).
      */
     void save(DisputeCase disputeCase, CaseOutcome outcome, List<OutgoingEvent> events);
+
+    /**
+     * Stores a case parked before its investigation ended ({@code AWAITING_RETRY}, ADR 0008) with the event it came
+     * from, so it can be replayed from the start. No outcome and no outgoing event yet.
+     */
+    void park(DisputeCase parked, DisputeOpened event);
 
     /**
      * Writes the case's new state, history, review, token and action result, if it is still in {@code expected}.

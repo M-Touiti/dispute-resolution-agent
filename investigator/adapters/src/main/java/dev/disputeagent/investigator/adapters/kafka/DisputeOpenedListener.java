@@ -37,7 +37,7 @@ public final class DisputeOpenedListener {
         }
         var result = process.process(dispute);
         log.info("dispute {} {}: {}{}", dispute.disputeId(), result.redelivery() ? "redelivered" : "investigated",
-                result.outcome().state(), result.outcome().escalationReason() == null ? ""
+                result.state(), result.outcome() == null || result.outcome().escalationReason() == null ? ""
                         : " (" + result.outcome().escalationReason() + ")");
         ack.acknowledge();
     }

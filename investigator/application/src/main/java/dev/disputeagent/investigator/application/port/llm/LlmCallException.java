@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * A model call that produced no response. Provider-neutral: adapters map their SDK's exceptions to a {@link Kind},
- * so the application (and the retry policy, M2) never sees SDK types.
+ * so the application (and the retry policy around the port, ADR 0008) never sees SDK types.
  */
 public final class LlmCallException extends RuntimeException {
 
@@ -14,6 +14,11 @@ public final class LlmCallException extends RuntimeException {
         SERVER_ERROR(true),
         TIMEOUT(true),
         CONNECTION(true),
+        /**
+         * The model is held off by this side: the circuit breaker is open, or the bulkhead has no free slot (ADR
+         * 0008). Not retried at once, but the case is parked and replayed later.
+         */
+        UNAVAILABLE(true),
         /** The request was rejected as invalid: a bug or an API change, never retried. */
         BAD_REQUEST(false),
         AUTHENTICATION(false),

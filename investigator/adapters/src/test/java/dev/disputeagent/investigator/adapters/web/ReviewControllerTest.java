@@ -35,6 +35,11 @@ class ReviewControllerTest {
         }
 
         @Override
+        public void park(DisputeCase parked, dev.disputeagent.investigator.application.intake.DisputeOpened event) {
+            throw new AssertionError("nothing is parked");
+        }
+
+        @Override
         public boolean update(DisputeCase disputeCase, CaseState expected, String approvalToken) {
             throw new AssertionError("nothing is updated");
         }
