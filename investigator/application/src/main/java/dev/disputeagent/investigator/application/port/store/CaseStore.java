@@ -1,6 +1,7 @@
 package dev.disputeagent.investigator.application.port.store;
 
 import dev.disputeagent.investigator.application.CaseOutcome;
+import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.investigation.CaseState;
 import dev.disputeagent.investigator.domain.investigation.DisputeCase;
@@ -23,8 +24,11 @@ public interface CaseStore {
     /** The reviewer's queue: cases waiting for approval, oldest request first, at most {@code limit}. */
     List<StoredCase> awaitingApproval(int limit);
 
-    /** Stores a case whose investigation just ended, with its outcome, in one transaction. */
-    void save(DisputeCase disputeCase, CaseOutcome outcome);
+    /**
+     * Stores a case whose investigation just ended, with its outcome and the events it emits, in one transaction: the
+     * events go to the outbox and are published from there (ADR 0008).
+     */
+    void save(DisputeCase disputeCase, CaseOutcome outcome, List<OutgoingEvent> events);
 
     /**
      * Writes the case's new state, history, review, token and action result, if it is still in {@code expected}.

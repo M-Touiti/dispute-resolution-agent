@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.disputeagent.investigator.adapters.persistence.JdbcCaseStore;
 import dev.disputeagent.investigator.application.CaseOutcome;
+import dev.disputeagent.investigator.application.port.events.OutgoingEvent;
 import dev.disputeagent.investigator.domain.CaseId;
 import dev.disputeagent.investigator.domain.DecisionOutcome;
 import dev.disputeagent.investigator.domain.DisputeCategory;
@@ -27,7 +28,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -50,7 +53,7 @@ class JdbcCaseStoreTest {
                 POSTGRES.getPassword());
         Flyway.configure().dataSource(dataSource).schemas("investigation").createSchemas(true).load().migrate();
         jdbc = JdbcClient.create(dataSource);
-        store = new JdbcCaseStore(jdbc);
+        store = new JdbcCaseStore(jdbc, new TransactionTemplate(new DataSourceTransactionManager(dataSource)));
     }
 
     @AfterAll
@@ -73,7 +76,7 @@ class JdbcCaseStoreTest {
         var c = decided(id);
         CaseOutcome outcome = CaseOutcome.of(c);
         c.requestApproval(T0.plusSeconds(31));
-        store.save(c, outcome);
+        store.save(c, outcome, List.of(new OutgoingEvent.Decided(outcome)));
         return c;
     }
 
@@ -133,7 +136,7 @@ class JdbcCaseStoreTest {
     void anEscalatedCaseIsStoredAsBefore() {
         var c = new DisputeCase(new CaseId("DSP-000103"), DisputeCategory.UNAUTHORISED_TRANSACTION, T0);
         c.escalate(EscalationReason.CASE_DATA_INVALID, T0.plusSeconds(1), "not on the card");
-        store.save(c, CaseOutcome.of(c));
+        store.save(c, CaseOutcome.of(c), List.of());
 
         var stored = store.find(c.id()).orElseThrow();
         assertThat(stored.disputeCase().state()).isEqualTo(CaseState.ESCALATED);

@@ -160,7 +160,8 @@ services:
       TRIAGE_MODEL: ${TRIAGE_MODEL:-claude-haiku-5-5}
       TRIAGE_EFFORT: ${TRIAGE_EFFORT:-low}
       # The reviewer API's key (X-Reviewer-Key), a stand-in for single sign-on. The default is for this local stack
-      # only; set REVIEWER_API_KEY in .env to change it.
+      # only; to change it, set REVIEWER_API_KEY in deploy/compose/.env (compose reads .env from this folder, not
+      # from the repository root) or in the shell.
       REVIEWER_API_KEY: ${REVIEWER_API_KEY:-local-reviewer-key}
     volumes:
       - ../../skills:/app/skills:ro

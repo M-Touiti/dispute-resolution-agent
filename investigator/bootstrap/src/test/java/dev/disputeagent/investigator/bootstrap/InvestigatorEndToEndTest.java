@@ -78,8 +78,9 @@ import org.testcontainers.utility.MountableFile;
  * {@code investigator.mcp.client=none}); everything else is the production wiring.
  *
  * <ol>
- *   <li>A recording instance decides a dispute and writes fixtures; a malformed event before it is skipped; the same
- *       event delivered again is published again without a second investigation.</li>
+ *   <li>A recording instance decides a dispute and writes fixtures; a malformed event before it is skipped. The
+ *       events leave through the outbox (ADR 0008); the same event delivered again is neither investigated nor
+ *       emitted again.</li>
  *   <li>Its reviewer API approves the case over HTTP: the token is signed with the configured Ed25519 key and the
  *       action port (a test double that verifies the signature) carries the action out once; a second approval is a
  *       conflict, and a redelivery after the review asks no one again.</li>
@@ -355,12 +356,16 @@ class InvestigatorEndToEndTest {
                 assertThat(files.filter(f -> f.toString().endsWith(".json")).count()).isEqualTo(3);
             }
 
-            // The same event again: published again, not investigated again.
+            assertThat(count(recording, "SELECT count(*) FROM investigation.outbox WHERE sent_at IS NULL"))
+                    .as("the relay sent both outbox rows").isZero();
+            assertThat(count(recording, "SELECT count(*) FROM investigation.outbox")).isEqualTo(2);
+
+            // The same event again: not investigated again, and nothing emitted again (the outbox already did).
             send(id, DisputeEvents.opened(DISPUTE));
-            await().atMost(Duration.ofSeconds(30)).until(() -> decided(id).size() == 2);
-            assertThat(decided(id).get(1)).isEqualTo(decided(id).getFirst());
-            await().atMost(Duration.ofSeconds(30)).until(() -> records("disputes.approval-requested", id).size() == 2);
+            await().during(Duration.ofSeconds(3)).atMost(Duration.ofSeconds(30))
+                    .until(() -> decided(id).size() == 1 && records("disputes.approval-requested", id).size() == 1);
             assertThat(LIVE_CALLS.get()).isEqualTo(3);
+            assertThat(count(recording, "SELECT count(*) FROM investigation.outbox")).isEqualTo(2);
             assertThat(count(recording, "SELECT count(*) FROM investigation.cases")).isEqualTo(1);
 
             // 2. The reviewer API (ADR 0005): the queue, then an approval carried out once.
@@ -396,16 +401,18 @@ class InvestigatorEndToEndTest {
                     .isEqualTo(404);
             assertThat(ACTIONS.tokens).hasSize(1);
 
-            // A redelivery after the review: the outcome again, no new approval request.
+            // A redelivery after the review: nothing emitted, no one asked again.
             send(id, DisputeEvents.opened(DISPUTE));
-            await().atMost(Duration.ofSeconds(30)).until(() -> decided(id).size() == 3);
-            assertThat(records("disputes.approval-requested", id)).hasSize(2);
+            await().during(Duration.ofSeconds(3)).atMost(Duration.ofSeconds(30))
+                    .until(() -> decided(id).size() == 1 && records("disputes.approval-requested", id).size() == 1);
         }
 
         // 2. Replay instance: own database, own group, same topic from the start.
         try (var replay = instance("replay", "replay", "replay")) {
-            await().atMost(Duration.ofSeconds(60)).until(() -> decided(id).size() == 6);
-            CaseOutcome replayed = DisputeEvents.decided(decided(id).get(3));
+            // Three disputes.opened for one dispute: one investigation, one event of each kind.
+            await().atMost(Duration.ofSeconds(60)).until(() -> decided(id).size() == 2);
+            await().atMost(Duration.ofSeconds(30)).until(() -> records("disputes.approval-requested", id).size() == 2);
+            CaseOutcome replayed = DisputeEvents.decided(decided(id).get(1));
             CaseOutcome recorded = DisputeEvents.decided(decided(id).getFirst());
 
             assertThat(replayed.state()).isEqualTo(recorded.state());

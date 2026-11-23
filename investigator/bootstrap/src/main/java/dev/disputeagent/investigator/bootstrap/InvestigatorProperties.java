@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("investigator")
 public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budget, Policy policy, String skillsDir,
-        Approval approval, Reviewer reviewer) {
+        Approval approval, Reviewer reviewer, Outbox outbox) {
 
     // Directories are bound as strings and read with Path.of: Spring's String-to-Path conversion goes through the
     // resource loader, which rejects relative paths with '..' in a web application.
@@ -58,6 +58,10 @@ public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budge
         public boolean configured() {
             return signingKey != null && !signingKey.isBlank() && verifyKey != null && !verifyKey.isBlank();
         }
+    }
+
+    /** The outbox relay (ADR 0008): how often it polls, and how many rows one batch sends. */
+    public record Outbox(Duration pollInterval, int batchSize) {
     }
 
     /** The reviewer API's static key (task 2.7), a stand-in for single sign-on; blank disables the API. */

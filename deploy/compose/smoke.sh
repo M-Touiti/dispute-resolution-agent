@@ -169,6 +169,11 @@ requested=$(docker compose exec -T kafka sh -c '/opt/kafka/bin/kafka-console-con
 [[ -n "$requested" ]] || fail "investigator: no disputes.approval-requested for $dispute"
 action=$(grep -oE '"action":\{"action":"[a-z_]+"' <<<"$requested" | cut -d'"' -f6)
 echo "ok   investigator $dispute waits for approval: $action"
+# Both events left through the outbox (ADR 0008): written with the case, relayed, marked sent.
+IFS='|' read -r rows unsent <<<"$(sql "SELECT count(*), count(*) FILTER (WHERE sent_at IS NULL) \
+    FROM investigation.outbox WHERE dispute_id = '$dispute'")"
+[[ "$rows" == "2" && "$unsent" == "0" ]] || fail "outbox: $dispute has $rows rows, $unsent unsent; expected 2, 0"
+echo "ok   outbox: $dispute's decided and approval-requested events written with the case and relayed"
 
 # The reviewer API (task 2.7): the queue, an approval carried out by actions-mcp once, a rejection that does nothing.
 reviews=http://localhost:8080/reviews

@@ -77,6 +77,10 @@ investigator:
     connect-timeout: PT5S
     request-timeout: PT30S
     max-response-bytes: 1000000
+  # The outbox relay (ADR 0008): events are saved with the case and published from investigation.outbox.
+  outbox:
+    poll-interval: ${OUTBOX_POLL_INTERVAL:PT0.2S}
+    batch-size: 100
   # The reviewer API (X-Reviewer-Key). Blank: the API answers 503 and nothing can be approved.
   reviewer:
     api-key: ${REVIEWER_API_KEY:}
