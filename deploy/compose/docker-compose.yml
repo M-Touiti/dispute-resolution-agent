@@ -276,7 +276,7 @@ services:
 
   k6:
     profiles: [perf]
-    image: grafana/k6:1.8.3
+    image: grafana/k6:2.4.0
     volumes:
       - ../../performance/k6:/scripts:ro
     depends_on:
