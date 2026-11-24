@@ -1,0 +1,40 @@
+# The ledger and the write server answer the investigator only (ADR 0003, ADR 0005): in compose any container could
+# call actions-mcp; here nothing but the pod that holds the signing key can. Their actuator port (9080) stays open
+# for the probes and a Prometheus scrape. policy-mcp serves public policy text and its metrics on one port: no policy.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: actions-mcp-from-investigator
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: actions-mcp
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: investigator
+      ports:
+        - port: 8083
+    - ports:
+        - port: 9080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ledger-mcp-from-investigator
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ledger-mcp
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: investigator
+      ports:
+        - port: 8081
+    - ports:
+        - port: 9080

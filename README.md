@@ -72,7 +72,8 @@ How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md)
 | `evals/` | Golden set of 30 cases; an evaluation run mode of the investigator; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals, schema, budget) with a regression rule against a committed baseline; 149 recorded model calls; `record.sh` for re-recording | 22 |
 | `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.4 (KRaft), the three MCP servers and the investigator, Prometheus, Tempo and Grafana with a provisioned dashboard; `smoke.sh` checks each, runs disputes end to end through the approval gate, and finds a case's trace in Tempo | smoke |
 | `performance/` | k6 at a constant arrival rate through a shim that publishes `disputes.opened` and awaits `disputes.decided`, on the replay adapter: one investigator replica saturates at 12.6 cases/s (p99 4.1 s at 20/s offered), three carry 20/s at p99 0.77 s ([report](performance/README.md)); failure injection under load (the model overloaded, policy-mcp stalled, malformed events): no decision lost, parked cases replayed and decided within 25 s of the fault's end | 10 |
-| CI | Build and tests per module, lint, the golden set replayed and graded against the baseline, compose smoke test, CodeQL (Java, Python, workflows), Dependabot | |
+| `deploy/k8s/` | Kustomize base (the four services with probes, limits, an HPA on the investigator, network policies that let only the investigator reach the ledger and the write server) and a `local` overlay with PostgreSQL and Kafka; ServiceMonitors and an optional Argo CD application; applied on kind with `up.sh` and checked with `check.sh` (a dispute decided and approved inside the cluster) | kind check |
+| CI | Build and tests per module, lint, the golden set replayed and graded against the baseline, compose smoke test, Kubernetes manifests validated, CodeQL (Java, Python, workflows), Dependabot | |
 
 Every tool's input schema stays inside the JSON Schema subset that strict tool use accepts, and a test in each
 server enforces it. The schemas can be passed to Claude unchanged.
@@ -121,7 +122,7 @@ data/                seeded synthetic data generator; policy corpus (Markdown, 2
 evals/               golden set, graders, recorded fixtures, REPORT.md (M1 to M3)
 skills/              Agent Skills (SKILL.md) the investigator loads on demand
 performance/         load test and failure injection (k6, shim, scripts, report)
-deploy/              docker compose; Kustomize manifests (M2)
+deploy/              docker compose; Kustomize manifests and a kind cluster script
 docs/                roadmap, architecture decision records, diagrams
 ```
 

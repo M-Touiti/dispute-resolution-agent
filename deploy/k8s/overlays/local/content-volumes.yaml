@@ -1,0 +1,34 @@
+# The repository's content, from the kind node's /repo (an extraMount of the repository root, deploy/k8s/kind/up.sh),
+# in place of the base's empty placeholders. Read-only: replay does not write fixtures.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: investigator
+spec:
+  template:
+    spec:
+      volumes:
+        - name: skills
+          emptyDir: null
+          hostPath:
+            path: /repo/skills
+            type: Directory
+        - name: fixtures
+          emptyDir: null
+          hostPath:
+            path: /repo/evals/fixtures/llm
+            type: Directory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: policy-mcp
+spec:
+  template:
+    spec:
+      volumes:
+        - name: corpus
+          emptyDir: null
+          hostPath:
+            path: /repo/data/policy-corpus
+            type: Directory

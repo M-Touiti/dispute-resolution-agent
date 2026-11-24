@@ -1,0 +1,21 @@
+# Optional: Argo CD keeps a cluster in step with the local overlay on main. The overlay mounts the repository from the
+# kind node (/repo) and expects the approval-key secrets, so the cluster still comes from deploy/k8s/kind/up.sh;
+# Argo CD then owns the rollout instead of kubectl apply. kubectl apply -n argocd -f deploy/k8s/argocd/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dispute-agent
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/M-Touiti/dispute-resolution-agent.git
+    targetRevision: main
+    path: deploy/k8s/overlays/local
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dispute-agent
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

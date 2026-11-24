@@ -1,0 +1,98 @@
+# Read-only ledger tools (Streamable HTTP on 8081, /mcp) as the role ledger_reader. Actuator on 9080.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ledger-mcp
+  labels:
+    app.kubernetes.io/name: ledger-mcp
+    app.kubernetes.io/component: mcp-server
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ledger-mcp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ledger-mcp
+        app.kubernetes.io/component: mcp-server
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ledger-mcp
+          image: dispute-agent/ledger-mcp:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mcp
+              containerPort: 8081
+            - name: management
+              containerPort: 9080
+          env:
+            - name: POSTGRES_HOST
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_HOST}}
+            - name: POSTGRES_PORT
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_PORT}}
+            - name: POSTGRES_DB
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_DB}}
+            - name: LEDGER_DB_URL
+              value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+            - name: LEDGER_DB_USER
+              value: ledger_reader
+            - name: LEDGER_DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: dispute-agent-db, key: ledger-reader-password}}
+            - name: MANAGEMENT_SERVER_PORT
+              value: "9080"
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: "1"
+              memory: 768Mi
+          startupProbe:
+            httpGet: {path: /actuator/health/liveness, port: management}
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: {path: /actuator/health/liveness, port: management}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /actuator/health/readiness, port: management}
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ledger-mcp
+  labels:
+    app.kubernetes.io/name: ledger-mcp
+    app.kubernetes.io/component: mcp-server
+spec:
+  selector:
+    app.kubernetes.io/name: ledger-mcp
+  ports:
+    - name: mcp
+      port: 8081
+      targetPort: mcp
+    - name: management
+      port: 9080
+      targetPort: management
