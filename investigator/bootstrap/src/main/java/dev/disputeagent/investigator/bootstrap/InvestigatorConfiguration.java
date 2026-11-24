@@ -3,6 +3,7 @@ package dev.disputeagent.investigator.bootstrap;
 import dev.disputeagent.investigator.adapters.anthropic.PriceTable;
 import dev.disputeagent.investigator.adapters.fixtures.Fixtures;
 import dev.disputeagent.investigator.adapters.fixtures.RecordingAdapter;
+import dev.disputeagent.investigator.adapters.fixtures.FaultSwitch;
 import dev.disputeagent.investigator.adapters.fixtures.ReplayAdapter;
 import dev.disputeagent.investigator.adapters.json.JacksonJsonAdapter;
 import dev.disputeagent.investigator.adapters.otel.MeteredAuditLog;
@@ -90,12 +91,14 @@ class InvestigatorConfiguration {
     @Bean
     @Primary
     LlmPort llmPort(InvestigatorProperties properties, PriceTable prices, ObjectProvider<LiveLlm> live, Clock clock,
-            @Qualifier("llmAttempts") ExecutorService attempts, ObservationRegistry observations) {
+            @Qualifier("llmAttempts") ExecutorService attempts, ObservationRegistry observations,
+            ObjectProvider<FaultSwitch> faults) {
         var fixtures = new Fixtures(properties.llm().fixturesPath());
         String adapter = properties.llm().adapter();
         log.info("model adapter: {} (fixtures {})", adapter, fixtures.dir().toAbsolutePath().normalize());
         LlmPort port = switch (adapter) {
-            case "replay" -> new ReplayAdapter(fixtures, prices);
+            // The fault switch exists only with FAULT_INJECTION, and then only with replay (FaultConfiguration).
+            case "replay" -> new ReplayAdapter(fixtures, prices, faults.getIfAvailable());
             case "recording" -> new RecordingAdapter(live.getObject(), fixtures);
             case "anthropic" -> live.getObject();
             default -> throw new IllegalStateException(

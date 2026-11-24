@@ -27,7 +27,7 @@ from aiokafka.admin import AIOKafkaAdminClient
 from fastapi import FastAPI, HTTPException
 from psycopg_pool import AsyncConnectionPool
 
-from shim.core import DisputePool, RunStats, Sent
+from shim.core import DisputePool, RunStats, Sent, phases, recovered_after, zero_after
 
 log = logging.getLogger("shim")
 
@@ -58,7 +58,26 @@ SAMPLE_LAG_EVERY_S = 0.5
 PROMQL = {
     "investigator_pool_size": 'sum(max_over_time(hikaricp_connections_max{{application="investigator"}}[{w}s]))',
     "outbox_unsent_max": "max_over_time(sum(dispute_outbox_unsent)[{w}s:5s])",
+    # Failure injection (task 2.14): whether the breaker opened in the window.
+    "llm_breaker_open_max": "max_over_time(max(dispute_llm_breaker_open)[{w}s:5s])",
 }
+
+# Counter totals since the investigator started, by a label (faults.sh starts it afresh, so they are the run's;
+# increase() would extrapolate them into fractions). Each: (query, the label to group by).
+PROMQL_TOTALS = {
+    "llm_failed_attempts_by_kind": (
+        'sum by (kind) (max_over_time(dispute_llm_call_seconds_count{{kind!="none"}}[{w}s]))',
+        "kind",
+    ),
+    "cases_parked_by_replays_before": (
+        "sum by (after_replays) (max_over_time(dispute_cases_parked_total[{w}s]))",
+        "after_replays",
+    ),
+    "cases_replayed_by_replay": ("sum by (replay) (max_over_time(dispute_cases_replayed_total[{w}s]))", "replay"),
+}
+
+PARKED_SQL = "SELECT count(*) FROM investigation.cases WHERE state = 'AWAITING_RETRY'"
+DLQ_TOPIC = "disputes.dlq"
 
 
 class Shim:
@@ -67,6 +86,7 @@ class Shim:
         self.database_url = os.environ.get("SHIM_DB_URL", "postgresql://disputes:disputes@localhost:5432/disputes")
         self.golden = Path(os.environ.get("GOLDEN_SET", "../../evals/golden/unauthorised-v1.json"))
         self.prometheus = os.environ.get("PROMETHEUS_URL", "http://localhost:9090")
+        # A parked case waits for its replay (30 s, then doubling): failure runs raise this (faults.sh).
         self.timeout_s = float(os.environ.get("DECIDED_TIMEOUT_SECONDS", "120"))
         self.stats = RunStats()
         self.events: dict[str, bytes] = {}
@@ -85,6 +105,8 @@ class Shim:
         self._lagging: asyncio.Task[None]
         self.admin: AIOKafkaAdminClient
         self.group = os.environ.get("INVESTIGATOR_GROUP", "investigator")
+        # (time, cases parked in AWAITING_RETRY), sampled with the lag.
+        self.parked: list[tuple[float, int]] = []
 
     async def start(self) -> None:
         ids = [c["dispute_id"] for c in json.loads(self.golden.read_text(encoding="utf-8"))["cases"]]
@@ -138,7 +160,9 @@ class Shim:
             future, sent = entry
             sent.latency_s = time.time() - sent.sent_at
             try:
-                sent.state = json.loads(record.value).get("state")
+                decided = json.loads(record.value)
+                sent.state = decided.get("state")
+                sent.reason = decided.get("escalation_reason")
             except ValueError:
                 sent.state = "UNREADABLE"
             self.pool.release(dispute_id)
@@ -168,10 +192,14 @@ class Shim:
                     ends[tp] - (committed[tp].offset if tp in committed and committed[tp].offset >= 0 else 0)
                     for tp in tps
                 )
+                async with self.db.connection() as conn:
+                    row = await (await conn.execute(PARKED_SQL)).fetchone()
                 now = time.time()
                 self.lag.append((now, lag))
+                self.parked.append((now, row[0] if row else 0))
                 if self.lag[0][0] < now - 3600:
                     self.lag = [x for x in self.lag if x[0] >= now - 3600]
+                    self.parked = [x for x in self.parked if x[0] >= now - 3600]
             except Exception:  # a sampler must outlive a broker hiccup
                 log.warning("consumer lag sample failed", exc_info=True)
             await asyncio.sleep(SAMPLE_LAG_EVERY_S)
@@ -216,9 +244,34 @@ class Shim:
             raise HTTPException(504, f"no disputes.decided for {dispute_id} within {self.timeout_s:.0f} s") from e
         return {"dispute_id": dispute_id, "state": state, "e2e_ms": round((sent.latency_s or 0) * 1000, 1)}
 
-    async def summary(self, since: float, until: float | None) -> dict[str, object]:
+    async def malformed(self, count: int) -> dict[str, object]:
+        """Publishes ``count`` events that are not JSON to disputes.opened: each must reach the dead-letter topic."""
+        before = await self.dlq_records()
+        for i in range(count):
+            await self.producer.send_and_wait("disputes.opened", b"{not json", key=f"MALFORMED-{i + 1}".encode())
+        return {"published": count, "dlq_records_before": before}
+
+    async def dlq_records(self) -> int:
+        """Records in the dead-letter topic so far (the sum of its end offsets)."""
+        partitions = await self.producer.partitions_for(DLQ_TOPIC)
+        tps = [TopicPartition(DLQ_TOPIC, p) for p in sorted(partitions or [])]
+        return sum((await self.consumer.end_offsets(tps)).values()) if tps else 0
+
+    async def summary(
+        self, since: float, until: float | None, fault_start: float | None = None, fault_end: float | None = None
+    ) -> dict[str, object]:
         until = until or time.time()
         result = self.stats.summary(since)
+        parked = [n for t, n in self.parked if since <= t <= until]
+        result["parked_max"] = max(parked) if parked else None
+        result["dlq_records_now"] = await self.dlq_records()
+        if fault_start is not None and fault_end is not None:
+            result["fault"] = {
+                "seconds": round(fault_end - fault_start, 1),
+                "phases": phases(self.stats.sent, since, fault_start, fault_end),
+                "recovered_after_s": recovered_after(self.stats.sent, fault_end),
+                "parked_back_to_zero_after_s": zero_after([x for x in self.parked if x[0] <= until], fault_end),
+            }
         result["in_flight_now"] = self.pool.in_flight
         async with self.db.connection() as conn:
             row = await (
@@ -249,13 +302,21 @@ class Shim:
             "at_end": lags[-1] if lags else None,
         }
         window = max(15, int(until - since) + 10)
-        prom: dict[str, float | None] = {}
+        prom: dict[str, object] = {}
         async with httpx.AsyncClient(base_url=self.prometheus, timeout=10) as client:
             for name, query in PROMQL.items():
                 try:
                     r = await client.get("/api/v1/query", params={"query": query.format(w=window), "time": until})
                     values = r.json()["data"]["result"]
                     prom[name] = float(values[0]["value"][1]) if values else None
+                except (httpx.HTTPError, KeyError, ValueError):
+                    prom[name] = None
+            for name, (query, label) in PROMQL_TOTALS.items():
+                try:
+                    r = await client.get("/api/v1/query", params={"query": query.format(w=window), "time": until})
+                    prom[name] = {
+                        v["metric"].get(label, ""): int(float(v["value"][1])) for v in r.json()["data"]["result"]
+                    }
                 except (httpx.HTTPError, KeyError, ValueError):
                     prom[name] = None
         result["prometheus"] = prom
@@ -290,7 +351,19 @@ def create_app() -> FastAPI:
         return await shim.send()
 
     @app.get("/summary")
-    async def summary(since: float, until: float | None = None) -> dict[str, object]:
-        return await shim.summary(since, until)
+    async def summary(
+        since: float, until: float | None = None, fault_start: float | None = None, fault_end: float | None = None
+    ) -> dict[str, object]:
+        return await shim.summary(since, until, fault_start, fault_end)
+
+    @app.post("/faults/malformed")
+    async def malformed(count: int = 1) -> dict[str, object]:
+        if not 1 <= count <= 1000:
+            raise HTTPException(400, "count must be between 1 and 1000")
+        return await shim.malformed(count)
+
+    @app.get("/dlq")
+    async def dlq() -> dict[str, object]:
+        return {"records": await shim.dlq_records()}
 
     return app

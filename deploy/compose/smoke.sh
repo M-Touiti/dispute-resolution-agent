@@ -195,6 +195,11 @@ done
 [[ -z "$down_jobs" && "$target_count" -ge 5 ]] || fail "prometheus: targets down: ${down_jobs:-none} ($target_count targets)"
 echo "ok   prometheus   all $target_count targets up"
 
+# Failure injection (task 2.14) exists only when performance/faults.sh switches it on.
+faults=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/faults)
+[[ "$faults" == "404" ]] || fail "investigator: /faults answers $faults; FAULT_INJECTION must be off outside faults.sh"
+echo "ok   investigator /faults does not exist (failure injection off)"
+
 for _ in $(seq 1 24); do
     [[ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3200/ready)" == "200" ]] && break
     sleep 5

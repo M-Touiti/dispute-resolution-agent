@@ -16,8 +16,9 @@
 
 The host ports match `.env.example`, so the investigator can also run on the host against the stack.
 
-The `perf` profile adds `load-shim` (port 8090) and `k6` for the load test; `performance/run.sh` starts them (see
-`performance/README.md`). Prometheus finds investigator replicas by DNS, so a scaled investigator is scraped whole.
+The `perf` profile adds `load-shim` (port 8090) and `k6` for the load test; `performance/run.sh` and
+`performance/faults.sh` start them (see `performance/README.md`). `FAULT_INJECTION=true` gives the investigator the
+fault switch (`/faults`, replay adapter only); it is off by default and `smoke.sh` checks that. Prometheus finds investigator replicas by DNS, so a scaled investigator is scraped whole.
 
 ## Observability (ADR 0008)
 

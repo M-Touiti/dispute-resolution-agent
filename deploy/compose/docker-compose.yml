@@ -166,6 +166,8 @@ services:
       # One trace per case to Tempo over OTLP/HTTP (ADR 0008).
       OTEL_TRACES_EXPORT: "true"
       MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT: http://tempo:4318/v1/traces
+      # Failure injection (task 2.14): /faults, with the replay adapter only. performance/faults.sh sets it.
+      FAULT_INJECTION: ${FAULT_INJECTION:-false}
     volumes:
       - ../../skills:/app/skills:ro
       - ../../evals/fixtures/llm:/app/fixtures
@@ -259,6 +261,7 @@ services:
       SHIM_DB_URL: postgresql://${POSTGRES_USER:-disputes}:${POSTGRES_PASSWORD:-disputes}@postgres:5432/disputes
       GOLDEN_SET: /golden/unauthorised-v1.json
       PROMETHEUS_URL: http://prometheus:9090
+      DECIDED_TIMEOUT_SECONDS: ${SHIM_DECIDED_TIMEOUT:-120}
     volumes:
       - ../../evals/golden:/golden:ro
     depends_on:

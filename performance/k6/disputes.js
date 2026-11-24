@@ -3,6 +3,7 @@
 //   RATE      disputes per second offered (default 2)
 //   DURATION  how long to offer them (default 60s)
 //   SHIM_URL  the shim (default http://load-shim:8090, inside the compose network)
+//   TIMEOUT   how long one request waits for its decision (default 150s; failure runs wait for replays)
 import http from 'k6/http';
 import { check } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
@@ -22,6 +23,8 @@ export const options = {
       // One VU waits for one decision; enough of them that k6 itself never limits the arrival rate.
       preAllocatedVUs: 40,
       maxVUs: 200,
+      // Requests still waiting when the arrivals stop get this long to finish (a parked case waits for its replay).
+      gracefulStop: __ENV.TIMEOUT || '150s',
     },
   },
   // A run fails when a decision is lost, not when the system is saturated (saturation is the measurement).
@@ -32,7 +35,7 @@ export const options = {
 };
 
 export default function () {
-  const res = http.post(`${SHIM}/disputes`, null, { timeout: '150s', tags: { name: 'POST /disputes' } });
+  const res = http.post(`${SHIM}/disputes`, null, { timeout: __ENV.TIMEOUT || '150s', tags: { name: 'POST /disputes' } });
   if (res.status === 503) {
     saturated.add(1);
     return;
