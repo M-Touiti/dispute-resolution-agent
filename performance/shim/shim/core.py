@@ -58,6 +58,11 @@ class Sent:
     sent_at: float  # wall clock, seconds since the epoch
     latency_s: float | None = None  # publish to disputes.decided; None until decided
     state: str | None = None  # DECIDED or ESCALATED, from the decided event
+    reason: str | None = None  # the escalation reason, when escalated
+
+    @property
+    def outcome(self) -> str:
+        return f"{self.state or 'UNKNOWN'} {self.reason}" if self.reason else self.state or "UNKNOWN"
 
 
 @dataclass
@@ -73,8 +78,10 @@ class RunStats:
         latencies = [s.latency_s for s in done if s.latency_s is not None]
         rejected = sum(1 for t in self.rejected_at if t >= since)
         states: dict[str, int] = {}
+        by_dispute: dict[str, set[str]] = {}
         for s in done:
-            states[s.state or "UNKNOWN"] = states.get(s.state or "UNKNOWN", 0) + 1
+            states[s.outcome] = states.get(s.outcome, 0) + 1
+            by_dispute.setdefault(s.dispute_id, set()).add(s.outcome)
         throughput = None
         if done:
             first = min(s.sent_at for s in window)
@@ -90,6 +97,8 @@ class RunStats:
             "not_decided": len(window) - len(done),
             "rejected_all_in_flight": rejected,
             "states": states,
+            # Replayed answers are the same every time: a dispute with two outcomes was changed by the load or a fault.
+            "outcome_varied": {d: sorted(o) for d, o in sorted(by_dispute.items()) if len(o) > 1},
             "cases_per_second": None if throughput is None else round(throughput, 2),
             "e2e_ms": {
                 "p50": ms(percentile(latencies, 50)),
@@ -98,3 +107,48 @@ class RunStats:
                 "max": ms(max(latencies) if latencies else None),
             },
         }
+
+
+def phases(sent: list[Sent], since: float, fault_start: float, fault_end: float) -> dict[str, dict[str, object]]:
+    """The run cut at the fault (task 2.14): disputes sent before it, during it and after it, with their outcomes."""
+    cuts = {"before": (since, fault_start), "during": (fault_start, fault_end), "after": (fault_end, float("inf"))}
+    result: dict[str, dict[str, object]] = {}
+    for name, (start, end) in cuts.items():
+        window = [s for s in sent if start <= s.sent_at < end]
+        latencies = [s.latency_s for s in window if s.latency_s is not None]
+        outcomes: dict[str, int] = {}
+        for s in window:
+            if s.latency_s is not None:
+                outcomes[s.outcome] = outcomes.get(s.outcome, 0) + 1
+        result[name] = {
+            "sent": len(window),
+            "decided": len(latencies),
+            "outcomes": dict(sorted(outcomes.items())),
+            "e2e_p50_ms": _ms(percentile(latencies, 50)),
+            "e2e_p99_ms": _ms(percentile(latencies, 99)),
+            "e2e_max_ms": _ms(max(latencies) if latencies else None),
+        }
+    return result
+
+
+def recovered_after(sent: list[Sent], fault_end: float) -> float | None:
+    """Seconds from the fault's end until every dispute sent before it was decided; None while one is still open."""
+    before = [s for s in sent if s.sent_at < fault_end]
+    if not before or any(s.latency_s is None for s in before):
+        return None
+    last = max(s.sent_at + (s.latency_s or 0.0) for s in before)
+    return round(max(0.0, last - fault_end), 1)
+
+
+def _ms(v: float | None) -> float | None:
+    return None if v is None else round(v * 1000, 1)
+
+
+def zero_after(samples: list[tuple[float, int]], fault_end: float) -> float | None:
+    """Seconds after the fault's end until the sampled count was zero for good; None if it never was."""
+    if not samples or samples[-1][1] != 0:
+        return None
+    last_nonzero = max((t for t, n in samples if n > 0), default=None)
+    if last_nonzero is None or last_nonzero <= fault_end:
+        return 0.0
+    return round(last_nonzero - fault_end, 1)

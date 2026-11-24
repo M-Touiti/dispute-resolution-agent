@@ -133,6 +133,10 @@ investigator:
     breaker-failure-rate: 50
     breaker-open-for: PT30S
     breaker-half-open-calls: 3
+  # Failure injection (task 2.14): /faults makes the replay adapter answer "overloaded". Load-test stack only; the
+  # investigator refuses to start with it on any other adapter.
+  faults:
+    enabled: ${FAULT_INJECTION:false}
   # The replay of parked cases (ADR 0008): every sweep-interval, due cases go to disputes.replay (held in-flight while
   # they run); the wait after a park starts at first-delay and doubles, up to max-delay; after max-replays a case that
   # parks again escalates.

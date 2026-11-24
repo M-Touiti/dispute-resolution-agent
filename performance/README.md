@@ -1,4 +1,4 @@
-# Load testing
+# Load and failure testing
 
 How much the investigator handles, and what changes with more replicas. k6 drives a small HTTP shim that publishes
 `disputes.opened` and answers when the matching `disputes.decided` arrives. The model is the **replay adapter**: the
@@ -54,6 +54,49 @@ ceiling: a fourth replica would sit idle.
   (lag 27 of 30), so 27.5 is a lower bound. The MCP servers, PostgreSQL and Kafka are single instances on the same
   laptop.
 
+## Failure injection (23 Nov 2026)
+
+One investigator replica, 1 dispute a second for 150 s, and one fault 30 s into the run (`faults.sh`, task 2.14).
+Each run is cut at the fault: disputes sent before it, during it and after it.
+
+| | model overloaded for 40 s | policy-mcp paused for 40 s | 5 malformed events |
+|---|---|---|---|
+| decided / sent | 127 / 127 | 141 / 141 | 150 / 150 |
+| sent during the fault: p50 / max | 49.5 s / 61.8 s | 27.6 s / 40.6 s | 268 ms / 443 ms |
+| sent after the fault: p99 | 415 ms | 2358 ms | 464 ms |
+| every dispute sent before the fault's end decided after | 24.9 s | 3.4 s | 0.1 s |
+| parked at most | 30 | 0 | 0 |
+| consumer lag, max | 21 | 30 | 5 |
+| arrivals turned away (all 30 disputes in flight) | 23 | 10 | 0 |
+| disputes whose outcome changed | none | 1 (see below) | none |
+
+**The model overloaded.** The fault switch makes the replay adapter answer `OVERLOADED` for 40 s.
+- **Fast failure.** Only 10 attempts reached the model (6 triage, 4 investigation). The circuit breaker then opened,
+  and later calls failed at once without waiting out their retries.
+- **Every case in flight parked:** 30 cases, each once. The sweep replayed each after its first 30 s wait, and each
+  was decided on that first replay.
+- **Recovery.** Every dispute sent before the fault's end was decided within 25 s of it, and parked cases were back
+  to zero after 24 s. Every outcome matched the dispute's other runs, so a park and replay leaves the answer unchanged.
+
+**A stalled policy-mcp.** The container is paused, so calls to it hang rather than fail.
+- **Bounded, but blocking.** The MCP request timeout (30 s) bounds the wait. But one listener thread per replica runs
+  one case at a time, so the case waiting on the stalled server held up every case behind it. Lag reached the
+  30-dispute ceiling and 10 arrivals were turned away.
+- **One escalation.** DSP-000070 was mid-investigation. Its policy call timed out and went back to the model as an
+  error, as ADR 0008 decides for a tool error inside the loop. On replay there is no recording of that turn, so the
+  case escalated `DEPENDENCY_UNAVAILABLE` (a missing fixture). Against the live model, the model would see the error
+  and could retry the search or escalate. DSP-000070 escalates in the golden set anyway, for its own reason
+  (`AGENT_DECISION`).
+- **Recovery.** 3.4 s after the unpause, everything sent before was decided.
+- **Levers.** If stalls matter, two would shorten the blocking: more listener threads per replica, or a shorter
+  timeout for policy-mcp than for the ledger.
+
+**Malformed events.** Five events that are not JSON, published among the disputes: all five reached
+`disputes.dlq` with their reason. The partition moved on, so the disputes around them were not slowed: p99 was
+447, 443 and 464 ms before, during and after. Nothing else changed.
+
+**Unchanged in every run:** no decision was lost, and no case was decided twice.
+
 ## Caveats
 
 - **The model is replayed.** A recorded answer comes back in microseconds; a real call takes seconds to tens of
@@ -69,6 +112,9 @@ ceiling: a fourth replica would sit idle.
   dispute's case; that reset is not part of the latency.
 - **No approvals.** Cases that propose an action wait for approval; the load test measures the investigation, not
   the reviewer API or actions-mcp.
+- **Faults on replay.** The fault switch fakes the API's overloaded answer; it does not reproduce its timing. A real
+  outage also slows the calls that do succeed. A tool error inside the loop has no recording, so on replay such a
+  case escalates where the live model would carry on.
 
 ## Run it
 
@@ -93,10 +139,29 @@ the stack with `docker compose down -v`.
 
 | Part | What it is |
 |---|---|
-| `shim/` | FastAPI and aiokafka (Python 3.13, uv): `POST /disputes`, `GET /summary?since=&until=`, `GET /health`; tests: `uv run pytest` |
+| `shim/` | FastAPI and aiokafka (Python 3.13, uv): `POST /disputes`, `GET /summary?since=&until=[&fault_start=&fault_end=]`, `POST /faults/malformed`, `GET /dlq`, `GET /health`; tests: `uv run pytest` |
 | `k6/disputes.js` | the k6 scenario: constant arrival rate, `dispute_e2e` trend, counters for turned-away and timed-out disputes |
-| `run.sh` | one run, as above |
+| `run.sh` | one load run, as above |
+| `faults.sh` | one failure-injection run |
 | `compose.replicas.yml` | the override for several replicas |
 | `results/` | run summaries, git-ignored |
 
-Failure injection (task 2.14) builds on the same shim.
+### Failure injection
+
+```sh
+bash performance/faults.sh llm-overloaded    # also policy-stall, malformed
+```
+
+`faults.sh` starts the stack with one replica and `FAULT_INJECTION=true`, and runs k6 at `RATE` (default 1) for
+`DURATION` (default 150s). It injects the fault at `FAULT_AT` seconds (default 30) for `FAULT_FOR` seconds (default
+40), then writes `results/fault-<scenario>.json`. It fails if a decision is lost, or if a malformed event misses the
+dead-letter topic. Requests wait up to 600 s for a parked case's replay. When it ends, it unpauses policy-mcp and
+restarts the investigator with the switch off.
+
+The fault switch is `/faults` on the investigator:
+- `POST /faults/llm-overloaded?seconds=N`, `DELETE /faults/llm-overloaded`, `GET /faults`;
+- it exists only with `FAULT_INJECTION=true`, and the investigator refuses to start with that setting on any
+  adapter but replay;
+- `smoke.sh` checks that it is absent on a normal stack.
+
+Malformed events come from the shim (`POST /faults/malformed?count=N`); `GET /dlq` counts the dead letters.
