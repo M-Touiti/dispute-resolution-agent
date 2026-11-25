@@ -7,7 +7,7 @@
 A production-shaped agent that investigates card disputes through MCP tool servers, cites its evidence, cannot
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
-> **Status: M2 (the production half) complete; M3 (evidence) next.** The agent investigates one dispute category,
+> **Status: M2 (the production half) complete; M3 (evidence) in progress.** The agent investigates one dispute category,
 > unauthorised transactions, end to end, and every pull request replays 30 golden cases and grades them. Nothing it
 > decides is carried out without a person: a decided case waits for a reviewer, and an approved action runs on the
 > write server only with a signed, single-use token that server verifies itself. A model outage parks cases and
