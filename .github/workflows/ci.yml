@@ -121,6 +121,55 @@ jobs:
       - name: Build and validate
         run: bash deploy/k8s/validate.sh
 
+  # The four service images, built as a release builds them and scanned (SECURITY.md): a HIGH or CRITICAL finding with
+  # a fix fails the pull request (.github/actions/trivy; accepted findings in .trivyignore.yaml). Every finding goes
+  # to the Security tab where code scanning is available.
+  images:
+    name: Image scan (${{ matrix.image }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      security-events: write # the SARIF upload
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: investigator
+            context: investigator
+          - image: ledger-mcp
+            context: mcp-servers/ledger-mcp
+          - image: policy-mcp
+            context: mcp-servers/policy-mcp
+          - image: actions-mcp
+            context: mcp-servers/actions-mcp
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.context }}
+          load: true
+          push: false
+          tags: dispute-agent/${{ matrix.image }}:scan
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+      - name: Scan
+        uses: ./.github/actions/trivy
+        with:
+          image: dispute-agent/${{ matrix.image }}:scan
+          sarif: trivy-${{ matrix.image }}.sarif
+      # Code scanning on a private repository needs GitHub Code Security, and a fork's pull request cannot write it.
+      - name: Upload to the Security tab
+        if: ${{ always() && !github.event.repository.private && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles(format('trivy-{0}.sarif', matrix.image)) != '' }}
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: trivy-${{ matrix.image }}.sarif
+          category: trivy-${{ matrix.image }}
+
   eval:
     name: Evaluation (replay)
     needs: [java, python]

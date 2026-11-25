@@ -1,0 +1,10 @@
+# Image-scan findings accepted on purpose (task 2.16; .github/actions/trivy). The scan fails on a HIGH or CRITICAL
+# finding that has a fix; an entry here lets one through while it waits on an upstream release. Every entry names
+# the finding, the image's package, why it is accepted, and an expiry date after which the scan fails again:
+#
+# vulnerabilities:
+#   - id: CVE-2026-00000
+#     purls: ["pkg:maven/org.example/library"]
+#     statement: "Fixed in kafka-clients 4.5; not reachable: compression is off on our topics"
+#     expired_at: 2027-01-31
+vulnerabilities: []
