@@ -48,6 +48,8 @@ def test_output_does_not_depend_on_hash_randomisation(tmp_path):
                 "40",
                 "--disputes",
                 "34",
+                "--adversarial",
+                "2",
                 "--out",
                 str(out),
             ],

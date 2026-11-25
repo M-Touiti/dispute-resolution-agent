@@ -56,7 +56,12 @@ def select(data_dir: Path, selection: Selection) -> dict[str, Any]:
         raise FileNotFoundError(f"{manifest_path} not found: run `uv run python generate.py` in data/ first")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     with (data_dir / "ground_truth.csv").open(encoding="utf-8", newline="") as f:
-        rows = [r for r in csv.DictReader(f) if r["category"] in selection.categories]
+        # Adversarial variants (generator v4) are selected by kind, never in place of their scenario's cases.
+        rows = [
+            r
+            for r in csv.DictReader(f)
+            if r["category"] in selection.categories and r.get("adversarial", "NONE") == "NONE"
+        ]
 
     by_scenario: dict[str, list[dict[str, str]]] = defaultdict(list)
     for row in rows:
