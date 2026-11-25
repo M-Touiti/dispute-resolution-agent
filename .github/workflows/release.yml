@@ -1,0 +1,114 @@
+# Release images (task 2.16): a version tag (v0.1.0, v1.2.3) builds the four service images, scans each with the
+# gate pull requests use, and pushes it to GitHub Container Registry as ghcr.io/<owner>/dispute-agent-<image>, tagged
+# with the version, its major.minor and the commit. A finding the gate refuses stops that image from being pushed.
+# Build provenance and an SBOM are attached to each image by BuildKit. linux/amd64 only.
+name: Release images
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: An existing version tag to rebuild and push (v0.1.0)
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  image:
+    name: Release ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write # push to ghcr.io with the workflow's own token
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: investigator
+            context: investigator
+          - image: ledger-mcp
+            context: mcp-servers/ledger-mcp
+          - image: policy-mcp
+            context: mcp-servers/policy-mcp
+          - image: actions-mcp
+            context: mcp-servers/actions-mcp
+    steps:
+      - name: Resolve the tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          tag=${INPUT_TAG:-$REF_NAME}
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "not a version tag: $tag" >&2; exit 1; }
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          # Registry paths are lower case; the owner may not be.
+          echo "owner=${OWNER,,}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ steps.tag.outputs.tag }}
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Image tags and labels
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          # The checked-out tag, not the run's ref: a manual run starts from the default branch.
+          context: git
+          images: ghcr.io/${{ steps.tag.outputs.owner }}/dispute-agent-${{ matrix.image }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.tag.outputs.tag }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.tag.outputs.tag }}
+            type=sha,format=long
+          labels: |
+            org.opencontainers.image.title=dispute-agent-${{ matrix.image }}
+      # Built once and loaded for the scan; the push below reuses the same layers from the cache.
+      - name: Build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.context }}
+          load: true
+          push: false
+          tags: dispute-agent/${{ matrix.image }}:release
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+      - name: Scan
+        uses: ./.github/actions/trivy
+        with:
+          image: dispute-agent/${{ matrix.image }}:release
+          sarif: trivy-${{ matrix.image }}.sarif
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          provenance: mode=max
+          sbom: true
+      - name: Summary
+        env:
+          IMAGE: ${{ matrix.image }}
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          {
+            echo "### $IMAGE"
+            echo '```'
+            echo "$TAGS"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -26,4 +26,10 @@ open a public issue for a vulnerability.
 ## Automated checks
 
 CodeQL (Java, Python and the GitHub Actions workflows) and Dependabot (Maven, uv, Docker, compose and Actions)
-run on every pull request and weekly. Container image scanning is added in M2.
+run on every pull request and weekly.
+
+Every pull request builds the four service images and scans them with Trivy: a HIGH or CRITICAL vulnerability that
+has a fix fails the pull request, and every finding goes to the repository's Security tab. A finding accepted while
+it waits on an upstream release is listed in `.trivyignore.yaml` with a reason and an expiry date, after which the
+scan fails again. Release images (`.github/workflows/release.yml`, on a version tag) pass the same scan before they
+are pushed to GitHub Container Registry, with build provenance and an SBOM attached.

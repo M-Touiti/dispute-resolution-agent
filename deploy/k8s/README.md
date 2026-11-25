@@ -62,6 +62,20 @@ approves it, so a signed token crosses the network policy and actions-mcp record
   remains the place for the dashboard and traces; `monitoring/` wires the metrics into a cluster that runs the
   Prometheus Operator.
 
+## Release images
+
+The base names the images that compose builds (`dispute-agent/<image>:dev`). A version tag publishes the same four
+to GitHub Container Registry (`.github/workflows/release.yml`) as `ghcr.io/<owner>/dispute-agent-<image>`; an overlay
+for a real cluster points the base at them with Kustomize's `images` field:
+
+```yaml
+images:
+  - name: dispute-agent/investigator
+    newName: ghcr.io/<owner>/dispute-agent-investigator
+    newTag: 0.1.0
+  # likewise ledger-mcp, policy-mcp, actions-mcp
+```
+
 Pinned outside Dependabot's reach, bumped by hand: the kind node image (`kind/up.sh`, by digest), metrics-server
 (`kind/up.sh`) and kubeconform (`.github/workflows/ci.yml`, with its checksum). The PostgreSQL and Kafka images
 follow the compose stack's pins, which Dependabot bumps; `validate.sh` fails when the two differ.

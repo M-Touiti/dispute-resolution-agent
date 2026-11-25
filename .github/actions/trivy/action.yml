@@ -1,0 +1,47 @@
+# Scans one local image with Trivy (task 2.16; SECURITY.md): fails on a HIGH or CRITICAL finding that has a fix,
+# and writes every finding as SARIF for the Security tab. Used by ci.yml on pull requests and by release.yml before
+# anything is pushed, so a release cannot ship what a pull request would refuse. The binary is pinned with its
+# checksum (Dependabot does not see it: bump TRIVY_VERSION and TRIVY_SHA256 together).
+name: Trivy image scan
+description: Scan a local image; fail on fixable HIGH and CRITICAL findings; write SARIF.
+inputs:
+  image:
+    description: The image reference to scan (already loaded into the local Docker engine)
+    required: true
+  sarif:
+    description: Where to write the SARIF report (all severities, fixed or not)
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install Trivy
+      shell: bash
+      env:
+        TRIVY_VERSION: 0.76.2
+        TRIVY_SHA256: bc0fc726e017b8927a62b2d3531d7a84ee01769daf5c99ed866dced54089fdbf
+      run: |
+        archive="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        curl -fsSLo "$RUNNER_TEMP/$archive" \
+          "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/${archive}"
+        echo "$TRIVY_SHA256  $RUNNER_TEMP/$archive" | sha256sum -c
+        mkdir -p "$RUNNER_TEMP/trivy-bin" && tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/trivy-bin" trivy
+        echo "$RUNNER_TEMP/trivy-bin" >> "$GITHUB_PATH"
+        echo "day=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+      id: install
+    # The vulnerability database changes daily; one download per day per cache.
+    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ runner.temp }}/trivy-cache
+        key: trivy-db-${{ steps.install.outputs.day }}
+        restore-keys: trivy-db-
+    - name: Gate on fixable HIGH and CRITICAL findings
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        SARIF: ${{ inputs.sarif }}
+        TRIVY_CACHE_DIR: ${{ runner.temp }}/trivy-cache
+      run: |
+        # .trivyignore.yaml: accepted findings, each with a reason and an expiry date.
+        trivy image --scanners vuln --ignorefile .trivyignore.yaml --format sarif --output "$SARIF" "$IMAGE"
+        trivy image --scanners vuln --ignorefile .trivyignore.yaml --skip-db-update \
+          --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE"

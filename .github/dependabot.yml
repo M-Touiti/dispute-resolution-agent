@@ -44,8 +44,11 @@ updates:
       interval: weekly
       day: monday
 
+  # The workflows, and the local composite action that scans images (its Trivy binary is pinned by hand).
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - /
+      - /.github/actions/trivy
     schedule:
       interval: weekly
       day: monday
