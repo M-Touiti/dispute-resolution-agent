@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build context: mcp-servers/policy-mcp. Tests run in CI, not in the image build.
-FROM python:3.13.18-slim-trixie
+FROM python:3.15.1-slim-trixie
 # The image scan (task 2.16) fails on a fixable HIGH or CRITICAL finding: take Debian's security fixes that came after
 # the base image was built, and remove pip, which nothing runs here (uv installs) and whose vendored copies of urllib3
 # and msgpack carry their own findings.
