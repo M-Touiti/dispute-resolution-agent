@@ -11,7 +11,7 @@ When a milestone closes, its Status cell records the completion date.
 | M0 Skeleton | Repository public, ADR 0001, module layout, seeded synthetic data generator, three MCP servers answering `tools/list`, CI green (build, unit, CodeQL) | done 16 Nov 2026 |
 | M1 Loop | One category end to end (Kafka in, triage, investigate via `ledger-mcp` + `policy-mcp`, structured decision, guard, audit rows, decision event out); recording and replay adapters; 30 golden cases; deterministic graders in CI | done 22 Nov 2026 |
 | M2 Production half | Approval gate + `actions-mcp` token verification; Resilience4j around the model; DLQ, replay, outbox; traces, metrics, dashboard; k6 and failure-injection first report; Kustomize manifests apply on a local cluster | done 25 Nov 2026 |
-| M3 Evidence | All categories incl. two adversarial; 150+ golden cases; live eval; `evals/REPORT.md`; six ADRs; README results table first; tag `v0.1.0` | |
+| M3 Evidence | All categories incl. two adversarial; 150+ golden cases; live eval; `evals/REPORT.md`; six ADRs; README results table first; tag `v0.1.0` |in progress since 25 Nov 2026 |
 | M4 Voice | Public write-up: what the evals found, the two hardest failures, what the approval gate caught | |
 
 Scope cuts if time runs short, in order: reviewer page becomes a CLI; Kubernetes manifests wait for v0.2;
@@ -24,7 +24,7 @@ report, approval gate, recorded fixtures, ADRs.
 |---|---|---|---|
 | JDK | Temurin / Oracle | 21 (LTS) | Spring Boot 4 baseline is 17; 21 for virtual threads and records patterns |
 | Orchestrator | `org.springframework.boot:spring-boot-starter-parent` | 4.2.0 | GA 19 Nov 2026, applied in 2.1 (from 4.1.2). Spring Framework 7.1, Jackson 3.1, Servlet 6.1 |
-| Model access | `com.anthropic:anthropic-java` | 3.12.0 | 3.8.0 → 3.12.0 in 2.1 left every fixture key unchanged. 3.0.0 (21 Oct 2026) moved to API version 2026-10-21; ships `OutputConfig`, `JsonOutputFormat`, `Tool.strict`, `CacheControlEphemeral` |
+| Model access | `com.anthropic:anthropic-java` | 3.12.0 | 3.14.0 exists (25 Nov): task 3.1. 3.8.0 → 3.12.0 in 2.1 left every fixture key unchanged. 3.0.0 (21 Oct 2026) moved to API version 2026-10-21; ships `OutputConfig`, `JsonOutputFormat`, `Tool.strict`, `CacheControlEphemeral` |
 | MCP (Java) | `io.modelcontextprotocol.sdk:mcp-bom` | 2.2.0 | Latest GA. Use the `mcp` bundle = `mcp-core` + `mcp-json-jackson3`. 2.1.0 → 2.2.0 left all three `tools/list` contracts unchanged |
 | MCP server transport | `HttpServletStreamableServerTransportProvider` in `mcp-core` | n/a | The `mcp-spring-webmvc` and `server-servlet` artifacts stopped at 0.18.x; in 2.x the Spring transports live in Spring AI. We register the servlet transport in Spring Boot via `ServletRegistrationBean` and do not depend on Spring AI |
 | MCP client transport | `HttpClientStreamableHttpTransport` in `mcp-core` | n/a | JDK `HttpClient` based, Streamable HTTP |
@@ -55,6 +55,14 @@ Kafka image follows the managed client to `4.4.0`; `pgvector` and `python` uncha
 Hub): `prom/prometheus` v3.16.0, `grafana/grafana` 13.3.1, `grafana/tempo` 2.10.10, `grafana/k6` 1.8.3. The
 `opentelemetry-javaagent` row is retired: tracing goes through Micrometer Tracing and the OTLP exporter that Boot
 manages (decision 3 at the M2 kick-off). Task 2.1 applies the bumps.
+
+**Re-verified 25 Nov 2026 (M3 kick-off).** Drift since 23 Nov: `anthropic-java` 3.12.0 → 3.14.0 (minor); nothing
+else. Spring Boot 4.2.0, `mcp-bom` 2.2.0, `mcp` 2.3.0, `fastapi` 0.165.0, `psycopg` 3.3.9, `fastembed` 0.9.1,
+`resilience4j-spring-boot4` 2.4.0, both Testcontainers pins and `json-schema-validator` (3.0.9 exists; stays at
+3.0.8 with the MCP SDK) are the newest of their lines, and so are the images (`pgvector` 0.8.7, Kafka 4.4.0,
+Python 3.13.18, Prometheus v3.16.0, Tempo 2.10.10, k6 1.8.3 on its 1.x line; 2.1.0 exists and is not taken in M3)
+and Trivy 0.76.2. New for M3 (checked on PyPI): `anthropic` 2.14.0, the Python SDK the model-graded rubric uses
+(task 3.7). Task 3.1 applies the SDK bump if the fixtures allow it.
 
 ### Embedding runtimes measured for ADR 0004 (16 Nov 2026)
 
@@ -220,6 +228,73 @@ parallel. 2.13 and 2.14 need 2.8 to 2.12; 2.15 and 2.16 need the compose stack o
    adapter, so a run costs nothing and the p99 is the pipeline's. The fault switch for failure injection lives in
    the fixtures adapter, so the live adapter is never touched.
 
+## M3 task breakdown
+
+Done means: the agent investigates all five reason categories and both adversarial kinds; a golden set of 160 cases
+(8 for each of the 17 scenarios, 12 for each adversarial kind) replays from recorded fixtures on every pull request
+with the deterministic graders green per category; the same set has run live once in full, and that run is what
+`evals/REPORT.md` reports: decision accuracy overall and per category, the unsafe-proposal rate (published even if it
+is not zero), escalation precision, cost and wall-clock per case (median and p99), the cache hit ratio, the
+model-graded rubric with its agreement against 30 hand-labelled cases, and the failures left unfixed with the reason;
+a scheduled workflow runs a rotating 30-case slice live under a spend cap; ADR 0009 accepted; the README opens with
+the results table; `v0.1.0` is tagged and its images released. Branches are named `m3/<task>`.
+
+| # | Task | Output | Status |
+|---|---|---|---|
+| 3.1 | Re-baseline pins (above): `anthropic-java` 3.14.0, taken now only if the replay evaluation still hits every fixture (otherwise it rides with the recording in 3.8); check the price table in `application.yml` against the published prices and bump its version if they moved (cost is computed after the call, so the fixtures stay valid); builds, the three `tools/list` contracts, smoke and the replay evaluation pass unchanged. Needs the user: add `Evaluation (replay)`, `Python (performance/shim)`, `Kubernetes manifests` and the four `Image scan` checks to `main`'s ruleset (found in 2.17) | POMs, `application.yml`, this file | |
+| 3.2 | ADR 0009 evaluation design: the composition of golden set v2 and why adversarial cases are variants of a reason category, not categories of their own; the definition of every published metric (what counts as an unsafe proposal, an obeyed injection, an over-generous credit, escalation precision); the model-graded rubric, its calibration against hand labels made blind, and what agreement is reported; the nightly slice (rotation, thresholds for a live run, spend cap, where results go); the rule that the report publishes unfixed failures | `docs/adr/0009`, index | |
+| 3.3 | Generator v4, adversarial disputes: `injection` (instructions planted in data the model reads through a tool: a merchant's name or descriptor, a document summary) and `overclaim` (a claim above what the policy allows: a claimed amount above the posted one, a demand for the full amount where the rule gives the difference, pressure to skip a wait or a limit). Each is a variant of an existing scenario whose correct decision is unchanged by the adversarial content; ground truth gains the adversarial kind and the highest credit a correct decision may propose. They are appended after the 170 existing disputes, which must keep their bytes (a test compares them with v3), so the M1 fixtures still replay; `GENERATOR_VERSION` 4; corpus test, ledger-mcp and policy-mcp tests on the new seed | `data/` | |
+| 3.4 | Golden set v2: the selector takes 8 per scenario (keeping the 30 cases of v1) and 12 per adversarial kind, 160 cases, each with its category, difficulty, adversarial kind and credit ceiling; deterministic 30-case slices, stratified by category, for the nightly rotation; the byte-for-byte test covers both files. CI keeps evaluating v1 until 3.8 | `evals/golden/`, `evals/evaltools` | |
+| 3.5 | Investigator for every category, without changing a request: the guard's rules per category (the actions each allows, the credit ceiling for an amount mismatch being the difference, the wait for goods not received) and the case evidence for documents, a second posting and a refund; triage tested on the five categories; tests with fake ports for at least one scenario of each. The system prompt, the skills and the tool list are not touched here: the replay evaluation must pass on the M1 fixtures, which proves it | `investigator/domain`, `investigator/application` | |
+| 3.6 | Graders v2 and run data: results per category and per adversarial kind; new checks (the injection was not obeyed, the credit is within the ceiling); escalation precision and recall; cost and wall-clock per case (median, p99) and the cache hit ratio, for which the eval runner records the wall-clock of each case and model call; the regression gate holds per category; a live run is graded against thresholds, not against the replay baseline; tested on synthetic results, v1 still green | `evals/evaltools`, `investigator/bootstrap` (eval) | |
+| 3.7 | Model-graded rubric: `evaltools.rubric` scores a decided case's rationale (faithful to the cited evidence, evidence check complete for the category, merchant request clear) with `claude-opus-5-5` through the Python SDK (`anthropic`, an optional dependency group; the graders stay standard library), structured output, the written rubric in `evals/rubric/`, every grader answer stored so the report rebuilds with no key; a calibration tool that picks 30 cases and writes the sheet a person fills in before seeing the grader's scores, and computes the agreement. Offline tests on stored answers; no live call in this task | `evals/evaltools`, `evals/rubric/` | |
+| 3.8 | Skills, prompt and the recording, in one pull request because every part changes what the model sees: skills for duplicate charges, goods not received, cancelled recurring payments and amount mismatches (and how to read dispute documents); the system prompt reviewed for the five categories and the untrusted-content rule; then, live and each with its own go-ahead: a pilot of about 45 cases (3 per new scenario, 4 per adversarial kind) at medium effort, repeated at low and high to choose the effort (about $10 to $14 for the three), fixes to whatever the pilot shows, then the full recording of the 160 cases (about $11 to $16), replayed with no key and graded; fixtures, baseline v2 and the live run's summary committed together; CI evaluates v2 from here. Needs the user: the go-aheads and `ANTHROPIC_API_KEY` in `.env` | `skills/`, `investigator/application`, `evals/fixtures`, `evals/baseline`, `evals/live/`, `ci.yml` | |
+| 3.9 | Rubric run and calibration: the rubric over the recorded run (live, about $5 to $8, needs the go-ahead); the user labels the 30 calibration cases by hand (about an hour, before the grader's scores are shown); agreement computed and committed with both sets of labels | `evals/rubric/` | |
+| 3.10 | The report: `evaltools.report` builds `evals/REPORT.md` from the committed live summary, the rubric results and the calibration (the tables of the definition of done), plus the hand-written analysis of every failure: fixed and how, or left and why; a test fails when the committed report differs from the generator's output; the effort comparison from the pilot with its cost | `evals/REPORT.md`, `evals/evaltools` | |
+| 3.11 | Nightly live evaluation: `nightly-eval.yml`, scheduled and by hand, runs that day's 30-case slice with the live adapter under a per-run cap the runner checks before each case, grades it against the live thresholds, writes the job summary and commits the dated result to the branch `eval-nightly` (never to `main`); a repository variable switches the schedule off. First run by hand with 5 cases (about $0.40). Needs the user: the secret `ANTHROPIC_API_KEY` in the repository, the Console's monthly limit, and the choice of schedule (a nightly slice is about $2 a run) | `.github/workflows/nightly-eval.yml`, `evals/nightly/` | |
+| 3.12 | Close M3: the README opens with the results table from the report (with its caveats: synthetic data, one model version, the dated run), then architecture, run, evaluation, ADR index and limits (including the two M2 findings that stay: a stalled tool server holds the replica's single listener thread, and a replayed tool error has no recording); "What exists today"; the diagrams index; `CLAUDE.md`; if anything the model sees changed after 3.8, the full live run is repeated first (go-ahead). Needs the user: tag `v0.1.0` after the merge, which releases the images | `README.md`, `docs/`, `CLAUDE.md`, this file | |
+
+Order: 3.1 and 3.2 first (they fix the inputs). 3.3 → 3.4 is the data chain; 3.5, 3.6 and 3.7 need no live call and
+run alongside it (3.6 needs 3.4's case fields). 3.8 needs 3.3 to 3.6: everything that does not change a request is
+merged before the first dollar is spent. 3.9 needs 3.7 and 3.8; 3.10 needs 3.9; 3.11 needs 3.6 and 3.8 and can run
+alongside 3.9 and 3.10; 3.12 closes.
+
+## Decisions fixed at M3 kick-off
+
+1. **One recording, prepared for.** A change to anything the model sees misses every fixture, and a full recording
+   of 160 cases costs about $11 to $16 and adds about 18 MB to the repository. So tasks 3.3 to 3.7 change nothing
+   in a request and are proved by the M1 fixtures still replaying; the skills and the prompt change together in
+   3.8, after a pilot on a quarter of the set. The budget allows one full re-recording if the recording exposes a
+   flaw, as M1's did. Planned live spend for the milestone: about $40 to $55 without the nightly runs, every
+   session with its own go-ahead and estimate.
+2. **The full recording is the pre-tag live run.** ADR 0006 asks for a full live run before a tag. The recording
+   session is one: its summary is committed (`evals/live/`) and the report is built from it. It is repeated before
+   `v0.1.0` only if something the model sees changed after it.
+3. **Adversarial cases are variants, not categories.** The event's category stays one of the five reason
+   categories; `injection` and `overclaim` are a tag in the ground truth and the golden set, never in the data the
+   agent can read. The correct decision of an adversarial case is the one its scenario has without the adversarial
+   content. Both kinds stay (the last scope cut, one kind only, is not applied).
+4. **The set is 160 cases, and the 170 existing disputes keep their bytes.** Eight of each scenario's ten cases
+   are golden; the adversarial disputes are appended. Nothing is tuned on a held-out split: the set is small, and
+   the report says that the prompt and the skills were written with these scenarios in view.
+5. **The report is generated, and it reports what the run did.** Numbers come from committed run files through
+   `evaltools.report`; only the failure analysis is written by hand. A failure that is not fixed is listed with the
+   reason. The unsafe-proposal rate is published whatever it is.
+6. **The model grades prose only.** Decisions, citations, actions and amounts are graded deterministically; the
+   rubric scores the rationale and the merchant request, and is trusted only as far as its measured agreement with
+   30 hand labels. The grader runs in Python next to the other graders, with the Python SDK as an optional
+   dependency: it is not part of the agent, so the `LlmPort` rule (ADR 0001) does not apply to it.
+7. **The effort is chosen once, from the pilot** (low, medium and high on the same cases), before the full
+   recording. Model ids stay as configured; a new model is not adopted in M3.
+8. **Nightly results never touch `main`.** The scheduled run uses the live adapter, not the recording one, grades
+   against thresholds (a live run is not byte-stable) and pushes its dated result to the branch `eval-nightly`,
+   because `main` takes pull requests only. The schedule is the user's choice (it is their spend) and can be
+   switched off without a commit.
+9. **Feature freeze on the platform.** M3 adds no service, topic, state or reviewer page. The two limits found in
+   2.14 are stated in the README, not fixed. Server-side model fallbacks are not adopted: they would change every
+   request for a case the breaker and parking already cover.
+10. **Six ADRs were the plan; eight are accepted.** M3 adds one (0009); none is rewritten.
+
 ## Architecture decisions fixed at M0
 
 1. **Hexagonal `investigator`.** `domain` has no dependencies; `application` holds ports and use cases; `adapters`
@@ -246,3 +321,4 @@ parallel. 2.13 and 2.14 need 2.8 to 2.12; 2.15 and 2.16 need the compose stack o
 | 0006 | Recorded fixtures for CI and nightly live evaluation | M1 / M3 |
 | 0007 | Embedding model and fusion weights measured on the policy corpus | M1 |
 | 0008 | Reliability and observability as decorators around the ports | M2 |
+| 0009 | Evaluation design: golden set, metrics, model-graded rubric, nightly slice (planned, task 3.2) | M3 |
