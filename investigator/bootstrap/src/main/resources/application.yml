@@ -102,9 +102,9 @@ investigator:
       model: ${TRIAGE_MODEL:claude-haiku-5-5}
       effort: ${TRIAGE_EFFORT:low}
       max-tokens: 1000
-    # Dollars per million tokens (ADR 0001); the version is recorded with every cost. Input, output and cache
-    # reads are the published prices on 20 Nov 2026; cache writes (5-minute cache) are not published for these
-    # models and are derived as 1.25x input. Haiku: the price for prompts up to 100K tokens.
+    # Dollars per million tokens (ADR 0001); the version is recorded with every cost. The published prices on
+    # 20 Nov 2026, re-checked unchanged on 25 Nov 2026 (task 3.1): input, output, cache reads and 5-minute cache
+    # writes (1.25x input). Haiku: the price for prompts up to 100K tokens (a longer prompt costs five times more).
     prices:
       version: "2026-11-20"
       models:
