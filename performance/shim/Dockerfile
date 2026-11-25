@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build context: performance/shim. The load-test shim (task 2.13); compose profile "perf".
-FROM python:3.13.18-slim-trixie
+FROM python:3.15.1-slim-trixie
 COPY --from=ghcr.io/astral-sh/uv:0.11.33 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never UV_PROJECT_ENVIRONMENT=/app/.venv
 WORKDIR /app
