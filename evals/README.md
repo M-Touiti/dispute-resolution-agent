@@ -10,7 +10,7 @@ Python 3.13, uv, standard library only at run time. Run from this directory.
 | `baseline/` | The committed summary a run must not fall below | recorded in task 1.16 |
 | `record.sh` | The recording session: live check, record under a spend cap, replay with no key, grade and write the baseline | done |
 | `fixtures/llm/` | Recorded model requests and responses, `<sha256 of the canonical request>.json` (ADR 0006); served by the replay adapter in CI | format and adapters done (1.11); recorded in 1.16 |
-| `nightly/` | Dated results of the scheduled 30-case live slice | M3 |
+| `nightly/` | Dated results of the scheduled 30-case live slice, committed on the branch `eval-nightly`, never on `main` (ADR 0009) | M3 |
 | `REPORT.md` | Published metrics and the unfixed failures | M3 |
 
 ## Golden set v1
