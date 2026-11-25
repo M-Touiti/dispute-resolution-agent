@@ -1,0 +1,10 @@
+# Prometheus Operator scrape configuration, applied apart from the stack because it needs the operator's CRDs
+# (kube-prometheus-stack or similar): kubectl apply -k deploy/k8s/monitoring. The metrics and the dashboard are those
+# of the compose stack (ADR 0008, deploy/compose/observability).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dispute-agent
+
+resources:
+  - service-monitors.yaml

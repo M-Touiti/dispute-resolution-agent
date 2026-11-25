@@ -1,0 +1,36 @@
+# The application tier, independent of where PostgreSQL and Kafka run: the investigator and the three MCP servers.
+# An overlay supplies the namespace, the data stores (or points the endpoints below at managed ones), the secrets and
+# the content volumes (skills, fixtures, policy corpus). See deploy/k8s/README.md.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - investigator.yaml
+  - ledger-mcp.yaml
+  - policy-mcp.yaml
+  - actions-mcp.yaml
+  - network-policies.yaml
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: dispute-agent
+    includeSelectors: false
+
+# Where the data stores are. Every service builds its database URL from these; an overlay replaces them.
+configMapGenerator:
+  - name: dispute-agent-endpoints
+    literals:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=disputes
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  # Model ids and effort come from configuration, never from code (ADR 0001). The live adapter is the default here;
+  # the local overlay switches to replay, which needs no key.
+  - name: investigator-config
+    literals:
+      - LLM_ADAPTER=anthropic
+      - INVESTIGATOR_MODEL=claude-opus-5-5
+      - INVESTIGATOR_EFFORT=medium
+      - TRIAGE_MODEL=claude-haiku-5-5
+      - TRIAGE_EFFORT=low
+      - OTEL_TRACES_EXPORT=false

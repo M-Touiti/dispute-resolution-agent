@@ -1,0 +1,109 @@
+# The only server that writes (ADR 0005): verifies each approval token itself with the public key alone, as the role
+# actions_service. Streamable HTTP on 8083 (/mcp), reachable from the investigator only (network-policies.yaml);
+# actuator on 9080.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actions-mcp
+  labels:
+    app.kubernetes.io/name: actions-mcp
+    app.kubernetes.io/component: mcp-server
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: actions-mcp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: actions-mcp
+        app.kubernetes.io/component: mcp-server
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: actions-mcp
+          image: dispute-agent/actions-mcp:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mcp
+              containerPort: 8083
+            - name: management
+              containerPort: 9080
+          env:
+            - name: POSTGRES_HOST
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_HOST}}
+            - name: POSTGRES_PORT
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_PORT}}
+            - name: POSTGRES_DB
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_DB}}
+            - name: ACTIONS_DB_URL
+              value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+            - name: ACTIONS_DB_USER
+              value: actions_service
+            - name: ACTIONS_DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: dispute-agent-db, key: actions-service-password}}
+            - name: MANAGEMENT_SERVER_PORT
+              value: "9080"
+          volumeMounts:
+            # Spring config tree: actions-mcp.approval.verify-keys, the public key only.
+            - name: approval-verify
+              mountPath: /run/secrets/approval
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: "1"
+              memory: 768Mi
+          startupProbe:
+            httpGet: {path: /actuator/health/liveness, port: management}
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: {path: /actuator/health/liveness, port: management}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /actuator/health/readiness, port: management}
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+      volumes:
+        - name: approval-verify
+          secret:
+            secretName: approval-verify
+            defaultMode: 0440
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actions-mcp
+  labels:
+    app.kubernetes.io/name: actions-mcp
+    app.kubernetes.io/component: mcp-server
+spec:
+  selector:
+    app.kubernetes.io/name: actions-mcp
+  ports:
+    - name: mcp
+      port: 8083
+      targetPort: mcp
+    - name: management
+      port: 9080
+      targetPort: management

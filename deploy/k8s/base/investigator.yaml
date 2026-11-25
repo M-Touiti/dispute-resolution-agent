@@ -1,0 +1,170 @@
+# The agent: consumes disputes.opened and disputes.replay, calls the model and the MCP servers, serves the reviewer
+# API on 8080. Actuator (probes, Prometheus) on its own port, 9080. Secrets it needs, created by the overlay or by
+# hand (deploy/k8s/README.md): dispute-agent-db, reviewer, approval-signing, and optionally anthropic.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: investigator
+  labels:
+    app.kubernetes.io/name: investigator
+    app.kubernetes.io/component: agent
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: investigator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: investigator
+        app.kubernetes.io/component: agent
+    spec:
+      # Service links would put KAFKA_PORT and the like into the environment; nothing here reads them.
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: investigator
+          image: dispute-agent/investigator:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: management
+              containerPort: 9080
+          envFrom:
+            - configMapRef:
+                name: investigator-config
+          env:
+            - name: POSTGRES_HOST
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_HOST}}
+            - name: POSTGRES_PORT
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_PORT}}
+            - name: POSTGRES_DB
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: POSTGRES_DB}}
+            - name: INVESTIGATOR_DB_URL
+              value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+            - name: INVESTIGATOR_DB_USER
+              value: investigator
+            - name: INVESTIGATOR_DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: dispute-agent-db, key: investigator-password}}
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom: {configMapKeyRef: {name: dispute-agent-endpoints, key: KAFKA_BOOTSTRAP_SERVERS}}
+            - name: LEDGER_MCP_URL
+              value: http://ledger-mcp:8081/mcp
+            - name: POLICY_MCP_URL
+              value: http://policy-mcp:8082/mcp
+            - name: ACTIONS_MCP_URL
+              value: http://actions-mcp:8083/mcp
+            # Only the live adapters read it; replay needs no key.
+            - name: ANTHROPIC_API_KEY
+              valueFrom: {secretKeyRef: {name: anthropic, key: api-key, optional: true}}
+            - name: REVIEWER_API_KEY
+              valueFrom: {secretKeyRef: {name: reviewer, key: api-key}}
+            - name: MANAGEMENT_SERVER_PORT
+              value: "9080"
+          volumeMounts:
+            # Spring config tree (application.yml): investigator.approval.signing-key and ...verify-key.
+            - name: approval-signing
+              mountPath: /run/secrets/approval
+              readOnly: true
+            - name: skills
+              mountPath: /app/skills
+              readOnly: true
+            - name: fixtures
+              mountPath: /app/fixtures
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 250m
+              memory: 640Mi
+            limits:
+              cpu: "2"
+              memory: 1Gi
+          startupProbe:
+            httpGet: {path: /actuator/health/liveness, port: management}
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: {path: /actuator/health/liveness, port: management}
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: {path: /actuator/health/readiness, port: management}
+            periodSeconds: 5
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+      volumes:
+        - name: approval-signing
+          secret:
+            secretName: approval-signing
+            defaultMode: 0440
+        # Placeholders: an overlay gives these their content (the local overlay mounts the repository's skills/ and
+        # evals/fixtures/llm/). Empty skills make every investigation escalate.
+        - name: skills
+          emptyDir: {}
+        - name: fixtures
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: investigator
+  labels:
+    app.kubernetes.io/name: investigator
+    app.kubernetes.io/component: agent
+spec:
+  selector:
+    app.kubernetes.io/name: investigator
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+    - name: management
+      port: 9080
+      targetPort: management
+---
+# One consumer per partition at most: disputes.opened and disputes.replay have 3 partitions
+# (investigator.kafka.partitions), so a fourth replica would sit idle. The outbox relay and the replay sweep are safe
+# with several replicas (task 2.8, 2.10). CPU is the signal: a replica waiting on the model is cheap, and the bulkhead
+# bounds the model calls per replica.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: investigator
+  labels:
+    app.kubernetes.io/name: investigator
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: investigator
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+  behavior:
+    # A rebalance pauses every consumer of the group: scale down slowly.
+    scaleDown:
+      stabilizationWindowSeconds: 300

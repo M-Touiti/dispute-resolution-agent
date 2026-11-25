@@ -1,0 +1,41 @@
+# The whole stack on a local kind cluster (deploy/k8s/kind/up.sh): the base, plus PostgreSQL loaded with the seed and
+# a single-node Kafka, the replay adapter, and the repository's content mounted from the kind node (/repo, an
+# extraMount of the repository root). Spends nothing: no API key, replay only.
+#
+# Not generated here, because they are made per cluster and never committed: the approval keys (secrets
+# approval-signing and approval-verify, created by up.sh with deploy/compose/approval-keys) and, for a live run,
+# the secret anthropic (see deploy/k8s/README.md).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dispute-agent
+
+resources:
+  - namespace.yaml
+  - ../../base
+  - postgres.yaml
+  - kafka.yaml
+
+# Replay serves evals/fixtures/llm and needs no key.
+configMapGenerator:
+  - name: investigator-config
+    behavior: merge
+    literals:
+      - LLM_ADAPTER=replay
+
+# The compose stack's local-only defaults (deploy/compose/docker-compose.yml), not secrets worth the name. Any other
+# environment creates these from its own secret store.
+secretGenerator:
+  - name: dispute-agent-db
+    literals:
+      - postgres-password=disputes
+      - ledger-reader-password=ledger_reader
+      - policy-service-password=policy_service
+      - investigator-password=investigator
+      - actions-service-password=actions_service
+  - name: reviewer
+    literals:
+      - api-key=local-reviewer-key
+
+patches:
+  - path: content-volumes.yaml
