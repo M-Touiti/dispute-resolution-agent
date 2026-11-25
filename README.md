@@ -7,11 +7,13 @@
 A production-shaped agent that investigates card disputes through MCP tool servers, cites its evidence, cannot
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
-> **Status: M1 (the agent loop) complete; M2 (the production half) in progress.** The agent investigates one dispute
-> category, unauthorised transactions, end to end, and every pull request replays 30 golden cases and grades them.
-> Nothing it decides is carried out without a person: a decided case waits for a reviewer, and an approved action
-> runs on the write server only with a signed, single-use token that server verifies itself. The first numbers below come
-> from one category and 30 cases; the full results table replaces this notice at M3.
+> **Status: M2 (the production half) complete; M3 (evidence) next.** The agent investigates one dispute category,
+> unauthorised transactions, end to end, and every pull request replays 30 golden cases and grades them. Nothing it
+> decides is carried out without a person: a decided case waits for a reviewer, and an approved action runs on the
+> write server only with a signed, single-use token that server verifies itself. A model outage parks cases and
+> replays them; every event leaves through an outbox; each case is traced and metered; the stack has been load-tested,
+> fault-injected and run on Kubernetes. The numbers below come from one category, 30 cases and one laptop; the full
+> results table replaces this notice at M3.
 > Progress: [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## What it is
@@ -60,11 +62,29 @@ introduced by mistake; the generator was fixed and the set re-recorded. Ambiguou
 
 How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md).
 
-## What exists today (M1)
+## Around the model (M2)
+
+What happens after the decision, and when something fails: [the approval gate and parked
+cases](docs/diagrams/approval-and-parking.md). Measured on one laptop with the model replayed, so these are numbers
+for the pipeline around the model (Kafka, MCP, PostgreSQL, the outbox), not for Claude's latency or rate limits
+([report and caveats](performance/README.md)):
+
+| Run | Result |
+|---|---|
+| Load, 20 disputes a second | one investigator replica saturates at 12.6 cases a second (p99 4.1 s); three keep up (p99 0.77 s). The topic's 3 partitions cap the replicas |
+| Model answering "overloaded" for 40 s | the circuit breaker opened after 10 attempts; all 30 cases in flight parked once and were decided on their first replay, within 25 s of the fault's end, with unchanged outcomes |
+| policy-mcp paused for 40 s | calls bounded by the 30 s MCP timeout, but one listener thread per replica queued every case behind the stalled one; one mid-loop case escalated on replay, where the live model could have retried |
+| 5 malformed events among the disputes | all in `disputes.dlq` with their reason; p99 of the disputes around them unchanged |
+
+No decision was lost or made twice in any run. The approval path is checked by `smoke.sh` on every pull request (an
+approved credit recorded once by actions-mcp, a second approval refused with 409, a rejection that writes nothing) and
+inside a kind cluster by `deploy/k8s/kind/check.sh`.
+
+## What exists today (M2)
 
 | Part | State | Tests |
 |---|---|---|
-| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine with its approval, action and parked states, and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand; the approval gate's use cases (a decided case waits for a person; approve signs a token and carries the action out once; reject); tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, Resilience4j around every model call (a case the model cannot serve is parked and replayed, not escalated), a dead-letter topic, a trace per case and Prometheus metrics from decorators around the ports, JSON logs with card numbers masked, recording and replay of model calls, the MCP client, JSON and schema validation, approval tokens signed with Ed25519 as a compact JWS (JDK only, pinned by shared test vectors), the reviewer API (queue, approve, reject) and the action port on actions-mcp, Kafka in, and out through a transactional outbox, cases and audit in PostgreSQL; tested end to end on Testcontainers | 234 |
+| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine with its approval, action and parked states, and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with two Agent Skills loaded on demand; the approval gate's use cases (a decided case waits for a person; approve signs a token and carries the action out once; reject); tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, Resilience4j around every model call (a case the model cannot serve is parked and replayed, not escalated), a dead-letter topic, a trace per case and Prometheus metrics from decorators around the ports, JSON logs with card numbers masked, recording and replay of model calls, the MCP client, JSON and schema validation, approval tokens signed with Ed25519 as a compact JWS (JDK only, pinned by shared test vectors), the reviewer API (queue, approve, reject) and the action port on actions-mcp, Kafka in, and out through a transactional outbox, cases and audit in PostgreSQL; tested end to end on Testcontainers | 233 |
 | `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, with ground truth kept apart for evaluation; the policy corpus, checked against the generator's rules. Same seed, same bytes | 52 |
 | `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
 | `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI; Prometheus metrics | 33 |
@@ -90,9 +110,13 @@ cd data && uv run python generate.py && cd ..
 # Start PostgreSQL, Kafka, the three MCP servers and the investigator, then check them
 cd deploy/compose
 docker compose up -d --build --wait
-./smoke.sh            # Git Bash on Windows: one dispute through Kafka, the loop and back
+./smoke.sh            # Git Bash on Windows: disputes through Kafka, the loop, the approval gate and back
 docker compose down -v
 ```
+
+The same services on a local Kubernetes cluster (Docker and [kind](https://kind.sigs.k8s.io/); replay only):
+`bash deploy/k8s/kind/up.sh`, then `bash deploy/k8s/kind/check.sh` ([deploy/k8s](deploy/k8s/README.md)). Released
+images: `ghcr.io/m-touiti/dispute-agent-<investigator|ledger-mcp|policy-mcp|actions-mcp>`, from `v0.0.1`.
 
 Replay and grade the golden set, as CI does (stack up, no key):
 
@@ -110,7 +134,7 @@ cd data && uv run pytest && uv run ruff check .        # also mcp-servers/policy
 ```
 
 The MCP servers listen on `localhost:8081` (ledger), `8082` (policy) and `8083` (actions) at `/mcp`. Live model
-runs from M1 need `ANTHROPIC_API_KEY` in `.env` (see [.env.example](.env.example)); CI replays recorded responses
+runs need `ANTHROPIC_API_KEY` in `.env` (see [.env.example](.env.example)); CI replays recorded responses
 and never calls the API.
 
 ## Layout
@@ -148,7 +172,7 @@ The index with full titles is in [docs/adr](docs/adr/README.md); pinned versions
 |---|---|
 | **M0 Skeleton** (done) | Module layout, data generator, three MCP servers answering `tools/list`, compose, CI and CodeQL green |
 | **M1 Loop** (done) | One category end to end through both read servers, with a structured decision, guard and audit; 30 golden cases replayed in CI |
-| M2 Production half | Approval gate and token verification, resilience, DLQ and outbox, traces and dashboards, load and failure tests, Kubernetes manifests |
+| **M2 Production half** (done) | Approval gate and token verification, resilience, DLQ and outbox, traces and dashboards, load and failure tests, Kubernetes manifests |
 | M3 Evidence | All categories including two adversarial ones, 150+ golden cases, live evaluation, `evals/REPORT.md`, tag `v0.1.0` |
 | M4 Write-up | What the evaluations found, the two hardest failures, what the approval gate caught |
 
