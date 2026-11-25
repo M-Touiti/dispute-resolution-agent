@@ -13,3 +13,4 @@ acceptance; a superseding decision gets a new number and links back.
 | [0006](0006-recorded-fixtures-and-nightly-live-evaluation.md) | Recorded fixtures for CI and nightly live evaluation | accepted |
 | [0007](0007-embedding-model-and-fusion-measured-on-the-corpus.md) | Embedding model and fusion weights measured on the policy corpus | accepted |
 | [0008](0008-reliability-and-observability-as-port-decorators.md) | Reliability and observability as decorators around the ports | accepted |
+| [0009](0009-evaluation-design.md) | Evaluation design: golden set v2, metrics, model-graded rubric, nightly slice | accepted; refines 0006 |

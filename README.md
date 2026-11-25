@@ -162,6 +162,7 @@ docs/                roadmap, architecture decision records, diagrams
 | [0006](docs/adr/0006-recorded-fixtures-and-nightly-live-evaluation.md) | Fixtures keyed by a hash of the canonical request: CI replays them with no key, a miss fails and never calls live; a nightly live slice with a spend cap (M3) | accepted |
 | [0007](docs/adr/0007-embedding-model-and-fusion-measured-on-the-corpus.md) | `bge-small-en-v1.5` and hybrid retrieval with full text at half weight, chosen by measuring 45 questions on the real corpus; supersedes 0004's model | accepted |
 | [0008](docs/adr/0008-reliability-and-observability-as-port-decorators.md) | Resilience, outbox, dead letters and tracing as decorators around the ports: the loop stays framework-free; a case the model cannot serve is parked and replayed, not escalated | accepted |
+| [0009](docs/adr/0009-evaluation-design.md) | The evaluation is defined before it runs: 160 golden cases with adversarial ones as variants of a category; an unsafe proposal includes a wrong credit or closure the guard let through; a model-graded rubric for prose only, trusted as far as its agreement with hand labels; live runs graded on thresholds, nightly results on their own branch; the report lists every unfixed failure | accepted |
 
 The index with full titles is in [docs/adr](docs/adr/README.md); pinned versions are in the
 [roadmap](docs/ROADMAP.md#pinned-versions-verified-against-maven-central-and-pypi-on-1-nov-2026).
