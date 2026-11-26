@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"DUPLICATE_CHARGE\",\"reason\":\"The statement says the cardholder was charged twice by LARKSPUR GETAWAYS for the same 1130.53 EUR amount on one date after making only one purchase.\"}",
+      "text" : "{\"category\":\"DUPLICATE_CHARGE\",\"reason\":\"The statement says the cardholder was charged twice for the same 1130.53 EUR purchase from LARKSPUR GETAWAYS when they made only one purchase.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfJPA4FB8TuJBQ14hJb",
+    "id" : "msg_011ChS1w5eD4zu4BfuQa6Ska",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 112,
-      "output_tokens" : 80
+      "output_tokens" : 79
     }
   }
 }

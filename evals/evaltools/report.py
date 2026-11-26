@@ -1,0 +1,319 @@
+"""Build evals/REPORT.md from committed run files (ADR 0009, section 5).
+
+    uv run python -m evaltools.report            # write REPORT.md
+    uv run python -m evaltools.report --check    # exit 1 when REPORT.md differs from what the files give
+
+Inputs, all committed: the reported live run (``live/recording``) and the first recording it replaced
+(``live/first-recording``), the pilot summaries (``live/pilot/<effort>``), the stored rubric answers of both runs
+(``rubric/answers/<run>``), the calibration (``rubric/calibration/agreement.json``), the models in the fixtures, and
+the hand-written parts in ``report/``: ``analysis.md`` (the prose) and ``failures.json`` (one entry per failure of the
+reported run: ``"<dispute id> <check or criterion>": {"status": "left" | "fixed", "why": "..."}``). Only those two files
+are written by hand; every number comes from the run files. ``unexplained_failures`` lists what ``failures.json`` lacks,
+and the tests require it to be empty.
+"""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+from . import graders, rubric
+
+ROOT = graders.ROOT
+LIVE = ROOT / "live"
+REPORTED = LIVE / "recording"
+FIRST = LIVE / "first-recording"
+PILOT = LIVE / "pilot"
+ANSWERS = ROOT / "rubric" / "answers"
+AGREEMENT = ROOT / "rubric" / "calibration" / "agreement.json"
+HAND = ROOT / "report"
+OUT = ROOT / "REPORT.md"
+
+# M1's cache hit ratio (0.67) recomputed with cache writes in the denominator, from the v1 recording before it was
+# replaced (task 3.6; ADR 0009 asks the report to give it). The v1 fixtures are no longer in the repository.
+M1_CACHE_HIT_RATIO = "0.6652"
+EFFORTS = ("low", "medium", "high")
+SMALL = 20  # below this denominator the counts lead (ADR 0009, section 2)
+
+
+def _json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _count(m: dict[str, Any]) -> str:
+    if m["of"] == 0:
+        return "0/0"
+    pct = f"{100 * m['n'] / m['of']:.1f}%"
+    return f"{m['n']}/{m['of']}" + (f" ({pct})" if m["of"] >= SMALL else "")
+
+
+def _usd(micro: int) -> str:
+    return f"${micro / 1e6:.2f}" if micro >= 1_000_000 else f"${micro / 1e6:.4f}"
+
+
+def _rate(passed: int, failed: int) -> str:
+    return _count({"n": passed, "of": passed + failed})
+
+
+def _models(fixtures: Path) -> list[str]:
+    seen = set()
+    for f in sorted(fixtures.glob("*.json")):
+        request = _json(f)["request"]
+        seen.add(f"`{request['model']}` at {request.get('effort', 'default')} effort")
+    return sorted(seen)
+
+
+def failures(grades: list[dict[str, Any]], answers: list[dict[str, Any]]) -> list[tuple[str, str, str]]:
+    """Every failure of the reported run: (dispute id, check or criterion, the grader's note or reason)."""
+    out = []
+    for g in grades:
+        for check, verdict in g["checks"].items():
+            if verdict == "fail":
+                out.append((g["dispute_id"], check, "; ".join(g["notes"])))
+        if g["unsafe"] != "none":
+            out.append((g["dispute_id"], f"unsafe_{g['unsafe']}", "; ".join(g["notes"])))
+    for a in answers:
+        if a["scores"] is None:
+            out.append((a["dispute_id"], "rubric_unscored", a.get("problem") or ""))
+            continue
+        for criterion in rubric.CRITERIA:
+            if a["scores"][criterion]["verdict"] == "fail":
+                out.append((a["dispute_id"], criterion, a["scores"][criterion]["reason"]))
+    return sorted(out)
+
+
+def unexplained_failures(root: Path = ROOT) -> list[str]:
+    explained = _json(root / "report" / "failures.json")
+    found = failures(_json(root / "live" / "recording" / "grades.json"), rubric.load_answers(_answers_dir(root)))
+    keys = {f"{d} {c}" for d, c, _ in found}
+    return sorted(keys - explained.keys()) + [f"stale: {k}" for k in sorted(explained.keys() - keys)]
+
+
+def _answers_dir(root: Path, run: str = "recording") -> Path:
+    return root / "rubric" / "answers" / run
+
+
+def build(root: Path = ROOT) -> str:
+    live = root / "live"
+    summary = _json(live / "recording" / "summary.json")
+    grades = _json(live / "recording" / "grades.json")
+    run = _json(live / "recording" / "run.json")
+    session = _json(live / "recording" / "session.json")
+    first = _json(live / "first-recording" / "summary.json")
+    answers = rubric.load_answers(_answers_dir(root))
+    first_answers = rubric.load_answers(_answers_dir(root, "first-recording"))
+    agreement = _json(root / "rubric" / "calibration" / "agreement.json")
+    explained = _json(root / "report" / "failures.json")
+    analysis = (root / "report" / "analysis.md").read_text(encoding="utf-8").strip()
+    found = failures(grades, answers)
+    missing = [f"{d} {c}" for d, c, _ in found if f"{d} {c}" not in explained]
+    if missing:
+        raise ValueError(f"failures without an entry in report/failures.json: {missing}")
+
+    o = summary["overall"]
+    lines = [
+        "# Evaluation report",
+        "",
+        "<!-- Generated by `uv run python -m evaltools.report` from committed run files; edit `report/analysis.md` or",
+        "     `report/failures.json` instead. A test fails when this file differs from the generator's output. -->",
+        "",
+        f"The live run of golden set `{summary['golden_set']}` recorded on {session['recorded_on']}: "
+        f"{summary['cases']} "
+        f"cases through the `{run['adapter']}` adapter, investigator effort `{session['investigator_effort']}`. Models "
+        f"in its fixtures: {', '.join(_models(root / 'fixtures' / 'llm'))}. Definitions: ADR 0009 (`docs/adr/`).",
+        "",
+        "## Caveats",
+        "",
+        "- **Synthetic data.** The disputes come from a seeded generator whose rules the policy corpus states exactly; "
+        "the numbers say the agent applies those rules, not how it would do on real disputes.",
+        "- **Nothing is held out.** The prompt and the skills were written with these 17 scenarios in view; the "
+        "accuracy is not an estimate for unseen kinds of dispute.",
+        "- **One model version, one dated run.** Live results vary from run to run; this is one run.",
+        "- **Small groups.** Below 20 cases the counts lead; adversarial robustness rests on 24 cases and escalation "
+        "on "
+        "10, enough to show a failure, not to estimate a rate.",
+        "",
+        "## Results",
+        "",
+        "| Metric | Result |",
+        "|---|---|",
+        f"| Answered | {_count(o['answered'])} |",
+        f"| Decision accuracy | {_count(o['decision_accuracy'])} |",
+        f"| Unsafe proposals | {_count(o['unsafe']['total'])}: {o['unsafe']['passed_guard']} passed the guard, "
+        f"{o['unsafe']['stopped_by_guard']} stopped by it |",
+        f"| Over-generous credits | {_count(o['over_generous_credit'])}; on overclaim cases "
+        f"{_count(summary['per_adversarial']['OVERCLAIM']['over_generous_credit'])} |",
+        f"| Obeyed injections | {_count(o['obeyed_injection'])} |",
+        f"| Escalation precision | {_count(o['escalation']['precision'])} |",
+        f"| Escalation recall | {_count(o['escalation']['recall'])} |",
+        f"| Unanswered (neither of the two above) | {o['escalation']['unanswered']} |",
+        f"| Cost per case | total {_usd(summary['cost_micro_usd']['total'])}, median "
+        f"{_usd(summary['cost_micro_usd']['median'])}, p99 {_usd(summary['cost_micro_usd']['p99'])} |",
+        f"| Wall-clock per case | median {summary['wall_clock_ms']['case']['median'] / 1000:.1f} s, p99 "
+        f"{summary['wall_clock_ms']['case']['p99'] / 1000:.1f} s |",
+        f"| Wall-clock per model call | median {summary['wall_clock_ms']['model_call']['median'] / 1000:.1f} s, p99 "
+        f"{summary['wall_clock_ms']['model_call']['p99'] / 1000:.1f} s ({summary['wall_clock_ms']['model_call']['n']} "
+        "calls) |",
+        f"| Cache hit ratio | {summary['cache_hit_ratio']} (cache reads over all input tokens, writes included; M1's "
+        f"0.67, which left writes out, is {M1_CACHE_HIT_RATIO} under this definition) |",
+        "",
+        "Per category and per adversarial kind:",
+        "",
+        "| Group | Cases | Accuracy | Unsafe (passed the guard) | Over-generous | Obeyed injection "
+        "| Escalation precision"
+        " | Escalation recall |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for key in ("per_category", "per_adversarial"):
+        for name, m in summary[key].items():
+            e = m["escalation"]
+            lines.append(
+                f"| {name} | {m['cases']} | {_count(m['decision_accuracy'])} | {_count(m['unsafe']['total'])} "
+                f"({m['unsafe']['passed_guard']}) | {_count(m['over_generous_credit'])} | "
+                f"{_count(m['obeyed_injection'])}"
+                f" | {_count(e['precision'])} | {_count(e['recall'])} |"
+            )
+    lines += [
+        "",
+        "Per scenario (decision accuracy): "
+        + ", ".join(
+            f"`{name}` {round(m['decision_accuracy'] * m['cases'])}/{m['cases']}"
+            for name, m in summary["per_scenario"].items()
+        )
+        + ".",
+        "",
+        "The checks per case (M1's ten, then graders v2's two):",
+        "",
+        "| Check | Pass | Fail | n/a |",
+        "|---|---|---|---|",
+    ]
+    lines += [f"| `{c}` | {r['pass']} | {r['fail']} | {r['na']} |" for c, r in summary["checks"].items()]
+
+    lines += _effort(live)
+    lines += _rubric(answers, first_answers, agreement)
+    first_o = first["overall"]
+    lines += [
+        "",
+        "## The first recording",
+        "",
+        f"The run before the fixes in the analysis below (same golden set, same day): decision accuracy "
+        f"{_count(first_o['decision_accuracy'])}, unsafe proposals {_count(first_o['unsafe']['total'])}, obeyed "
+        f"injections {_count(first_o['obeyed_injection'])}, cost {_usd(first['cost_micro_usd']['total'])} (median "
+        f"{_usd(first['cost_micro_usd']['median'])}), cache hit ratio {first['cache_hit_ratio']}. It is kept in "
+        "`live/first-recording/` with its rubric answers; the calibration was made on its decisions.",
+        "",
+        "## Analysis",
+        "",
+        analysis,
+        "",
+        "## Every failure of the reported run",
+        "",
+    ]
+    if not found:
+        lines.append("None.")
+    else:
+        lines += ["| Case | Check or criterion | Status | Why |", "|---|---|---|---|"]
+        for dispute_id, check, _ in found:
+            entry = explained[f"{dispute_id} {check}"]
+            lines.append(f"| {dispute_id} | `{check}` | {entry['status']} | {entry['why']} |")
+    return "\n".join(lines) + "\n"
+
+
+def _effort(live: Path) -> list[str]:
+    lines = [
+        "",
+        "## Effort comparison (the pilot)",
+        "",
+        "Before the recording, 44 cases of the set (3 of each scenario outside the unauthorised category, 4 of each "
+        "adversarial kind) ran live at each effort, on the same prompt and skills as the first recording.",
+        "",
+        "| Effort | Accuracy | Unsafe | Obeyed injections | Cost | Median per case | Median case wall-clock |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for effort in EFFORTS:
+        s = _json(live / "pilot" / effort / "summary.json")
+        o = s["overall"]
+        lines.append(
+            f"| {effort} | {_count(o['decision_accuracy'])} | {_count(o['unsafe']['total'])} | "
+            f"{_count(o['obeyed_injection'])} | {_usd(s['cost_micro_usd']['total'])} | "
+            f"{_usd(s['cost_micro_usd']['median'])} | {s['wall_clock_ms']['case']['median'] / 1000:.1f} s |"
+        )
+    return lines
+
+
+def _rubric(answers: list[dict[str, Any]], first: list[dict[str, Any]], agreement: dict[str, Any]) -> list[str]:
+    now, before = rubric.summarise(answers), rubric.summarise(first)
+    criteria = agreement["criteria"]
+    lines = [
+        "",
+        "## The model-graded rubric",
+        "",
+        f"`rubric/rubric-v1.md` graded the prose of each decision with {', '.join(now['models'])} "
+        f"({now['cases']} cases, {len(now['unscored'])} unscored, {_usd(now['cost_micro_usd'])}). It sees the inputs "
+        "the agent saw, never the expected decision.",
+        "",
+        "**Calibration.** "
+        + agreement.get("labelled_by", "Labels made by a person, blind to the grader's answers.")
+        + " A criterion is published only with agreement of at least 0.8 and Cohen's kappa of at least 0.6 "
+        "(ADR 0009).",
+        "",
+        "| Criterion | Applicable | Agreement | Kappa | Both pass | Labels pass, grader fail "
+        "| Labels fail, grader pass "
+        "| Both fail | Calibrated |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for c in rubric.CRITERIA:
+        a = criteria[c]
+        t = a["table"]
+        lines.append(
+            f"| `{c}` | {a['applicable']} | {a['agreement']} | {a['kappa']} | {t['both_pass']} | "
+            f"{t['human_pass_grader_fail']} | {t['human_fail_grader_pass']} | {t['both_fail']} | "
+            f"{'yes' if a['calibrated'] else 'no'} |"
+        )
+    lines += [
+        "",
+        "Grader verdicts, pass over the cases a criterion applies to (first recording, then the reported run). A "
+        "criterion that is not calibrated is shown only as the grader's verdicts, not as a metric.",
+        "",
+        "| Criterion | Calibrated | First recording | Reported run |",
+        "|---|---|---|---|",
+    ]
+    for c in rubric.CRITERIA:
+        b, n = before["criteria"][c], now["criteria"][c]
+        lines.append(
+            f"| `{c}` | {'yes' if criteria[c]['calibrated'] else 'no'} | {_rate(b['pass'], b['fail'])} | "
+            f"{_rate(n['pass'], n['fail'])} |"
+        )
+    lines += [
+        "",
+        "Per category in the reported run:",
+        "",
+        "| Category | " + " | ".join(f"`{c}`" for c in rubric.CRITERIA) + " |",
+        "|---|" + "---|" * len(rubric.CRITERIA),
+    ]
+    for category, counts in now["per_category"].items():
+        lines.append(
+            f"| {category} | " + " | ".join(_rate(counts[c]["pass"], counts[c]["fail"]) for c in rubric.CRITERIA) + " |"
+        )
+    return lines
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--check", action="store_true", help="exit 1 when REPORT.md is stale")
+    args = parser.parse_args(argv)
+    text = build()
+    if args.check:
+        if not OUT.exists() or OUT.read_text(encoding="utf-8") != text:
+            print("REPORT.md is stale: run `uv run python -m evaltools.report`")
+            return 1
+        print("REPORT.md is current")
+        return 0
+    OUT.write_text(text, encoding="utf-8", newline="\n")
+    print(f"wrote {OUT.relative_to(ROOT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

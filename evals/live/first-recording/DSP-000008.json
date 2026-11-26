@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000008",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000008",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:49:09.244320700Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute was opened in time. TXN-007846 posted on 2026-07-31 and the dispute was opened on 2026-10-27, which is 88 days later and inside the 120-day limit. The ledger confirms the double charge. TXN-007845 (2026-07-30 10:20, posted 2026-07-31) and TXN-007846 (2026-07-30 10:25, posted 2026-07-31) are both purchases of 1018.73 EUR at LARKSPUR GADGETS, and both carry the same authorisation, AUTH-008059. So one authorisation was posted twice. However, the merchant already refunded the extra posting: refund TXN-007847 for 1018.73 EUR posted on 2026-08-04 and is linked to TXN-007846. Nothing is left in dispute, so the policy says to decline.",
+      "cited_evidence_ids" : [ "TXN-007846", "TXN-007845", "TXN-007847" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "You were charged twice for 1018.73 EUR at LARKSPUR GADGETS on 2026-07-30, but the merchant already refunded the duplicate charge in full. The refund of 1018.73 EUR posted to your card on 2026-08-04, so there is nothing left to dispute.",
+        "policy_section_ids" : [ "duplicate-already-refunded" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7394,
+    "output_tokens" : 1004,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 52296,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10793,
+    "model_call_ms" : [ 1540, 1484, 2021, 1306, 4321 ]
+  }
+}

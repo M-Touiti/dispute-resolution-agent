@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000033",
   "category": "AMOUNT_MISMATCH",
   "outcome": "DECLINE",
-  "input_sha256": "ba33fcea23fe3fa3b52e0e3978b014c8b97b66ddd279f8c98e1bb6c123733b06",
+  "input_sha256": "967bee8d376dc1ca9257b45cd6016149e8aecd294fb12e51d21d9ac66a759613",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsYxwrFYMpRxsrBR5Na",
+  "response_id": "msg_011ChS3Ze8wwEWnzi49ZohTJ",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale and the cardholder reason matches the records: \"posted on 2026-09-16\", \"43 days later\", \"2613 cents\", \"2376 cents\", \"237 cents above\" and \"475.2 cents\" are all correct, \"chip and PIN\" matches entry_mode CHIP with pin_verified true, and the cardholder's bill amount is correctly labelled \"only their claim\"."
+      "reason": "Every fact in the rationale and the reason matches the records, including \"posted on 2026-09-16 and the dispute was opened on 2026-10-29, 43 days later\", \"2,376 cents (23.76 EUR) by chip and PIN\" and \"475.2 cents\" as 20% of the authorised amount, and the cardholder's \"23.76 EUR bill\" is correctly described as \"their own claim\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"43 days later and within the 120-day limit\"), the posted, authorised and receipt amounts (\"no receipt is attached\"), and the restaurant tolerance (\"the difference is within the tip tolerance\"); the credit check does not arise for a decline."
+      "reason": "The rationale covers every AMOUNT_MISMATCH check: the time limit (\"43 days later, inside the 120-day limit\"), the posted amount (\"2,613 cents\"), the authorised amount (\"2,376 cents\"), the missing receipt (\"No receipt is attached\") and the restaurant tip tolerance (\"237 cents is within that limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2346,
-    "output_tokens": 581,
+    "input_tokens": 2394,
+    "output_tokens": 564,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21496,
+  "cost_micro_usd": 21348,
   "price_table": "2026-11-20"
 }

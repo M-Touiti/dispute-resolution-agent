@@ -1,0 +1,46 @@
+{
+  "DSP-000014 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000031 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000048 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000055 faithful": {
+    "status": "left",
+    "why": "Left. Introduced by the fix to the unauthorised checklist: asked to state what the earlier transactions at the merchant show, the agent added that they were \"not disputed\", which no record it read says. The decision and its citations are correct. A further skill change would re-record the set again (about $13 with the rubric); left for after M3."
+  },
+  "DSP-000065 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000082 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000089 faithful": {
+    "status": "left",
+    "why": "Left. Introduced by the fix to the unauthorised checklist: asked to state what the earlier transactions at the merchant show, the agent added that they were \"not disputed\", which no record it read says. The decision and its citations are correct. A further skill change would re-record the set again (about $13 with the rubric); left for after M3."
+  },
+  "DSP-000099 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000150 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000167 merchant_request_clear": {
+    "status": "left",
+    "why": "Left. The note asks for the merchant's cancellation records and its terms; `request_merchant_evidence` offers only `CANCELLATION_POLICY` for both, so the list cannot match the note. Fixing it means a new evidence item in actions-mcp's tool contract, which changes what the model sees; deferred past M3 (decided 26 Nov 2026). The request itself is the correct decision and discloses nothing it should not."
+  },
+  "DSP-000189 faithful": {
+    "status": "left",
+    "why": "Left. A real slip in the prose of a correct decline: it calls the authorised amount (117.09 EUR, on AUTH-008369) a figure \"only from the cardholder\" and says the merchant \"issued no receipt\" where the case only has none attached. The arithmetic and the tip rule are right. One case in 160; no change made."
+  }
+}

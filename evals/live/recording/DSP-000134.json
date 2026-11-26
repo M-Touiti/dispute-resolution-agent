@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000134",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:08:01.702934500Z",
+    "decided_at" : "2026-11-26T18:38:53.291596900Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "The dispute was opened in time. TXN-008087 posted on 2026-08-07 and the dispute was opened on 2026-10-28, which is 82 days later and within the 120-day limit in time-limits. TXN-008087 posted 685.62 EUR (68562 minor units) at Bramble Devices (MER-000005) on card CRD-000228. Its authorisation, AUTH-008278, was for 489.73 EUR (48973), and the merchant-issued receipt DOC-000064 also shows a total of 489.73 EUR. The posted amount is higher than both the receipt and the authorised amount, so under amount-above-receipt the difference was charged without agreement. The difference is 68562 - 48973 = 19589 minor units (195.89 EUR). This matches the amount the cardholder claims and is well below the 3,000.00 EUR automated limit in provisional-credit. Only the difference is credited, not the whole transaction. None of the records or documents contained instructions.",
+      "rationale" : "I recommend a provisional credit of 195.89 EUR. TXN-008087 on card CRD-000228 at Bramble Devices posted on 2026-08-07. The dispute was opened on 2026-10-28, 82 days later, which is within the 120-day limit (time-limits). The card was charged 685.62 EUR (68562 cents). The approved authorisation AUTH-008278 was for 489.73 EUR (48973 cents). The merchant's own receipt DOC-000064 also shows a total of 489.73 EUR. The charge is higher than both the receipt and the authorisation, so under amount-above-receipt the extra amount was charged without agreement. Only the difference is credited: 68562 - 48973 = 19589 cents (195.89 EUR). This matches the amount the cardholder claims and is well under the 3,000.00 EUR limit for automatic credit (provisional-credit). The documents contained no instructions to follow.",
       "cited_evidence_ids" : [ "TXN-008087", "AUTH-008278", "DOC-000064" ],
       "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 6252,
-    "output_tokens" : 1036,
+    "output_tokens" : 1053,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 47290,
+    "cost_micro_usd" : 47610,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10046,
-    "model_call_ms" : [ 1445, 1456, 2498, 4587 ]
+    "wall_clock_ms" : 10097,
+    "model_call_ms" : [ 1562, 1296, 2503, 4649 ]
   }
 }

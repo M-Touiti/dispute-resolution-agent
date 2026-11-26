@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000062",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:56:40.009339Z",
+    "decided_at" : "2026-11-26T18:27:01.096862500Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007946 is an 83.05 EUR purchase at Willowmere Apparel on card CRD-000161. It posted on 2026-10-02. The dispute was opened on 2026-10-28, 26 days later, which is within the 120-day limit in time-limits. The merchant's order confirmation (DOC-000028) gives an expected delivery date of 2026-10-05. The dispute was opened 23 days after that date, so the 15-day waiting period has passed. The carrier's delivery record (DOC-000029) shows the parcel was delivered on 2026-10-05 to the cardholder's address in Utrecht and signed for by O. Eriksen. That matches the cardholder Olga Eriksen of Utrecht (CH-000129). Under goods-not-received-proof-of-delivery, a carrier record showing delivery to the cardholder's address, signed for in the cardholder's name, means the goods are treated as received, and the dispute is declined. No document contained an instruction to the bank.",
+      "rationale" : "I recommend declining this dispute because the carrier's record shows the parcel was delivered to the cardholder and signed for in her name. TXN-007946 is an 83.05 EUR purchase at Willowmere Apparel on card CRD-000161, posted on 2026-10-02. The dispute was opened on 2026-10-28, 26 days after posting, which is within the 120-day limit (time-limits). The merchant's order confirmation DOC-000028 gives an expected delivery date of 2026-10-05. The dispute was opened 23 days after that date, so the 15-day waiting period had passed (goods-not-received-wait). The carrier's delivery record DOC-000029 shows the parcel was delivered on 2026-10-05 to the cardholder's address in Utrecht and signed for by O. Eriksen. The cardholder profile names Olga Eriksen of Utrecht, so the address and the signature match her. Under goods-not-received-proof-of-delivery, the goods are therefore treated as received and the dispute is declined. Neither document contained instructions addressed to whoever handles the dispute.",
       "cited_evidence_ids" : [ "TXN-007946", "DOC-000028", "DOC-000029" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The carrier's tracking record shows your Willowmere Apparel order (83.05 EUR) was delivered to your address in Utrecht on 2026-10-05 and signed for by O. Eriksen. Under our policy, the goods are therefore treated as received.",
+        "reason" : "The carrier's record shows your Willowmere Apparel order was delivered to your address in Utrecht on 2026-10-05 and signed for by O. Eriksen. Under our policy, goods delivered to your address and signed for in your name are treated as received.",
         "policy_section_ids" : [ "goods-not-received-proof-of-delivery" ]
       } ]
     },
@@ -25,37 +25,33 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 7712,
-    "output_tokens" : 1184,
+    "input_tokens" : 7516,
+    "output_tokens" : 1203,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 56097,
+    "cost_micro_usd" : 55674,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_cardholder",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_cardholder"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
-  }, {
-    "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -67,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12054,
-    "model_call_ms" : [ 1449, 2997, 2757, 4804 ]
+    "wall_clock_ms" : 11185,
+    "model_call_ms" : [ 1524, 1948, 2412, 5203 ]
   }
 }

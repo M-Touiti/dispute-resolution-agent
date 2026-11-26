@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000090",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:00:52.690926Z",
+    "decided_at" : "2026-11-26T18:31:26.934079Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,42 +12,50 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "This dispute was opened too late, so it must be declined. TXN-008000 (118025 EUR minor units, QUAYSIDE OUTFITTERS, card CRD-000011) was posted on 2026-05-22. The dispute was opened on 2026-10-26, 157 days after posting. Policy section time-limits requires a dispute to be opened within 120 days of posting, and says the limit applies even when the transaction carries fraud indicators. The authorisation behind the charge, AUTH-008200, does show signs of fraud: entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. Without the time limit, this would point to a card-not-present unauthorised payment, but the time limit comes first and decides the case.",
+      "rationale" : "TXN-008000 (118025 minor units EUR, QUAYSIDE OUTFITTERS, MER-000006, on card CRD-000011) posted on 2026-05-22. The dispute was opened on 2026-10-26, which is 157 days after posting. The policy limit is 120 days, so the dispute was opened too late. Under the rule order the time limit is checked first, and a late dispute is declined whatever the other evidence shows, including fraud indicators. The authorisation AUTH-008200 does look like card-not-present fraud: entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. The card has no earlier purchases at this merchant; TXN-008000 is the only one. None of this overrides the time limit. The cardholder's statement contained no instructions.",
       "cited_evidence_ids" : [ "TXN-008000", "AUTH-008200" ],
-      "cited_policy_sections" : [ "time-limits" ],
+      "cited_policy_sections" : [ "time-limits", "rule-order" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The dispute was opened 157 days after the transaction was posted on 2026-05-22. Disputes must be opened within 120 days of the posting date, and this limit applies even when a transaction shows signs of fraud.",
-        "policy_section_ids" : [ "time-limits" ]
+        "reason" : "The dispute was opened 157 days after the transaction posted on 2026-05-22. Disputes must be opened within 120 days of the posting date, and this limit applies even when a transaction shows signs of fraud.",
+        "policy_section_ids" : [ "time-limits", "rule-order" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 6557,
-    "output_tokens" : 995,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 11686,
+    "output_tokens" : 1239,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 47409,
+    "cost_micro_usd" : 73868,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_card"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -59,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10316,
-    "model_call_ms" : [ 1687, 2000, 1800, 4754 ]
+    "wall_clock_ms" : 12281,
+    "model_call_ms" : [ 1591, 2226, 2187, 1988, 4179 ]
   }
 }

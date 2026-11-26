@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000117",
   "category": "AMOUNT_MISMATCH",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "c6ac34c0b1dbd01dc2ae0d567c7b8198106c538d6bf169ad7dca8677e5e5e35b",
+  "input_sha256": "ae80d35a277bb11af1b4d0391bf68c09e6ba5f62052f9df5cbcbec1efd26b68d",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt2m134kymu6Mi1H7gU",
+  "response_id": "msg_011ChS41fEuE1RQ6BiE1c1p9",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact is supported by the records, including \"posted to card CRD-000078 on 2026-07-27\", \"That is 91 days\" (27 July to 26 October), \"approved for 924.40 EUR\" and \"104457 - 92440 = 12017 cents\", which is correct arithmetic."
+      "reason": "Every fact can be traced to the inputs: \"posted on 2026-07-27\" to \"2026-10-26, which is 91 days later\" is correct, the amounts match TXN-008055, AUTH-008249 and DOC-000056, and \"104457 - 92440 = 12017 cents\" is right."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"91 days, inside the 120-day limit\"), the posted, authorised and receipt amounts, and that \"Only that difference is credited\"; no tip tolerance is needed for a devices merchant."
+      "reason": "The rationale covers the time limit (\"91 days later. The limit is 120 days\"), the posted, authorised and receipt amounts, and that \"Only the difference is credited\"; the tip check does not apply because the merchant is not a restaurant."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2689,
-    "output_tokens": 430,
+    "input_tokens": 2673,
+    "output_tokens": 466,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 19848,
+  "cost_micro_usd": 20504,
   "price_table": "2026-11-20"
 }

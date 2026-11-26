@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000125",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000125",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:06:52.911120600Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I checked the time limit first. TXN-008066 posted on 2026-09-24 and the dispute was opened on 2026-10-28, which is 34 days later and inside the 120-day limit. The ledger shows two purchases at MEADOWLARK ELECTRONICS (MER-000032) on card CRD-000114, both for 96300 EUR minor units (963.00 EUR) and both posted on 2026-09-24. TXN-008065 is dated 2026-09-23T09:00:38Z and TXN-008066 is dated 2026-09-23T09:04:38Z. Both carry the same authorisation, AUTH-008259, an approved request for 963.00 EUR. That means one authorisation was posted twice. Neither posting has been refunded: the merchant's transaction list for this card shows no refunds. Under the policy for one authorisation posted twice, the extra posting, TXN-008066, gets provisional credit. That credit is 963.00 EUR, the amount of one posting, which matches the claim and is below the 3,000.00 EUR limit for provisional credit.",
+      "cited_evidence_ids" : [ "TXN-008066", "TXN-008065", "AUTH-008259" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 96300,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7802,
+    "output_tokens" : 1111,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 56232,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11798,
+    "model_call_ms" : [ 1530, 1493, 1545, 2300, 4882 ]
+  }
+}

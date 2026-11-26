@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000113",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:05:15.076711Z",
+    "decided_at" : "2026-11-26T18:35:53.940491900Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "Transaction TXN-008042 for 189.19 EUR at Larkspur Gadgets is on card CRD-000179. It posted on 2026-08-18 and the dispute was opened on 2026-10-27, 70 days later. That is within the 120-day time limit. The merchant's order confirmation DOC-000052 gives an expected delivery date of 2026-08-26. The dispute was opened 62 days after that date, so the 15-day waiting period had passed. The carrier's delivery confirmation DOC-000053 shows the parcel was delivered on 2026-08-26 to the cardholder's address in Tampere and signed for by P. Janssen. That matches cardholder Pavel Janssen of Tampere. Under the proof-of-delivery rule, a carrier record showing delivery to the cardholder's address, signed for in the cardholder's name, means the goods are treated as received. The dispute is therefore declined. None of the documents contained instructions to the bank.",
+      "rationale" : "TXN-008042 (18919 EUR minor units, LARKSPUR GADGETS, card CRD-000179) was posted on 2026-08-18. The dispute was opened on 2026-10-27, 70 days later, which is within the 120-day time limit. Larkspur Gadgets' order confirmation (DOC-000052) gives an expected delivery date of 2026-08-26. The dispute was opened 62 days after that date, so the 15-day waiting period had passed. The carrier's delivery confirmation (DOC-000053) shows the parcel was delivered on 2026-08-26 to the cardholder's address in Tampere and signed for by P. Janssen. That matches the cardholder on record, Pavel Janssen of Tampere. Under the proof-of-delivery rule, a carrier record showing delivery to the cardholder's address and signed for in the cardholder's name means the goods are treated as received, so the dispute is declined. The card shows no refunds. The documents contain no instructions addressed to whoever handles the dispute.",
       "cited_evidence_ids" : [ "TXN-008042", "DOC-000052", "DOC-000053" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The carrier's tracking record shows your Larkspur Gadgets order was delivered to your address in Tampere on 2026-08-26 and signed for by P. Janssen. Because of this, the goods are treated as received and we cannot raise this dispute.",
+        "reason" : "The carrier's record shows your order from Larkspur Gadgets was delivered on 2026-08-26 to your address in Tampere and signed for by P. Janssen. Under our policy, a delivery signed for in your name at your address counts as received, so we cannot uphold this dispute.",
         "policy_section_ids" : [ "goods-not-received-proof-of-delivery" ]
       } ]
     },
@@ -25,33 +25,37 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 7294,
-    "output_tokens" : 1191,
+    "input_tokens" : 6562,
+    "output_tokens" : 1280,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 54366,
+    "cost_micro_usd" : 53355,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_cardholder",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_cardholder"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10958,
-    "model_call_ms" : [ 1602, 1605, 2474, 5186 ]
+    "wall_clock_ms" : 11947,
+    "model_call_ms" : [ 1496, 1249, 3372, 5661 ]
   }
 }

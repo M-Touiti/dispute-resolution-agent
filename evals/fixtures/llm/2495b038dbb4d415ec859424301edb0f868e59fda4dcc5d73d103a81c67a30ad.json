@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Bramble Streaming service by phone last month but were still charged 16.79 EUR, which indicates a recurring charge after cancellation.\"}",
+      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Bramble Streaming subscription by phone last month, yet they were still charged 16.79 EUR, which indicates a recurring payment taken after cancellation.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRf17jPiaQiTyikyQ3pc",
+    "id" : "msg_011ChS1cvPr98cd6BsSx1Awr",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 106,
-      "output_tokens" : 81
+      "output_tokens" : 88
     }
   }
 }

@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000087",
     "state" : "ESCALATED",
-    "decided_at" : "2026-11-26T14:00:16.706931700Z",
+    "decided_at" : "2026-11-26T18:30:47.377919400Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : "AGENT_DECISION",
@@ -12,42 +12,50 @@
     "decision" : {
       "outcome" : "ESCALATE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007995 is a charge of 4,146.81 EUR at COPPERLEAF JOURNEYS on card CRD-000162. It posted on 2026-09-27 and the dispute was opened on 2026-10-26, 29 days later. That is inside the 120-day limit in time-limits. The authorisation AUTH-008195 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set. Under unauthorised-card-not-present, that means the payment counts as unauthorised and the rules would credit the full 414,681 cents. Under provisional-credit, the automated process never grants a credit above 3,000.00 EUR, so the case goes to a specialist to decide. No action is proposed.",
+      "rationale" : "I'm escalating this case to a specialist because the payment meets the unauthorised rule but the credit would be above the limit for automated credit. The transaction TXN-007995 for 4,146.81 EUR at COPPERLEAF JOURNEYS (MER-000061) was posted on 2026-09-27 to card CRD-000162. The dispute was opened on 2026-10-26, 29 days later, so it is within the 120-day time limit (time-limits). Authorisation AUTH-008195 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN and the fraud flag set. Under unauthorised-card-not-present, that counts as an unauthorised payment, and the credit would be the full 414,681 minor units. The card has no earlier transactions at this merchant: TXN-007995 is the only one. The provisional-credit section says the automated process never grants credit above 3,000.00 EUR and that such cases go to a specialist, who decides. So I propose no action.",
       "cited_evidence_ids" : [ "TXN-007995", "AUTH-008195" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 5,
-    "input_tokens" : 10314,
-    "output_tokens" : 1002,
-    "cache_read_input_tokens" : 23480,
+    "model_calls" : 4,
+    "input_tokens" : 7655,
+    "output_tokens" : 1167,
+    "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 63593,
+    "cost_micro_usd" : 55077,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -59,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11631,
-    "model_call_ms" : [ 1569, 2767, 1815, 1999, 3403 ]
+    "wall_clock_ms" : 11763,
+    "model_call_ms" : [ 1603, 2702, 2961, 4386 ]
   }
 }

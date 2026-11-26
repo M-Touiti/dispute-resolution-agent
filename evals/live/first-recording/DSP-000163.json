@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000163",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000163",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:13:36.347576900Z",
+    "reported_category" : "GOODS_NOT_RECEIVED",
+    "category" : "GOODS_NOT_RECEIVED",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute because it was opened too early. The 79.63 EUR charge, TXN-008137 at Ashgrove Apparel (MER-000033), is on card CRD-000006 and posted on 2026-10-05. The dispute was opened on 2026-10-24, 19 days later, so it is within the 120-day time limit. The merchant's order confirmation, DOC-000075, gives an expected delivery date of 2026-10-18. The dispute was opened 6 days after that date. The cardholder must wait 15 days after the expected delivery date before opening a dispute, so this one came too soon. Because the wait decides the case, I did not check proof of delivery or merchant refunds. The cardholder may open a new dispute from 2026-11-02 if the order still has not arrived. Neither the statement nor the document contained instructions to follow.",
+      "cited_evidence_ids" : [ "TXN-008137", "DOC-000075" ],
+      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your Ashgrove Apparel order was due on 2026-10-18, and you opened this dispute on 2026-10-24. You need to wait 15 days after the expected delivery date before opening a dispute, so a late parcel still has time to arrive. If the order still hasn't arrived, you can open a new dispute from 2026-11-02.",
+        "policy_section_ids" : [ "goods-not-received-wait", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5618,
+    "output_tokens" : 990,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 43779,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10506,
+    "model_call_ms" : [ 1559, 1486, 2215, 5190 ]
+  }
+}

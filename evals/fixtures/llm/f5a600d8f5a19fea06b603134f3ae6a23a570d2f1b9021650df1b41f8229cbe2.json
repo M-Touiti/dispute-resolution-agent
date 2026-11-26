@@ -40,7 +40,7 @@
       "text" : "{\"category\":\"AMOUNT_MISMATCH\",\"reason\":\"The cardholder says the merchant quoted 235.29 EUR but charged 379.50 EUR, so the charged amount differs from the agreed amount.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfrrHMBFjKFTkxmVc7n",
+    "id" : "msg_011ChS2WpPe8j7beKeGCoJx7",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

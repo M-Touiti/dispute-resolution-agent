@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000027",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "DECLINE",
-  "input_sha256": "0a8798b24178b150120e01cb9d62f1475f976e52e46696ac394af6d8d35ce0cb",
+  "input_sha256": "33953a62972b554bf7ac638f9e1598aa4fdbe91a58adf531c9df28b6e023474f",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsXe6ze4kFQYG5XQXip",
+  "response_id": "msg_011ChS3Y7tF2LWQ3d58BiCaW",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact matches the records: \"posted on 2026-10-15\", \"opened on 2026-10-31, 16 days after posting\", \"expected delivery date as 2026-10-28\" and \"opened only 3 days after that date\" are all correct, as is the 2026-11-12 reopening date."
+      "reason": "The facts in the rationale and the cardholder reason match the records: \"posted on 2026-10-15\", \"opened on 2026-10-31, 16 days later\", \"expected delivery date of 2026-10-28\", \"only 3 days after that date\", and 2026-10-28 plus 15 days is \"2026-11-12\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day time limit\") and the expected delivery date and wait, then stops at that deciding check and says why: \"the waiting-period rule decides the case before either is considered.\""
+      "reason": "The rationale addresses the time limit (\"well inside the 120-day time limit\") and the expected delivery date and waiting period, then stops at that deciding check and says why: \"Because the case ends at the waiting-period step, I did not consider proof of delivery or a merchant refund.\""
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2020,
-    "output_tokens": 475,
+    "input_tokens": 1971,
+    "output_tokens": 518,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 18072,
+  "cost_micro_usd": 18736,
   "price_table": "2026-11-20"
 }

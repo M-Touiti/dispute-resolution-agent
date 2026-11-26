@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000021",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "062ba415f170d6f0dc951b2aa708f5c4bf2ed675b79bf6e68855344bc5a6e949",
+  "input_sha256": "05dd5a5e55fb6545d22d6967676ca8e69b0ad17fae48a6e3b16d51846a3ff279",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsVf1FxHDWvNRvTMTBD",
+  "response_id": "msg_011ChS3WD7iFABY47HbEqizP",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale and the cardholder reason matches the records, including \"posted on 2026-10-13 and the dispute was opened on 2026-10-29. That is 16 days\" (correct arithmetic) and \"entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag\" (from AUTH-008083), and the policy is paraphrased accurately."
+      "reason": "Every fact matches the records, including \"It posted on 2026-10-13 and the dispute was opened on 2026-10-29. That is 16 days\", \"entry mode ECOMMERCE\", \"(AUTHENTICATED)\", \"(CVV MATCH)\" and \"the fraud flag was not set\"; the cardholder's claim is presented only as their statement."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"well inside the 120-day limit\"), entry mode, the 3-D Secure result and the fraud flag. It stops at the deciding 3-D Secure rule and says why: \"does not outweigh that authentication, so the dispute is declined\". The earlier-transactions check and the credit limit therefore need not be addressed."
+      "reason": "The rationale covers the time limit (\"well within the 120-day time limit\"), the entry mode (\"ECOMMERCE\"), the 3-D Secure result (\"AUTHENTICATED\"), the fraud flag and earlier merchant transactions (\"The card has no earlier transactions at this merchant\"); no credit is proposed, so the credit limit does not apply."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2458,
-    "output_tokens": 759,
+    "input_tokens": 3522,
+    "output_tokens": 621,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 25504,
+  "cost_micro_usd": 27000,
   "price_table": "2026-11-20"
 }

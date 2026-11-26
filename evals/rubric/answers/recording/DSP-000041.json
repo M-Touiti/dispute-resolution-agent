@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000041",
   "category": "DUPLICATE_CHARGE",
   "outcome": "DECLINE",
-  "input_sha256": "b0ecdce90dbe594c3486f5d7db1dbab391a36a91abde95e52446a569d3268c7b",
+  "input_sha256": "e20653c8ce526ce356b360860160a279dae396ebc948b42bc7c54d8173de80be",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsbGbnakZE8qCeQd44a",
+  "response_id": "msg_011ChS3boRrWPhRG5EiuZTDL",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact checks against the records, including \"62 days later\" (2026-08-29 to 2026-10-30), the AUTH-008115/AUTH-008116 times \"six hours apart\", \"no fraud flag\", and \"There is no refund from this merchant on this card\", which matches the merchant search showing only the two purchases."
+      "reason": "Every fact in the rationale and the decline reason matches the records, including \"62 days after TXN-007908 posted on 2026-08-29\", \"about six hours apart\" (20:51 to 02:51) and \"There is no refund at this merchant on the card\", which the merchant search showing only the two purchases supports."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"inside the 120-day limit\"), the authorisations (\"They do not share an authorisation\"), the amounts and dates of both postings, and the refund (\"There is no refund from this merchant\"); no credit limit check is needed for a decline."
+      "reason": "The rationale covers the time limit (\"within the 120-day time limit\"), authorisations (\"The postings do not share an authorisation\"), the amounts and dates of both postings, and refunds (\"There is no refund at this merchant on the card\"); the credit limit does not apply to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to judge."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2783,
-    "output_tokens": 529,
+    "input_tokens": 2921,
+    "output_tokens": 521,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 22204,
+  "cost_micro_usd": 22596,
   "price_table": "2026-11-20"
 }

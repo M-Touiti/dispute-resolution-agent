@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000043",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "REQUEST_MERCHANT_EVIDENCE",
+  "input_sha256": "56704f085269123d073633a8d4cc954a7067b8dc76ad023720f18cd361463174",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsc1CMfNdstRTLuxNYN",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "fail",
+      "reason": "The rationale says \"This category does not allow a provisional credit.\", but none of the inputs or cited policy sections say anything about provisional credit for this category; the day counts (85 and 78) and other facts are correct."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"85 days later. That is within the 120-day limit\"), the expected delivery date and wait (\"opened 78 days after that date, so the 15-day waiting period ... has passed\"), the delivery record (\"No carrier delivery confirmation is attached\") and merchant resolution (\"got no reply\" and \"no refund from this merchant\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "pass",
+      "reason": "The note asks for \"the carrier's delivery record showing delivery to the cardholder's address, signed for by the cardholder\", which matches the PROOF_OF_DELIVERY evidence item and discloses nothing internal."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2695,
+    "output_tokens": 829,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 27852,
+  "price_table": "2026-11-20"
+}

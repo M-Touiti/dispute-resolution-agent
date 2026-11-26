@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000108",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:04:14.935079600Z",
+    "decided_at" : "2026-11-26T18:34:52.263903800Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend a provisional credit of 453.53 EUR for one of the two postings. The time limit is met: TXN-008034 posted on 2026-08-24 and the dispute was opened on 2026-10-30, 67 days later, which is within the 120-day limit. The card has two purchases at MER-000052 (LARKSPUR GETAWAYS), both for 45353 minor units, both made on 2026-08-23 and both posted on 2026-08-24: TXN-008033 at 10:27:18Z and the disputed TXN-008034 at 10:30:18Z. Both carry the same authorisation, AUTH-008230. That authorisation was approved for 45353, so one authorisation was posted twice. The card has no refunds. Under duplicate-same-authorisation, the extra posting, TXN-008034 for 45353, gets a provisional credit. That is below the 3,000.00 EUR limit in provisional-credit. The credit is for one posting only, not both. A separate purchase at the same merchant, TXN-002867 for 45080 on 2026-09-07, uses a different authorisation (AUTH-002943) and is not part of this dispute.",
+      "rationale" : "I recommend a provisional credit of 453.53 EUR for the extra posting. The disputed posting, TXN-008034 (453.53 EUR, posted 2026-08-24), was made 3 minutes after TXN-008033 (453.53 EUR, also posted 2026-08-24). Both are at LARKSPUR GETAWAYS (MER-000052) and carry the same authorisation, AUTH-008230. That authorisation was approved once for 453.53 EUR. So one authorisation was posted twice. The ledger shows no refund of either posting. The dispute was opened on 2026-10-30, 67 days after posting, which is within the 120-day time limit. The later TXN-002867 (450.80 EUR, 2026-09-08) has a different amount and its own authorisation, so it is not part of this duplicate. Under the rule for one authorisation posted twice, provisional credit is approved for the extra posting. 453.53 EUR is below the 3,000.00 EUR automated limit.",
       "cited_evidence_ids" : [ "TXN-008034", "TXN-008033", "AUTH-008230" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,41 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7991,
-    "output_tokens" : 1254,
+    "input_tokens" : 7826,
+    "output_tokens" : 1110,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 59583,
+    "cost_micro_usd" : 56140,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
-  }, {
-    "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -71,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12015,
-    "model_call_ms" : [ 1544, 1259, 1843, 2675, 4603 ]
+    "wall_clock_ms" : 11413,
+    "model_call_ms" : [ 1615, 1294, 1708, 2207, 4402 ]
   }
 }

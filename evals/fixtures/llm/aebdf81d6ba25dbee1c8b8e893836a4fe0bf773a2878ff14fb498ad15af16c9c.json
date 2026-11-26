@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"AMOUNT_MISMATCH\",\"reason\":\"The cardholder says the receipt shows 67.70 EUR while the card was charged 97.48 EUR, a difference in amount rather than a duplicate, unauthorised, undelivered, or cancelled payment.\"}",
+      "text" : "{\"category\":\"AMOUNT_MISMATCH\",\"reason\":\"The cardholder says the receipt shows 67.70 EUR but the card was charged 97.48 EUR, so the charged amount differs from the agreed amount.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfSJ8QjbtTyo46qww9f",
+    "id" : "msg_011ChS24rXeEbGpcyzRQzHnP",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 101,
-      "output_tokens" : 95
+      "output_tokens" : 77
     }
   }
 }

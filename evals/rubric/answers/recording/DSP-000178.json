@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000178",
   "category": "CANCELLED_RECURRING",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "a0e844e59e03ad8c68ea8df690f8be152ca33c402cfd47f85752f47262d4599c",
+  "input_sha256": "9eaf1ccd8d88ba32773adf15cff2832b6078678e236719a2fdaa46f1fab92f01",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtPR3pfyNLatBPseRao",
+  "response_id": "msg_011ChS4MpdFbDZyafPvBATeq",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The stated facts match the records: \"posted on 2026-09-27\", \"opened on 2026-10-29, 32 days after posting\" (a correct count), and \"cancelled with effect from 2026-09-12\"; the 84.80 EUR four-month request is presented as what \"The cardholder asked for\", not as fact."
+      "reason": "Every fact in the rationale matches the records, including \"posted on 2026-09-27\", \"32 days after posting\" (correct from 2026-09-27 to 2026-10-29) and \"cancelled with effect from 2026-09-12\" from DOC-000087."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers every required check: the time limit (\"32 days after posting, which is inside the 120-day time limit\"), the written confirmation \"DOC-000087\", its effective date against the charge (\"That is before the 2026-09-26 charge\"), and the credit limit (\"well under the 3,000.00 EUR limit\")."
+      "reason": "The rationale addresses the time limit (\"within the 120-day limit\"), the written confirmation (\"cancellation confirmation (DOC-000087)\"), its effective date against the charge (\"took effect before the charge was made\") and the credit limit (\"well below the 3,000.00 EUR automated limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2459,
-    "output_tokens": 686,
+    "input_tokens": 2532,
+    "output_tokens": 484,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 24048,
+  "cost_micro_usd": 20300,
   "price_table": "2026-11-20"
 }

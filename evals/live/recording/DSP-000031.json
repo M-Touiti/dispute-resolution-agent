@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000031",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:51:58.989065700Z",
+    "decided_at" : "2026-11-26T18:22:08.657077900Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,13 +12,13 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "The disputed charge is TXN-007894. It is on card CRD-000082 at Copperleaf Gym (MER-000009), which bills on a recurring basis. The charge was made on 2026-09-19, posted on 2026-09-20 and is for 6778 minor units (67.78 EUR), the same as the amount claimed. The dispute was opened on 2026-10-29, 39 days after posting, which is within the 120-day limit in time-limits. The cardholder says they cancelled by phone and has nothing in writing. No documents are attached, so there is no merchant-issued cancellation confirmation and no effective date to compare with the charge date. Under recurring-no-proof, the merchant must provide its cancellation records and the terms for the subscription.",
+      "rationale" : "TXN-007894 is a recurring charge of 67.78 EUR (6778 minor units) by Copperleaf Gym (MER-000009) on card CRD-000082. It was charged on 2026-09-19 and posted on 2026-09-20. The dispute was opened on 2026-10-29, 39 days after posting, which is within the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing, and no merchant cancellation confirmation is attached to the case. That means there is no effective cancellation date to compare with the charge date. Under recurring-no-proof, the merchant's cancellation records and subscription terms must be requested before any credit or decline.",
       "cited_evidence_ids" : [ "TXN-007894" ],
       "cited_policy_sections" : [ "time-limits", "recurring-no-proof" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "CANCELLATION_POLICY" ],
-        "note" : "For the subscription charge of 67.78 EUR made on 2026-09-19, please provide your cancellation records for this cardholder's membership, including any record of a cancellation request made by phone and its date, and the cancellation terms that applied to the subscription."
+        "note" : "Please provide your cancellation records for this cardholder's membership, including any record of a phone cancellation request and its date, and the cancellation terms that applied to the 67.78 EUR charge on 2026-09-19."
       } ]
     },
     "guard_violations" : [ ]
@@ -26,28 +26,28 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 4385,
-    "output_tokens" : 826,
+    "output_tokens" : 789,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 35454,
+    "cost_micro_usd" : 34850,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist" ],
@@ -59,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10857,
-    "model_call_ms" : [ 1508, 2469, 2513, 4325 ]
+    "wall_clock_ms" : 8422,
+    "model_call_ms" : [ 1518, 1542, 1529, 3748 ]
   }
 }

@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"GOODS_NOT_RECEIVED\",\"reason\":\"The cardholder ordered from Ashgrove Apparel, the order was due on 2026-08-17, and it never arrived, so they want a refund.\"}",
+      "text" : "{\"category\":\"GOODS_NOT_RECEIVED\",\"reason\":\"The cardholder ordered from Ashgrove Apparel with a due date of 2026-08-17, says the order never arrived, and asks for a refund, which describes paid goods not delivered.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRg3LCR9ZAzUXj1cr8Yo",
+    "id" : "msg_011ChS2gucwb7B7Po6UHm2mc",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 108,
-      "output_tokens" : 75
+      "output_tokens" : 88
     }
   }
 }

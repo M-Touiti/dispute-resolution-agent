@@ -1,0 +1,77 @@
+{
+  "dispute_id" : "DSP-000143",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000143",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:10:00.222920500Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I am declining this dispute because the records show two separate purchases, not one purchase charged twice. The dispute was opened on 2026-10-30, 10 days after the disputed charge posted on 2026-10-20. That is within the 120-day time limit (time-limits). There are two charges at FERNHILL APOTHECARY (MER-000067) on card CRD-000049, both for 4407 EUR minor units and both posted on 2026-10-20: TXN-008099 at 2026-10-19T16:31:45Z under AUTH-008289, and the disputed TXN-008100 at 2026-10-19T20:31:45Z under AUTH-008290. The two charges have different authorisations. Both were approved contactless payments, made four hours apart, with no fraud flag. No refund for either charge appears on the card. Under duplicate-separate-authorisations, two charges with their own authorisations made some time apart are two purchases, even when the merchant and amount are the same.",
+      "cited_evidence_ids" : [ "TXN-008100", "TXN-008099", "AUTH-008290", "AUTH-008289" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "There are two 44.07 EUR charges from FERNHILL APOTHECARY on 2026-10-19, but each was approved separately as its own contactless card payment, about four hours apart (16:31 and 20:31 UTC). Our records show these as two separate purchases, not one purchase charged twice. If you made only one of these payments, you can open a new dispute saying that you did not make or allow the other one.",
+        "policy_section_ids" : [ "time-limits", "duplicate-separate-authorisations" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 6,
+    "input_tokens" : 11738,
+    "output_tokens" : 1366,
+    "cache_read_input_tokens" : 29184,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 78053,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "search_policy",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 14623,
+    "model_call_ms" : [ 1521, 1360, 1668, 2659, 1828, 5476 ]
+  }
+}

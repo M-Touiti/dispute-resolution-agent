@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000094",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "REQUEST_MERCHANT_EVIDENCE",
+  "input_sha256": "3029732ebc8439402042acfefcba917c3ff9df6d78ac3d562137e6dd61457a6e",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRstkCw3uFUW5tx1eEgx",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "fail",
+      "reason": "The rationale states \"This category never approves a credit,\" but none of the policy sections or other inputs the agent received say this, so it is an unsupported claim about policy."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"98 days after posting\"), the waiting period (\"88 days after that date\"), the delivery record (\"no carrier delivery record\") and merchant resolution (\"the merchant has not resolved the matter\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "pass",
+      "reason": "The note asks for \"the carrier's record showing the parcel was delivered to the cardholder's address, with the signature obtained on delivery,\" which matches the PROOF_OF_DELIVERY evidence item and discloses nothing internal."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3132,
+    "output_tokens": 761,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 28240,
+  "price_table": "2026-11-20"
+}

@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the 1413.00 EUR HARBOUR GADGETS charge, have never shopped there, and did not give their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the 1413.00 EUR HARBOUR GADGETS charge, have never shopped there, and did not share their card details.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRehSQJRiDyAgCsP2Ydf",
+    "id" : "msg_011ChS1JR3jhXsFwqJB2LFML",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 121,
-      "output_tokens" : 83
+      "output_tokens" : 79
     }
   }
 }

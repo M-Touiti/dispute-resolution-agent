@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000095",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:01:58.405256300Z",
+    "decided_at" : "2026-11-26T18:32:34.882363900Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008009 is a payment of 107.42 EUR to Riverside Outfitters (MER-000060) on card CRD-000214. It posted on 2026-10-10. The dispute was opened on 2026-10-26, 16 days after posting, which is inside the 120-day time limit. The merchant's order confirmation DOC-000043 gives an expected delivery date of 2026-10-19. The dispute was opened 7 days after that date. The policy says a cardholder must wait 15 days after the expected delivery date before opening a dispute, and a dispute opened sooner is declined. Because the case was opened too early, I did not go on to check for proof of delivery or a merchant refund. Neither the statement nor the document contains an instruction to the bank. The cardholder may open a new dispute from 2026-11-03, the day the 15-day wait ends, if the order still has not arrived.",
+      "rationale" : "I recommend declining this dispute because it was opened before the 15-day waiting period ended. TXN-008009 is a 107.42 EUR (10742 minor units) purchase from Riverside Outfitters on card CRD-000214. It was posted on 2026-10-10 and the dispute was opened on 2026-10-26, 16 days later. That is well within the 120-day limit in time-limits. The merchant's order confirmation DOC-000043 gives an expected delivery date of 2026-10-19. The dispute was opened 7 days after that date. Under goods-not-received-wait, the cardholder must wait 15 days after the expected delivery date, and a dispute opened earlier is declined. Because the wait decides the case, I did not check proof of delivery or merchant refunds. The cardholder may open a new dispute from 2026-11-03 if the goods have still not arrived. Neither the statement nor the document contained any instruction directed at the bank.",
       "cited_evidence_ids" : [ "TXN-008009", "DOC-000043" ],
-      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait" ],
+      "cited_policy_sections" : [ "goods-not-received-wait", "time-limits" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Your order from Riverside Outfitters was due on 2026-10-19, and you opened this dispute 7 days later. A dispute for goods not received can only be opened once 15 days have passed since the expected delivery date, so that a late parcel still has time to arrive. If the order has still not arrived, you can open a new dispute from 2026-11-03.",
+        "reason" : "Your dispute was opened 7 days after the expected delivery date of 2026-10-19 shown on the merchant's order confirmation. The policy asks you to wait 15 days after that date so a late delivery can still arrive. If the order has still not arrived, you can open a new dispute from 2026-11-03.",
         "policy_section_ids" : [ "goods-not-received-wait" ]
       } ]
     },
@@ -25,25 +25,25 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 5590,
-    "output_tokens" : 979,
+    "input_tokens" : 5585,
+    "output_tokens" : 970,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 43490,
+    "cost_micro_usd" : 43309,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -55,7 +55,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11648,
-    "model_call_ms" : [ 1529, 1792, 2296, 5981 ]
+    "wall_clock_ms" : 11065,
+    "model_call_ms" : [ 1589, 1782, 2345, 5292 ]
   }
 }

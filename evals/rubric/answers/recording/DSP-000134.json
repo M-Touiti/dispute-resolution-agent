@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000134",
   "category": "AMOUNT_MISMATCH",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "8c6997bc34af2f4df53ed24da94a859113e94d8b94704084951184b31e75a178",
+  "input_sha256": "027ce7961027f6484b8ea3909af72414e55c360ae770c0f397b55b3dc96f9e84",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt75n1CHp6p73inJT4J",
+  "response_id": "msg_011ChS45nAyTaRubVnceBaS7",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every stated fact checks out against the records, including \"which is 82 days later\" (2026-08-07 to 2026-10-28), \"posted 685.62 EUR\", \"was for 489.73 EUR\" and \"68562 - 48973 = 19589 minor units\"."
+      "reason": "Every fact in the rationale matches the records: \"posted on 2026-08-07\", \"opened on 2026-10-28, 82 days later\", \"charged 685.62 EUR\", \"AUTH-008278 was for 489.73 EUR\", and \"68562 - 48973 = 19589 cents\" are all correct."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"within the 120-day limit\"), the posted, authorised and receipt amounts (\"higher than both the receipt and the authorised amount\") and the difference-only credit (\"Only the difference is credited\"); the tip tolerance does not apply to a device merchant."
+      "reason": "The rationale covers the time limit (\"82 days later, which is within the 120-day limit\"), the posted, authorised and receipt amounts, and states \"Only the difference is credited\"; no tip check applies because the merchant is not a restaurant."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2693,
-    "output_tokens": 504,
+    "input_tokens": 2681,
+    "output_tokens": 477,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21344,
+  "cost_micro_usd": 20756,
   "price_table": "2026-11-20"
 }

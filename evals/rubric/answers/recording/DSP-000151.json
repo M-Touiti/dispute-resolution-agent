@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000151",
   "category": "AMOUNT_MISMATCH",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "35a7c9c9db7cbba0e29dccb72a1f5ee7db1108b7c945b1cd46bc5b27986b2644",
+  "input_sha256": "ec63ff3210bde36b23014a775d009bcd4e8000e29efb79b2301c8f936a02ca05",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtDtLNVZFZGby6BaTSu",
+  "response_id": "msg_011ChS4CARMDkmcCWiQKQQbS",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact matches the records, including \"posted on 2026-08-07 and the dispute was opened on 2026-10-30, 84 days later\" (a correct count) and \"the 3714-cent difference\", which is 14326 minus 10612."
+      "reason": "Every fact in the rationale matches the records: \"posted on 2026-08-07\", \"84 days later\" (correctly counted to 2026-10-30), the authorisation \"for 10612 cents (106.12 EUR)\", the receipt showing \"106.12 EUR\", and \"14326 - 10612 = 3714 cents\" (arithmetic is right)."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit, the posted amount (\"14326 cents\"), the authorised amount (\"10612 cents\") and the receipt (\"106.12 EUR\"), and it states \"The credit covers only that difference\"; a tip tolerance is not needed for a fuel merchant."
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the posted, authorised and receipt amounts, and that \"Only the difference is credited\"; the tip tolerance does not apply because the merchant is a fuel station, not a restaurant."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2677,
-    "output_tokens": 430,
+    "input_tokens": 2687,
+    "output_tokens": 467,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 19800,
+  "cost_micro_usd": 20580,
   "price_table": "2026-11-20"
 }

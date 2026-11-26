@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000136",
   "category": "AMOUNT_MISMATCH",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "4994dc8a04e072be139c936ad5536ac747dad66237707b893475f6022b9d0725",
+  "input_sha256": "ede262c86398c9295c6d9cc906e4b825531be13e0a4f3f114bafbbb0df085b87",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt7njr3ZFNuM9Y3pdbz",
+  "response_id": "msg_011ChS46SWoydY3ziJgT97QJ",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The rationale's facts, such as \"posted on 2026-10-07 for 379.50 EUR\", \"17 days later\" and \"approved for the same 37950\", match the records, and it frames the quote correctly as \"a claim, not a receipt\"."
+      "reason": "Every fact in the rationale matches the records, including \"posted on 2026-10-07 and the dispute was opened on 2026-10-24, 17 days later\" and the 14421-cent difference, and it treats the quote amount as \"a claim, not evidence\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale addresses the time limit (\"inside the 120-day limit\"), the posted and authorised amounts (\"the posted amount equals the authorised amount\") and the missing quote (\"they have no quote, no receipt is attached\"); the tip tolerance does not apply to an electronics merchant."
+      "reason": "The rationale covers the time limit (\"inside the 120-day limit\"), the posted and authorised amounts (\"the same 37950 cents\") and the missing receipt (\"No receipt or quote is attached\"); the merchant is an electronics seller, so no tip check applies."
     },
     "merchant_request_clear": {
       "verdict": "pass",
-      "reason": "The note asks for \"the receipt or order details for the purchase of 379.50 EUR made on 2026-10-06\" showing \"the amount the cardholder agreed to pay\", which matches the RECEIPT evidence item and discloses nothing internal."
+      "reason": "The note asks for \"the receipt or order details for the purchase of 379.50 EUR made on 2026-10-06\" showing \"the amount the cardholder agreed to pay\", which matches the RECEIPT evidence item and discloses no internal or third-party data."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2275,
-    "output_tokens": 496,
+    "input_tokens": 2324,
+    "output_tokens": 584,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 19512,
+  "cost_micro_usd": 21468,
   "price_table": "2026-11-20"
 }

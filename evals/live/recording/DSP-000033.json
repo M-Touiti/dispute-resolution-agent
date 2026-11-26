@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000033",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:52:23.247191700Z",
+    "decided_at" : "2026-11-26T18:22:30.105154700Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,13 +12,13 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute. The cardholder opened it in time: TXN-007896 posted on 2026-09-16 and the dispute was opened on 2026-10-29, which is 43 days later and within the 120-day limit (time-limits). The posted amount is 2613 cents (26.13 EUR). The authorised amount on AUTH-008105 is 2376 cents (23.76 EUR). The cardholder says the bill was 23.76 EUR, but no receipt is attached, so that amount is only their claim. MER-000029 (Stonecrest Brasserie) is a RESTAURANT. The posted amount is 237 cents above the authorised amount. 20% of the authorised amount is 475.2 cents, so the difference is within the tip tolerance. Under amount-restaurant-tip, that counts as an agreed tip, not an amount mismatch.",
+      "rationale" : "I recommend declining this dispute. It is within the time limit: TXN-007896 posted on 2026-09-16 and the dispute was opened on 2026-10-29, 43 days later, inside the 120-day limit. TXN-007896 posted at 2,613 cents (26.13 EUR) at Stonecrest Brasserie (MER-000029), a RESTAURANT. Its authorisation, AUTH-008105, was approved for 2,376 cents (23.76 EUR) by chip and PIN. No receipt is attached. The 23.76 EUR bill the cardholder mentions is their own claim, not a receipt from the merchant. The posted amount is 237 cents above the authorised amount. A restaurant may add up to 20% of the authorised amount as a tip, which here is 475.2 cents, so 237 cents is within that limit. Under amount-restaurant-tip, the difference counts as an agreed tip, not an amount mismatch, and the dispute is declined.",
       "cited_evidence_ids" : [ "TXN-007896", "AUTH-008105" ],
       "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "You paid by chip and PIN for 23.76 EUR, and 26.13 EUR was charged. Restaurants may charge a tip of up to 20% above the authorised amount. The extra 2.37 EUR is within that limit, so it is treated as an agreed tip, not a billing error.",
-        "policy_section_ids" : [ "amount-restaurant-tip" ]
+        "reason" : "The restaurant authorised 23.76 EUR and posted 26.13 EUR. The 2.37 EUR difference is less than 20% of the authorised amount (4.75 EUR), which is how much a restaurant may add as a tip, so it is treated as an agreed tip and not a charging error.",
+        "policy_section_ids" : [ "time-limits", "amount-restaurant-tip" ]
       } ]
     },
     "guard_violations" : [ ]
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5046,
-    "output_tokens" : 1062,
+    "output_tokens" : 1074,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 43013,
+    "cost_micro_usd" : 43253,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11980,
-    "model_call_ms" : [ 1517, 2193, 2393, 5797 ]
+    "wall_clock_ms" : 11523,
+    "model_call_ms" : [ 1522, 2010, 2202, 5693 ]
   }
 }

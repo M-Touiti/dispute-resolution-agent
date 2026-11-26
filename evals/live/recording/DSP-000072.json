@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000072",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:58:04.476265600Z",
+    "decided_at" : "2026-11-26T18:28:30.422211200Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute. TXN-007967 (710.25 EUR, LUMEN JOURNEYS, card CRD-000176) posted on 2026-09-27. The dispute was opened on 2026-10-27, 30 days later, which is inside the 120-day limit in time-limits. The authorisation behind the payment, AUTH-008170, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH, response APPROVED and fraud flag false. Under unauthorised-3ds-authenticated, an online payment the cardholder authenticated with 3-D Secure and that has no fraud flag is treated as made by the cardholder, and the matching CVV supports this. The cardholder says the card never left them, but that does not change the result, because a card-not-present payment does not need the physical card. No documents were attached.",
+      "rationale" : "TXN-007967 is a 710.25 EUR payment to LUMEN JOURNEYS (MER-000016) on card CRD-000176. It posted on 2026-09-27. The dispute was opened on 2026-10-27, 30 days later, which is inside the 120-day limit in time-limits. Its authorisation, AUTH-008170, was approved with entry mode ECOMMERCE, 3-D Secure AUTHENTICATED and CVV MATCH, and the fraud flag was not set. Under unauthorised-3ds-authenticated, an online payment the cardholder confirmed with 3-D Secure and that has no fraud flag counts as made by the cardholder, and the dispute is declined. The matching CVV supports this. The card has no earlier transactions at this merchant: TXN-007967 is the only one. That neither supports nor weakens the decision. The cardholder says they do not recognise the payment and still have the card. A card-not-present payment does not need the physical card, and the 3-D Secure confirmation outweighs the statement.",
       "cited_evidence_ids" : [ "TXN-007967", "AUTH-008170" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-3ds-authenticated" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The 710.25 EUR payment to LUMEN JOURNEYS on 2026-09-26 was an online payment that was confirmed through the bank's 3-D Secure check, and the correct card security code was entered. Under our policy, a payment confirmed this way is treated as made by the cardholder, so the dispute is declined.",
+        "reason" : "This online payment was confirmed through 3-D Secure, the bank's extra security check for online payments. The correct card security code was also entered, and our fraud screening did not flag the payment. Under our policy, a payment confirmed this way is treated as made by the cardholder, so we cannot treat it as unauthorised.",
         "policy_section_ids" : [ "unauthorised-3ds-authenticated", "time-limits" ]
       } ]
     },
@@ -25,33 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 10129,
-    "output_tokens" : 1093,
+    "input_tokens" : 9879,
+    "output_tokens" : 1287,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 64728,
+    "cost_micro_usd" : 67627,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12526,
-    "model_call_ms" : [ 1885, 2660, 1768, 1027, 5047 ]
+    "wall_clock_ms" : 12794,
+    "model_call_ms" : [ 1533, 1306, 2550, 2020, 5193 ]
   }
 }

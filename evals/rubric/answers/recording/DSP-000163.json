@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000163",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "DECLINE",
-  "input_sha256": "3f576ca1f523e2cc5d208c211d5a04fcc2de1b150a4ccff2d727a62c1945e4ab",
+  "input_sha256": "65f54178cd10db2188e04a8b8092e89a54de304845df7309a2ee80027a36d58b",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtHiqj4tA1TqL59Tdvp",
+  "response_id": "msg_011ChS4GEy46MqHLvqbPUh9m",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The rationale's facts check out against the records: \"posted on 2026-10-05\", \"opened on 2026-10-24, 19 days later\", \"expected delivery date of 2026-10-18\" and \"opened 6 days after that date\" all match, and \"from 2026-11-02\" is 15 days after the expected delivery date."
+      "reason": "The rationale's facts match the records: \"posted on 2026-10-05\", \"19 days later\", \"expected delivery date of 2026-10-18\", \"opened only 6 days after that date\" and \"The waiting period ends on 2026-11-02\" are all correct."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day time limit\") and the waiting period, then stops at that deciding check and says why: \"Because the wait decides the case, I did not check proof of delivery or merchant refunds.\""
+      "reason": "It addresses the time limit (\"well within the 120-day limit\") and the expected delivery date against the 15-day wait, then stops at that deciding check and says so: \"Because the case stopped at the waiting-period check, I did not look at proof of delivery or search for a merchant refund.\""
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2014,
-    "output_tokens": 484,
+    "input_tokens": 2018,
+    "output_tokens": 492,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 18228,
+  "cost_micro_usd": 18404,
   "price_table": "2026-11-20"
 }

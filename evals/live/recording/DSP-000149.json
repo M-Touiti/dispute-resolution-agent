@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000149",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:11:07.827544900Z",
+    "decided_at" : "2026-11-26T18:41:55.497894600Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,42 +12,46 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I'm declining this dispute. TXN-008114 is a 16.04 EUR (1604 minor units) BRAMBLE STREAMING charge on card CRD-000201 at merchant MER-000053. The charge was made on 2026-10-05 and posted on 2026-10-06. The dispute was opened on 2026-10-29, 23 days after posting, which is within the 120-day limit (time-limits). The merchant's own cancellation confirmation, DOC-000071, says the subscription was cancelled with effect from 2026-10-07. That is two days after the charge. So the charge was made before the cancellation took effect and belongs to a period the cardholder had not yet cancelled. Under recurring-cancelled-after-charge, a charge made before the cancellation takes effect is declined.",
+      "rationale" : "TXN-008114 is a 16.04 EUR (1604 minor units) Bramble Streaming charge on card CRD-000201. It was made on 2026-10-05 and posted on 2026-10-06. The dispute was opened on 2026-10-29, 23 days after posting, which is within the 120-day time limit (time-limits). The merchant's cancellation confirmation, DOC-000071, says the subscription was cancelled with effect from 2026-10-07. That is two days after the charge was made. Because the charge came before the cancellation took effect, it belongs to a period the cardholder had not yet cancelled. Under recurring-cancelled-after-charge, the dispute is declined. No document or record contained instructions.",
       "cited_evidence_ids" : [ "TXN-008114", "DOC-000071" ],
       "cited_policy_sections" : [ "time-limits", "recurring-cancelled-after-charge" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The Bramble Streaming charge of 16.04 EUR was made on 2026-10-05. The merchant's cancellation confirmation shows your subscription was cancelled with effect from 2026-10-07, two days later. The charge covers a period before the cancellation took effect, so we can't uphold the dispute.",
+        "reason" : "The Bramble Streaming charge of 16.04 EUR was made on 2026-10-05. The merchant's cancellation confirmation shows your subscription was cancelled from 2026-10-07, two days later. The charge was made before the cancellation took effect, so it is for a period that was still active.",
         "policy_section_ids" : [ "recurring-cancelled-after-charge", "time-limits" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 5574,
-    "output_tokens" : 998,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 10099,
+    "output_tokens" : 1089,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 43587,
+    "cost_micro_usd" : 64824,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
@@ -59,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10164,
-    "model_call_ms" : [ 1616, 1270, 2535, 4683 ]
+    "wall_clock_ms" : 11551,
+    "model_call_ms" : [ 1476, 1334, 2439, 1774, 4343 ]
   }
 }

@@ -1,0 +1,77 @@
+{
+  "dispute_id" : "DSP-000109",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000109",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:04:28.569817800Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute is within the time limit. TXN-008036 was posted on 2026-08-26 and the dispute was opened on 2026-10-28, which is 63 days later against a 120-day limit. The card has two postings at LUMEN BRASSERIE (MER-000002) for 100.76 EUR, both posted on 2026-08-26. TXN-008035 has authorisation AUTH-008231, made contactless at 12:13 on 2026-08-25 and approved. TXN-008036 has authorisation AUTH-008232, made by chip with the PIN verified at 15:13 the same day and approved. The two postings do not share an authorisation. They are separate purchases made three hours apart, by different entry methods, and the second one was confirmed by PIN. Neither authorisation has a fraud flag. No refund has been posted at this merchant. Under the policy, two postings with their own authorisations made some time apart are two purchases, even when the merchant and amount are the same, so the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-008036", "TXN-008035", "AUTH-008232", "AUTH-008231" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Our records show two separate purchases at LUMEN BRASSERIE on 2026-08-25, each approved on its own about three hours apart. The second was made by chip and confirmed with your PIN. These are two purchases, not one purchase charged twice, so we can't treat this as a duplicate charge. If you don't recognise one of these purchases, please contact us.",
+        "policy_section_ids" : [ "duplicate-separate-authorisations" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7896,
+    "output_tokens" : 1365,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 61528,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 13632,
+    "model_call_ms" : [ 1544, 1330, 2826, 2388, 5468 ]
+  }
+}

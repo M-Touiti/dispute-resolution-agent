@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000055",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "14275d6ddca07703d1222682f5dcc8e787859ff7a77e40f32b933028d4df9984",
+  "input_sha256": "6dc65b0031e7e424820ee06d05beb7dc28a2eb5185b67bc1a72a11b7b4ebf81c",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsfjknprjgYCSuYmaDY",
+  "response_id": "msg_011ChS3gB2ESC4LE7gpYdwFZ",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
-      "verdict": "pass",
-      "reason": "Every fact checks out against the records: \"posted on 2026-08-22\", \"65 days later\" (from 2026-08-22 to 2026-10-26), \"ECOMMERCE\", \"AUTHENTICATED\", \"CVV MATCH\" and \"fraud flag false\" all match the transaction and authorisation, and the policy is paraphrased accurately."
+      "verdict": "fail",
+      "reason": "The rationale states \"The cardholder did not dispute either\" about TXN-005505 and TXN-005522, but the agent never looked up the cardholder's other disputes, so this statement has no support in the inputs."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), entry mode, 3-D Secure result and fraud flag, then stops at the deciding rule (\"counts as made by the cardholder\"), so it need not go on to the cardholder's earlier transactions with the merchant."
+      "reason": "The rationale covers each required check: the time limit (\"65 days, inside the 120-day limit\"), \"ECOMMERCE\", \"3-D Secure AUTHENTICATED\", \"fraud flag false\" and the earlier purchase \"TXN-005501\"; the credit limit does not apply to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2246,
-    "output_tokens": 792,
+    "input_tokens": 4514,
+    "output_tokens": 664,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 25316,
+  "cost_micro_usd": 31828,
   "price_table": "2026-11-20"
 }

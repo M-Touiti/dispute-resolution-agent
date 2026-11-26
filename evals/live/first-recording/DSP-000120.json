@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000120",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000120",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:06:20.730443200Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008058 is a 2,097.42 EUR purchase at ASHGROVE DEVICES (MER-000014) on card CRD-000140. It posted on 2026-07-25. The dispute was opened on 2026-10-25, 92 days later, which is within the 120-day time limit. Its authorisation, AUTH-008252, shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set. The card was not present, the payment was not confirmed with 3-D Secure and the fraud flag is set, so under unauthorised-card-not-present the payment counts as unauthorised. The credit of 2,097.42 EUR is the full posted amount, equal to the claim and below the 3,000.00 EUR limit for provisional credit.",
+      "cited_evidence_ids" : [ "TXN-008058", "AUTH-008252" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 209742,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 10535,
+    "output_tokens" : 1032,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 65217,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_card",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11584,
+    "model_call_ms" : [ 1507, 2764, 1936, 1320, 3939 ]
+  }
+}

@@ -47,4 +47,4 @@ card's data, no internal reasoning.
 
 - State in the rationale the expected delivery date, the day count to the dispute, and what the case shows about
   delivery and about the merchant's answer.
-- This category never approves a credit: the policy's outcomes are a decline, a merchant request or an escalation.
+- State only what the policy sections you read say. A rule that is not in them is not a reason in the rationale.

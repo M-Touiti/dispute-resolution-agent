@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000169",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000169",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:14:31.077102200Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute. TXN-008152 is on card CRD-000243. It posted on 2026-09-04 and the dispute was opened on 2026-10-27, 53 days later. That is within the 120-day limit in time-limits. The posted amount is 9462 cents (94.62 EUR). Authorisation AUTH-008337 approved 8449 cents (84.49 EUR) for a contactless payment. The merchant, Meadowlark Bistro (MER-000011), is listed as a RESTAURANT. No receipt is attached, so the 84.49 EUR bill is only the cardholder's own figure. The difference is 9462 - 8449 = 1013 cents (10.13 EUR). The tip limit is 20% of the authorised amount, 0.20 x 8449 = 1689.8 cents. The difference is below that limit. Under amount-restaurant-tip, a restaurant may post up to 20% above the authorised amount for a tip, and that counts as an agreed tip rather than a mismatch.",
+      "cited_evidence_ids" : [ "TXN-008152", "AUTH-008337" ],
+      "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Meadowlark Bistro, a restaurant, approved the payment for 84.49 EUR and charged 94.62 EUR. The extra 10.13 EUR is within the 20% allowed for a tip on restaurant payments, so under our policy it is treated as an agreed tip, not a wrong amount.",
+        "policy_section_ids" : [ "amount-restaurant-tip" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5052,
+    "output_tokens" : 1105,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 43862,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 4,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11322,
+    "model_call_ms" : [ 1440, 2032, 2119, 5662 ]
+  }
+}

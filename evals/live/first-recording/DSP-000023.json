@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000023",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000023",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:51:00.156272500Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "This is a duplicate charge, so I propose a provisional credit of one posting, 136.74 EUR. Two purchases at WILLOWMERE GADGETS (MER-000041) on card CRD-000154 have the same authorisation, AUTH-008085. TXN-007873 was made at 2026-07-29T20:48:09Z and the disputed TXN-007874 at 2026-07-29T20:51:09Z. Each is 13674 minor units (136.74 EUR) and each posted on 2026-07-30. AUTH-008085 is one approved e-commerce authorisation for 13674 minor units, so the same authorisation was posted twice. The ledger shows no refund of either posting at this merchant. The other purchase at this merchant, TXN-004855, is for a different amount and is not part of this dispute. Time limit: the posting date was 2026-07-30 and the dispute was opened on 2026-10-31. That is 93 days, inside the 120-day limit. Under duplicate-same-authorisation, the extra posting is credited. Its amount, 136.74 EUR, matches the amount claimed and is below the 3,000.00 EUR provisional credit limit.",
+      "cited_evidence_ids" : [ "TXN-007874", "TXN-007873", "AUTH-008085" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 13674,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7830,
+    "output_tokens" : 1188,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 57701,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11920,
+    "model_call_ms" : [ 1597, 1257, 1800, 2560, 4629 ]
+  }
+}

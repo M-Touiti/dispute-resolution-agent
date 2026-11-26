@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000136",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000136",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:08:27.359559600Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "REQUEST_MERCHANT_EVIDENCE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008089 on card CRD-000158 posted on 2026-10-07 for 379.50 EUR (37950). The dispute was opened on 2026-10-24, 17 days later, which is inside the 120-day limit in time-limits. Authorisation AUTH-008280 was approved for the same 37950, so the posted amount equals the authorised amount and the difference is 0. The cardholder says the quote was 235.29 EUR, which would make the overcharge 144.21 EUR. But they have no quote, no receipt is attached, and an amount stated by the cardholder is a claim, not a receipt. Nothing in the records shows a different agreed amount. Under amount-no-receipt, we ask the merchant for the receipt or order details.",
+      "cited_evidence_ids" : [ "TXN-008089", "AUTH-008280" ],
+      "cited_policy_sections" : [ "time-limits", "amount-no-receipt" ],
+      "proposed_actions" : [ {
+        "action" : "request_merchant_evidence",
+        "evidence" : [ "RECEIPT" ],
+        "note" : "Please provide the receipt or order details for the purchase of 379.50 EUR made on 2026-10-06. They should show the amount the cardholder agreed to pay, including any quote issued before the purchase."
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5061,
+    "output_tokens" : 887,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 39538,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 14226,
+    "model_call_ms" : [ 1549, 6147, 2359, 4097 ]
+  }
+}

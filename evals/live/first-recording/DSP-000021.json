@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000021",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000021",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:50:39.490159400Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007871 (68,731 minor units EUR at LUMEN TRAVEL, MER-000070) is on card CRD-000182. It posted on 2026-10-13 and the dispute was opened on 2026-10-29. That is 16 days, well inside the 120-day limit in time-limits. The authorisation behind it, AUTH-008083, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag. Under unauthorised-3ds-authenticated, an online payment the cardholder confirmed with 3-D Secure and that has no fraud flag is treated as made by the cardholder, and the matching security code supports this. The statement that the cardholder never shopped there does not outweigh that authentication, so the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-007871", "AUTH-008083" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "We can't refund this payment as unauthorised. Our records show it was an online payment that was confirmed through your bank's 3-D Secure check, with the correct card security code, and our fraud screening didn't flag it. Under our policy, a payment confirmed this way counts as one you made.",
+        "policy_section_ids" : [ "unauthorised-3ds-authenticated" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 9111,
+    "output_tokens" : 1001,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 59124,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10860,
+    "model_call_ms" : [ 1562, 1409, 2172, 963, 4600 ]
+  }
+}

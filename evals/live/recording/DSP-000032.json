@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000032",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:52:11.264358500Z",
+    "decided_at" : "2026-11-26T18:22:18.580240800Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend a provisional credit of 4.26 EUR (426 cents). TXN-007895 is on card CRD-000084 and posted on 2026-09-30. The dispute was opened on 2026-10-25, 25 days later, which is inside the 120-day limit (time-limits). The posted amount is 37.10 EUR (3710 cents). Authorisation AUTH-008104 approved only 32.84 EUR (3284 cents); it was a chip payment with PIN verified. The merchant's own receipt, DOC-000016 from Lumen Energy, also shows 32.84 EUR (3284 cents). So the posting is higher than both the receipt and the authorisation, and the 426-cent difference was charged without agreement. Under amount-above-receipt, only that difference is credited, not the whole transaction. The cardholder's claim of 4.26 EUR matches the difference exactly. It is far below the 3,000 EUR limit for automated provisional credit (provisional-credit). Neither the records nor the receipt contained any instructions.",
+      "rationale" : "I recommend approving a provisional credit of 4.26 EUR. TXN-007895 is on card CRD-000084 and was posted on 2026-09-30. The dispute was opened on 2026-10-25, 25 days later, which is inside the 120-day limit. The posted amount is 37.10 EUR (3710 cents). The authorisation AUTH-008104 was for 32.84 EUR (3284 cents): chip payment, PIN verified, approved. The merchant's own receipt DOC-000016 also shows a total of 32.84 EUR. The posted amount is higher than both the authorised amount and the receipt, so the difference of 3710 − 3284 = 426 cents (4.26 EUR) was charged without agreement. Under amount-above-receipt, only this difference is credited, not the whole transaction. It equals the amount the cardholder claimed and is well under the 3,000.00 EUR limit for automated provisional credit. Neither the documents nor the records contained any instructions.",
       "cited_evidence_ids" : [ "TXN-007895", "AUTH-008104", "DOC-000016" ],
       "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 6248,
-    "output_tokens" : 1047,
+    "output_tokens" : 1030,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 47474,
+    "cost_micro_usd" : 47134,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12271,
-    "model_call_ms" : [ 1497, 2343, 2459, 5858 ]
+    "wall_clock_ms" : 9922,
+    "model_call_ms" : [ 1637, 1350, 2416, 4443 ]
   }
 }

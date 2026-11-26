@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000152",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "DECLINE",
+  "input_sha256": "40dd1eef6274022ec5085886254a09761387c5f047a65770cdadb7d8520909d5",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtEBSWzUux6eCdeTitD",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact matches the records: \"posted on 2026-07-18 for 5519 cents\", \"99 days later\", \"approved by chip and PIN for 5018 cents\", \"501 cents above\" and \"20% of 5018, which is 1003.6 cents\" are all correct, and the tip rule is accurately paraphrased."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"99 days later, so it is within the 120-day limit\"), the posted and authorised amounts, the missing receipt (\"No receipt is attached\") and the restaurant tip tolerance (\"The limit is 20% of 5018\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2377,
+    "output_tokens": 493,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 19860,
+  "price_table": "2026-11-20"
+}

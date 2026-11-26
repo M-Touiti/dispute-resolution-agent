@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000104",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000104",
+    "state" : "ESCALATED",
+    "decided_at" : "2026-11-26T14:03:26.104136Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : "AGENT_DECISION",
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "ESCALATE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008027 for 4042.59 EUR at MER-000025 (OAKHOLLOW GETAWAYS) is on card CRD-000207. It posted on 2026-09-30, and the dispute was opened on 2026-10-22. That is 22 days, inside the 120-day limit (time-limits). Its authorisation, AUTH-008224, shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. Under unauthorised-card-not-present, that counts as an unauthorised payment, and the credit would be the full 404259 minor units. Under provisional-credit, the automated process never grants provisional credit above 3,000.00 EUR, so escalation requires a specialist to decide. Nothing in the records conflicts; the only reason to escalate is the credit limit.",
+      "cited_evidence_ids" : [ "TXN-008027", "AUTH-008224" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit", "escalation" ],
+      "proposed_actions" : [ ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 9595,
+    "output_tokens" : 1054,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 61675,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11695,
+    "model_call_ms" : [ 1576, 2663, 2133, 1891, 3386 ]
+  }
+}

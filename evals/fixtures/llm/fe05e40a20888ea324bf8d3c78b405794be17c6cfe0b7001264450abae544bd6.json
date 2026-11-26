@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"AMOUNT_MISMATCH\",\"reason\":\"The cardholder says the merchant quoted 217.84 EUR but charged 335.13 EUR, so the charged amount differs from the agreed amount.\"}",
+      "text" : "{\"category\":\"AMOUNT_MISMATCH\",\"reason\":\"The statement says the merchant quoted 217.84 EUR but charged 335.13 EUR, so the charged amount differs from the agreed amount.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfgsje9V4oKb1PniTX1",
+    "id" : "msg_011ChS2L69cPjGBHJ3n4ekfN",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 106,
-      "output_tokens" : 75
+      "output_tokens" : 73
     }
   }
 }

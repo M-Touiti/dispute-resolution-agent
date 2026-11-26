@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000091",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:01:04.727185700Z",
+    "decided_at" : "2026-11-26T18:31:41.093585900Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,8 +12,8 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "Authorisation AUTH-008201 was posted twice to card CRD-000044 at LARKSPUR GETAWAYS (MER-000052). The two postings are TXN-008001 (1130.53 EUR, made 2026-07-24T13:09:36Z) and TXN-008002 (1130.53 EUR, made 2026-07-24T13:10:36Z), and both were posted on 2026-07-25. AUTH-008201 is a single approval for 1130.53 EUR, so this is one authorisation posted twice. The ledger shows no refund of either posting. The only other charge at this merchant, TXN-001372 on 2026-08-18, is a different amount under a different authorisation and is not part of this dispute. Time limit: the dispute was opened on 2026-10-28, 95 days after posting, which is within the 120-day limit. Under duplicate-same-authorisation, the extra posting is credited. Its amount, 1130.53 EUR, equals the claimed amount and is below the 3,000.00 EUR limit for provisional credit, so only that one posting is credited.",
-      "cited_evidence_ids" : [ "TXN-008001", "TXN-008002", "AUTH-008201" ],
+      "rationale" : "Time limit: TXN-008002 posted on 2026-07-25 and the dispute was opened on 2026-10-28. That is 95 days, inside the 120-day limit in time-limits. The ledger shows two purchases at LARKSPUR GETAWAYS (MER-000052) on card CRD-000044. TXN-008001 was made at 2026-07-24T13:09:36Z and TXN-008002 at 2026-07-24T13:10:36Z. Both are for 1130.53 EUR (113053 minor units), both posted on 2026-07-25, and both carry the same authorisation, AUTH-008201. That authorisation is a single approved request for 113053 at 13:09:36Z. So one authorisation was posted twice, and the later posting, TXN-008002, is the extra one. There are no refunds on the card. Under duplicate-same-authorisation, provisional credit is approved for the extra posting only. The credit is 1130.53 EUR, the amount of one posting, which matches the claim and is below the 3,000.00 EUR limit in provisional-credit. The other purchase at this merchant, TXN-001372 for 800.28 EUR on 2026-08-17, has a separate authorisation and is not part of this dispute.",
+      "cited_evidence_ids" : [ "TXN-008002", "TXN-008001", "AUTH-008201" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
       "proposed_actions" : [ {
         "action" : "issue_provisional_credit",
@@ -25,37 +25,41 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7827,
-    "output_tokens" : 1134,
+    "input_tokens" : 8094,
+    "output_tokens" : 1329,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 56562,
+    "cost_micro_usd" : 61549,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12034,
-    "model_call_ms" : [ 1600, 2302, 1845, 2068, 4153 ]
+    "wall_clock_ms" : 14154,
+    "model_call_ms" : [ 1650, 2087, 2350, 2716, 5275 ]
   }
 }

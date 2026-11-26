@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000139",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "263d0cab7a97e067a896e6053406e6d77bf6ba6702f16d6f1c16bddc7cbb3345",
+  "input_sha256": "b06ebd16d314618f62802b112102309b50a631cc622d11d232ee6d32025f7f42",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt91MA2q8hF8mgYJg6g",
+  "response_id": "msg_011ChS47Yv4cQyJgGteiDFkN",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The stated facts match the records: \"posted on 2026-07-28\", the dispute \"opened on 2026-10-23, which is 87 days later\" (the count is correct), and \"entry mode CHIP, PIN verified true, 3-D Secure NOT_APPLICABLE, fraud flag false\" appear in AUTH-008285, and the earlier purchases TXN-008092, TXN-008093 and TXN-006207 appear in the transaction search."
+      "reason": "The facts are all in the records, including \"posted on 2026-07-28 \u2026 opened on 2026-10-23, 87 days later\" (a correct count), \"entry mode CHIP, PIN verified true\" and \"no fraud flag\", and the earlier purchases on \"2026-05-27\" and \"2026-05-28\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"87 days later. The limit is 120 days\"), the entry mode and PIN (\"entry mode CHIP, PIN verified true\"), the fraud flag (\"fraud flag false\") and earlier transactions at the same merchant (\"TXN-008092 and TXN-008093 in May 2026\"), and no credit was proposed, so the credit limit does not apply."
+      "reason": "The rationale addresses every required check: the time limit (\"within the 120-day limit\"), the entry mode (\"CHIP\"), the PIN (\"PIN verified true\"), the fraud flag (\"no fraud flag\") and the merchant history (\"earlier approved purchases TXN-008092 \u2026 TXN-008093\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3918,
-    "output_tokens": 720,
+    "input_tokens": 3589,
+    "output_tokens": 643,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 30564,
+  "cost_micro_usd": 27708,
   "price_table": "2026-11-20"
 }

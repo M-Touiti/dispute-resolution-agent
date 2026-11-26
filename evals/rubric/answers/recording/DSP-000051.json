@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000051",
   "category": "AMOUNT_MISMATCH",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "eaa4f1d14c44259a738c8231b9594178db4bc8f83cc047ba4bf3120a5c8f40c6",
+  "input_sha256": "cbf982515515d5fe3e0c48b36a852e286311c4aac068353fd4c9743eff83adea",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRseuFFrv3Rg4KKuwVSg",
+  "response_id": "msg_011ChS3fD8hYBt2bSHeMBPtw",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact is supported by the records, including \"posted on 2026-10-03, and the dispute was opened on 2026-10-27, 24 days later\", \"198780 cents (1987.80 EUR)\" matching the authorisation, and the 21865-cent difference, and the quote is framed as \"a claim, not evidence\"."
+      "reason": "Every fact matches the records: \"24 days after TXN-007929 posted on 2026-10-03\" (03 Oct to 27 Oct is 24 days), \"198780 minor units (1987.80 EUR)\", and \"ECOMMERCE, with 3-D Secure authenticated\" all match the transaction and authorisation, and the cardholder's figure is treated as \"a claim, not a merchant document\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale addresses the time limit (\"24 days later. The limit is 120 days\"), the posted and authorised amounts (\"it matches the authorised amount on AUTH-008135\"), and the missing quote (\"There is no receipt or quote in the case\"); the tip tolerance does not apply to a travel merchant."
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the posted and authorised amounts (\"approved for the same 198780 minor units\") and the missing receipt (\"No receipt or quote is attached\"); this is a travel merchant with no credit, so the tip and difference checks do not apply."
     },
     "merchant_request_clear": {
       "verdict": "pass",
-      "reason": "The note asks for \"the receipt, quote or order details for the 1987.80 EUR transaction dated 2026-10-02, showing the amount the cardholder agreed to pay and what it covers\", which matches the RECEIPT evidence item and discloses no internal reasoning, flags or policy ids."
+      "reason": "The note asks the merchant to \"send the receipt or order details, including the quote, showing the amount the cardholder agreed to pay\", which matches the RECEIPT evidence item and discloses no internal flags, policy ids or speculation."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2285,
-    "output_tokens": 637,
+    "input_tokens": 2566,
+    "output_tokens": 636,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 22372,
+  "cost_micro_usd": 23476,
   "price_table": "2026-11-20"
 }

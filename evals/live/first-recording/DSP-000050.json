@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000050",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000050",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:54:58.740534500Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute is within the time limit. TXN-007928 posted on 2026-09-02 and the dispute was opened on 2026-10-22, which is 50 days later. The limit is 120 days. Larkspur Brasserie (MER-000038) is a RESTAURANT merchant. The posting is 8850 cents, and its authorisation AUTH-008134 (contactless, approved) was for 7437 cents. No receipt is attached to the case. The 74.37 EUR figure comes only from the cardholder's statement, so it is a claim, not a receipt. The posting is 8850 - 7437 = 1413 cents above the authorisation. The tolerance is 20% of the authorised amount, which is 1487.4 cents. The difference is within that tolerance, so under amount-restaurant-tip it counts as an agreed tip, not a mismatch, and the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-007928", "AUTH-008134" ],
+      "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your card was authorised for 74.37 EUR at Larkspur Brasserie, and the final charge was 88.50 EUR. A restaurant may add a tip of up to 20% of the authorised amount, which here is 14.87 EUR. The 14.13 EUR difference is within that limit, so it is treated as an agreed tip rather than an incorrect amount.",
+        "policy_section_ids" : [ "time-limits", "amount-restaurant-tip" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5052,
+    "output_tokens" : 1042,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 42641,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11105,
+    "model_call_ms" : [ 1432, 2331, 2099, 5138 ]
+  }
+}

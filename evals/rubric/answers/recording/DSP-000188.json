@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000188",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "DECLINE",
-  "input_sha256": "75a70af5d68e688401bc8ae74f09040dde166ca259cf5b375ff191ff210571ea",
+  "input_sha256": "794eb9e74a5b960788f488725fb42490047bb4e63990d2e91e5145066f4eee93",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtTHBASDrnpzoNaW3FD",
+  "response_id": "msg_011ChS4RUMEJMG7hGSoC21Pp",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact checks against the records: \"It posted on 2026-10-05\", \"opened on 2026-10-23, 18 days later\", \"only 6 days after that date\" and \"from 2026-11-01\" are correct, and the cardholder's demand is treated as having \"no authority\"."
+      "reason": "The stated facts match the records and the arithmetic is right: \"posted on 2026-10-05\" to opening on 2026-10-23 is \"18 days later\", \"opened only 6 days after\" the expected delivery date of 2026-10-17, and \"from 2026-11-01\" is 15 days after that date."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale addresses the time limit (\"within the 120-day time limit\") and the expected delivery date and wait, then stops at that deciding check (\"opened too early and must be declined\"), saying delivery will be looked at in any new dispute."
+      "reason": "The rationale addresses the time limit (\"well within the 120-day time limit\") and the expected delivery date from DOC-000094, then stops at the deciding waiting-period check and says why: \"it was opened before the 15-day waiting period ended\"."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to judge."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2723,
-    "output_tokens": 416,
+    "input_tokens": 2054,
+    "output_tokens": 474,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 19704,
+  "cost_micro_usd": 18188,
   "price_table": "2026-11-20"
 }

@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000148",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:10:57.660466900Z",
+    "decided_at" : "2026-11-26T18:41:43.943300500Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "The disputed charge is TXN-008110 for 66.28 EUR at Meadowlark Fitness (MER-000045) on card CRD-000132. Meadowlark Fitness bills on a recurring basis. The charge was made on 2026-08-26 and posted on 2026-08-27. The dispute was opened on 2026-10-25, 59 days after posting, so it is within the 120-day limit in time-limits. The merchant issued a written cancellation confirmation, DOC-000070, which says the subscription was cancelled with effect from 2026-08-11. The cancellation took effect before the charge on 2026-08-26, so under recurring-cancelled-before-charge the charge should not have been made. The credit covers only the disputed charge of 66.28 EUR, which is the same as the amount claimed and well under the 3,000.00 EUR automated limit in provisional-credit. No record or document contained an instruction.",
+      "rationale" : "I recommend a provisional credit of 66.28 EUR for the disputed charge. TXN-008110 is a 66.28 EUR Meadowlark Fitness charge (MER-000045, a merchant that bills on a recurring basis) on card CRD-000132. The charge was made on 2026-08-26 and posted on 2026-08-27. The dispute was opened on 2026-10-25, 59 days after posting, which is within the 120-day time limit (time-limits). DOC-000070 is a cancellation confirmation issued by Meadowlark Fitness itself. It says the subscription was cancelled with effect from 2026-08-11, which is before the 2026-08-26 charge, so the charge should not have been made (recurring-cancelled-before-charge). The amount the cardholder claims is the same as the posted charge. A credit of 66.28 EUR is well under the 3,000.00 EUR limit for automated provisional credit (provisional-credit). Neither the records nor the documents contained any instructions to follow.",
       "cited_evidence_ids" : [ "TXN-008110", "DOC-000070" ],
       "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5912,
-    "output_tokens" : 996,
+    "output_tokens" : 1019,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 44853,
+    "cost_micro_usd" : 45469,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10782,
-    "model_call_ms" : [ 1484, 2530, 2305, 4387 ]
+    "wall_clock_ms" : 10121,
+    "model_call_ms" : [ 1473, 1292, 2604, 4615 ]
   }
 }

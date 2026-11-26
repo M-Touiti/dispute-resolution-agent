@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000142",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000142",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:09:45.595445100Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "The ledger shows two purchases at HARBOUR GADGETS (MER-000023) on card CRD-000116. TXN-008097 was made at 2026-08-02T08:30:28Z and TXN-008098 (the disputed one) at 2026-08-02T08:31:28Z. Both are for 37312 minor units (373.12 EUR), both posted on 2026-08-03, and both carry the same authorisation, AUTH-008288. That authorisation was approved once for 373.12 EUR. The ledger shows no refund at this merchant. The time limit is met: the dispute was opened on 2026-10-24, 82 days after posting, within the 120-day limit. Under duplicate-same-authorisation, one authorisation posted twice is a duplicate, and the extra posting is credited. The credit is one posting, TXN-008098 for 373.12 EUR, which is within the 3,000.00 EUR provisional credit limit and does not exceed the claimed amount.",
+      "cited_evidence_ids" : [ "TXN-008098", "TXN-008097", "AUTH-008288" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 37312,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7511,
+    "output_tokens" : 1147,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 55632,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11287,
+    "model_call_ms" : [ 1535, 1390, 1823, 2401, 4092 ]
+  }
+}

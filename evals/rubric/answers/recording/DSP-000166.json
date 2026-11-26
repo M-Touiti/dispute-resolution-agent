@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000166",
   "category": "CANCELLED_RECURRING",
   "outcome": "DECLINE",
-  "input_sha256": "d90d3181ef535bc3dfe7838941fcecd43008c91ec1239945baadce3dfa82679b",
+  "input_sha256": "e48f8fc6223f49252c8c18893d3a5155b13084c8d9c0db4fc617e32129bca503",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtJaXhEd5kPNZbYAEYX",
+  "response_id": "msg_011ChS4GxqyKZJUSmgSS5jc1",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact matches the records, including \"posted on 2026-08-31 for 56.69 EUR\", \"58 days after posting\" (31 August to 28 October is 58 days) and \"cancelled with effect from 2026-09-06\" from DOC-000079."
+      "reason": "Every fact in the rationale and the cardholder reason matches the records, including \"posted on 2026-08-31\", \"58 days after posting\" (correct from 2026-08-31 to 2026-10-28) and \"cancelled with effect from 2026-09-06\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"58 days after posting and within the 120-day limit\"), the written confirmation (\"cancellation confirmation DOC-000079\") and its effective date against the charge (\"after the charge on 2026-08-30\"); no credit is proposed, so the credit limit does not apply."
+      "reason": "The rationale checks the time limit (\"58 days after posting, which is within the 120-day limit\"), the written confirmation (\"DOC-000079\"), and its effective date against the charge (\"That date is after the charge\"); the credit limit does not apply to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 1835,
-    "output_tokens": 500,
+    "input_tokens": 2054,
+    "output_tokens": 440,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 17832,
+  "cost_micro_usd": 17508,
   "price_table": "2026-11-20"
 }

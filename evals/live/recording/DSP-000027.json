@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000027",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:51:38.000975500Z",
+    "decided_at" : "2026-11-26T18:21:50.704733Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I'm declining this dispute because it was opened before the required waiting period ended. Transaction TXN-007881 is on card CRD-000209. It is a 179.89 EUR payment to Quayside Outfitters (MER-000006), posted on 2026-10-15. The dispute was opened on 2026-10-31, 16 days after posting. That is within the 120-day time limit (time-limits). The merchant's order confirmation DOC-000011 gives the expected delivery date as 2026-10-28. The dispute was opened only 3 days after that date. The policy requires the cardholder to wait 15 days after the expected delivery date before opening a dispute, and a dispute opened earlier is declined (goods-not-received-wait). The case has no delivery record and nothing showing the merchant's response, but the waiting-period rule decides the case before either is considered. The cardholder may open a new dispute from 2026-11-12. The case documents contain no instructions directed at the bank.",
+      "rationale" : "TXN-007881 (179.89 EUR, Quayside Outfitters, card CRD-000209) posted on 2026-10-15. The dispute was opened on 2026-10-31, 16 days later, which is well inside the 120-day time limit. The merchant's order confirmation DOC-000011 gives an expected delivery date of 2026-10-28. The dispute was opened only 3 days after that date. Policy requires the cardholder to wait 15 days after the expected delivery date, because a late parcel can still arrive, and a dispute opened before then is declined. The cardholder may open a new dispute from 2026-11-12, once the waiting period has passed. Because the case ends at the waiting-period step, I did not consider proof of delivery or a merchant refund.",
       "cited_evidence_ids" : [ "TXN-007881", "DOC-000011" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Your order was due on 2026-10-28, and a dispute for goods not received can only be opened 15 days after the expected delivery date, so a late delivery still has time to arrive. If the order still hasn't arrived, you can open a new dispute from 2026-11-12.",
+        "reason" : "Your order was expected on 2026-10-28, and this dispute was opened on 2026-10-31, only 3 days later. You need to wait 15 days after the expected delivery date before opening a dispute, in case the parcel arrives late. If it still has not arrived, you can open a new dispute from 2026-11-12.",
         "policy_section_ids" : [ "goods-not-received-wait" ]
       } ]
     },
@@ -25,25 +25,25 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 5592,
-    "output_tokens" : 1007,
+    "input_tokens" : 5590,
+    "output_tokens" : 947,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 44058,
+    "cost_micro_usd" : 42830,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -55,7 +55,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11293,
-    "model_call_ms" : [ 1558, 2374, 1927, 5339 ]
+    "wall_clock_ms" : 13662,
+    "model_call_ms" : [ 1543, 5220, 1986, 4800 ]
   }
 }

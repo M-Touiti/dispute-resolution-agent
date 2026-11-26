@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000114",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:05:25.629212900Z",
+    "decided_at" : "2026-11-26T18:36:04.811215600Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008046 is a 29.16 EUR charge on card CRD-000232 from Meadowlark Athletic Club (MER-000018), a merchant that bills on a recurring basis. The charge was made on 2026-09-10 and posted on 2026-09-11. The dispute was opened on 2026-10-24, 43 days after posting, so it is within the 120-day time limit (time-limits). DOC-000054 is a cancellation confirmation issued by the merchant. It says the subscription was cancelled with effect from 2026-09-07, which is three days before the charge. Because the merchant confirmed in writing a cancellation that took effect before the charge, the charge should not have been made (recurring-cancelled-before-charge). The credit is the disputed charge only, 29.16 EUR. That matches the amount claimed and is well under the 3,000.00 EUR provisional credit limit (provisional-credit). None of the documents or records contained instructions.",
+      "rationale" : "I recommend a provisional credit of 29.16 EUR (2916 minor units). TXN-008046 is a 29.16 EUR charge from Meadowlark Athletic Club (MER-000018), a merchant that bills on a recurring basis. It is on card CRD-000232, was charged on 2026-09-10 and posted on 2026-09-11. The dispute was opened on 2026-10-24, 43 days after posting, which is within the 120-day time limit (time-limits). The merchant's own cancellation confirmation (DOC-000054, issued by the merchant) says the subscription was cancelled with effect from 2026-09-07. That is three days before the charge, so the charge should not have been made (recurring-cancelled-before-charge). The credit covers only the disputed charge, which matches the amount the cardholder claims and is well under the 3,000.00 EUR limit for automated provisional credit (provisional-credit). The document contained no instructions to the bank.",
       "cited_evidence_ids" : [ "TXN-008046", "DOC-000054" ],
       "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5940,
-    "output_tokens" : 1001,
+    "output_tokens" : 1032,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 45174,
+    "cost_micro_usd" : 45794,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10551,
-    "model_call_ms" : [ 1519, 2433, 2293, 4231 ]
+    "wall_clock_ms" : 10864,
+    "model_call_ms" : [ 1566, 2114, 2473, 4580 ]
   }
 }

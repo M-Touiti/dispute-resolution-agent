@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000132",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000132",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:07:51.654806300Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute. The charge TXN-008082 for 47.77 EUR at Kestrel Athletic Club is on card CRD-000077. It was made on 2026-08-27 and posted on 2026-08-28. The dispute was opened on 2026-10-26, 59 days after posting, so it is within the 120-day time limit (time-limits). The merchant's cancellation confirmation DOC-000063 says the subscription was cancelled with effect from 2026-08-28. That is one day after the charge was made. The charge was made before the cancellation took effect, so it belongs to a period the cardholder had not yet cancelled. Under recurring-cancelled-after-charge the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-008082", "DOC-000063" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-after-charge" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The Kestrel Athletic Club charge of 47.77 EUR was made on 2026-08-27. The merchant's cancellation confirmation shows that your subscription was cancelled from 2026-08-28, the day after the charge. The charge is for a period before your cancellation took effect, so it was valid.",
+        "policy_section_ids" : [ "recurring-cancelled-after-charge", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5387,
+    "output_tokens" : 883,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 40469,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10537,
+    "model_call_ms" : [ 1720, 2511, 2121, 4141 ]
+  }
+}

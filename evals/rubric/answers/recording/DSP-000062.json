@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000062",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "DECLINE",
-  "input_sha256": "5ab79b78f683192b733d5c19aa1d6c9a20722b5f4f48f7baebd1fe81b68e6c89",
+  "input_sha256": "ed20b494f3deaaf4530668cb657fc3d623cb0ef3f1f5d6457f0748a8940d4951",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRshw9hPg5UykJHoBUck",
+  "response_id": "msg_011ChS3i3gWVZWpCnRpQe9W1",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The statements \"posted on 2026-10-02\", \"opened on 2026-10-28, 26 days later\", \"opened 23 days after that date\" and \"signed for by O. Eriksen\" all match the transaction record, the documents and the cardholder record, and the arithmetic is correct."
+      "reason": "The stated facts all match the records and the day counts are correct: \"posted on 2026-10-02\", \"opened on 2026-10-28, 26 days after posting\", \"opened 23 days after that date\" and \"signed for by O. Eriksen\" against the profile \"Olga Eriksen of Utrecht\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the waiting period (\"the 15-day waiting period has passed\") and the delivery record (\"signed for by O. Eriksen\"), then stops at that deciding check with \"the goods are treated as received, and the dispute is declined\", so the merchant-resolution check is not needed."
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the waiting period (\"the 15-day waiting period had passed\") and the delivery record and signer, then stops at the deciding proof-of-delivery rule (\"the goods are therefore treated as received and the dispute is declined\"), so it need not address merchant resolution."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2902,
-    "output_tokens": 677,
+    "input_tokens": 2763,
+    "output_tokens": 745,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 25640,
+  "cost_micro_usd": 26444,
   "price_table": "2026-11-20"
 }

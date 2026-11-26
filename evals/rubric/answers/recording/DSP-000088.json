@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000088",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "a832c93aa35838d82772b2155187b96dfba838d72045961af285cbca6ba780c3",
+  "input_sha256": "26185dd597b79ee293f0cb61c7d8569e83cf8be1e3dee13f39033ca102094eb1",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsr6kNbYu9vHdbSKCU8",
+  "response_id": "msg_011ChS3qjqBxDSXfusWXjMyo",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The facts match the records: \"posted on 2026-07-29\", \"opened on 2026-10-28, 91 days later\" (a correct count), \"entry mode CHIP, PIN verified true\" and \"no fraud flag\", while the cardholder's account is attributed as a claim (\"The cardholder says the card never left them\")."
+      "reason": "Each fact checks out against the records: \"posted on 2026-07-29 and the dispute was opened on 2026-10-28, which is 91 days later\" is correct, AUTH-008198 shows \"entry mode CHIP, PIN verified, response APPROVED and no fraud flag\", and the four earlier purchases and their dates \"from 2026-05-23 to 2026-07-02\" match the search results."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"91 days later, which is inside the 120-day limit\"), the entry mode, the PIN verification and the fraud flag (\"entry mode CHIP, PIN verified true ... and no fraud flag\"), and the earlier purchases (\"four earlier approved purchases at the same merchant\"); the credit limit does not apply to a decline."
+      "reason": "The rationale covers every required check: the time limit (\"inside the 120-day limit\"), the entry mode and PIN verification (\"entry mode CHIP, PIN verified\"), the fraud flag (\"no fraud flag\") and the earlier same-merchant purchases (\"four earlier approved purchases at the same merchant\"); the credit limit does not apply to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3140,
-    "output_tokens": 672,
+    "input_tokens": 3714,
+    "output_tokens": 665,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 26492,
+  "cost_micro_usd": 28648,
   "price_table": "2026-11-20"
 }

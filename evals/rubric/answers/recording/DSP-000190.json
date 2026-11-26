@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000190",
   "category": "CANCELLED_RECURRING",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "4c7304232529d43f9eeea8ced5f2f6bdf15bff2c23c526cff1a828ef4fb34848",
+  "input_sha256": "f5977c0f4b43cc944c17d770ba13b049251c508a9dda40116e2f6d289d4d56a4",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtU9KtvnwANRe9GDkTT",
+  "response_id": "msg_011ChS4SFKApQwqy3xZYGmLV",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
-      "verdict": "fail",
-      "reason": "The rationale says \"Under provisional-credit, the credit is never more than the disputed charge\", but the section says \"never more than the disputed amount\", and the dispute records an amount in dispute of 232.80 EUR, so the policy is misquoted."
+      "verdict": "pass",
+      "reason": "The stated facts, such as \"posted on 2026-10-03\", \"27 days after posting\", \"cancelled with effect from 2026-09-15\" and \"58.20 EUR is well under the 3,000.00 EUR automated limit\", match the records and policy, and the remark that \"Earlier charges ... are not covered by the cancellation\" reads as a conclusion rather than a factual claim."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"27 days after posting, which is within the 120-day limit\"), the written confirmation (\"DOC-000096 is a cancellation confirmation from the merchant\"), the effective date against the charge (\"2026-09-15, which is before the 2026-10-02 charge\") and the credit limit (\"well below the 3,000.00 EUR limit\")."
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the written confirmation (\"DOC-000096\"), its effective date against the charge (\"took effect before the charge\") and the credit limit (\"well under the 3,000.00 EUR automated limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2699,
-    "output_tokens": 794,
+    "input_tokens": 2469,
+    "output_tokens": 968,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 27168,
+  "cost_micro_usd": 29728,
   "price_table": "2026-11-20"
 }

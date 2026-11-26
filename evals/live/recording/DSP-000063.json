@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000063",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:56:48.853723100Z",
+    "decided_at" : "2026-11-26T18:27:10.499633900Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007950 is a 67.98 EUR charge from Lumen Fitness (MER-000054, a merchant that bills on a recurring basis) on card CRD-000009. The charge was made on 2026-10-04 and posted on 2026-10-05. The dispute was opened on 2026-10-26, 21 days after posting, which is within the 120-day time limit. DOC-000030 is a cancellation confirmation issued by the merchant. It says the subscription was cancelled with effect from 2026-09-19, which is before the 2026-10-04 charge, so the charge should not have been made. The credit is the disputed posting of 67.98 EUR. This matches the amount claimed and is well below the 3,000.00 EUR provisional credit limit.",
+      "rationale" : "TXN-007950 is a Lumen Fitness (MER-000054) charge of 67.98 EUR on card CRD-000009. It was made on 2026-10-04 and posted on 2026-10-05. The dispute was opened on 2026-10-26, 21 days after posting, which is within the 120-day time limit. DOC-000030 is a cancellation confirmation issued by the merchant. It says the subscription was cancelled with effect from 2026-09-19, which is before the 2026-10-04 charge. Under the rule for a cancellation confirmed before the charge, the charge should not have been made and provisional credit is approved. The credit is the disputed charge of 67.98 EUR. This matches the amount claimed and is below the 3,000.00 EUR limit for provisional credit. No record or document contained any instruction.",
       "cited_evidence_ids" : [ "TXN-007950", "DOC-000030" ],
       "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5890,
-    "output_tokens" : 879,
+    "output_tokens" : 960,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 42471,
+    "cost_micro_usd" : 44130,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 8840,
-    "model_call_ms" : [ 1502, 1466, 2299, 3461 ]
+    "wall_clock_ms" : 9402,
+    "model_call_ms" : [ 1526, 1339, 2418, 3916 ]
   }
 }

@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000070",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "ESCALATE",
+  "input_sha256": "00329323b500b5cca801cc95f81492aba551b6672f1d9c4eb3989b2d85914233",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRskdQS3hCLChCXrnXQZ",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact matches the records, including \"posted on 2026-09-12\", \"48 days later\" (correct arithmetic to 2026-10-30), \"ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT\", \"the fraud flag is set\", and an accurate paraphrase of provisional-credit."
+    },
+    "evidence_check_complete": {
+      "verdict": "fail",
+      "reason": "The rationale covers the time limit, \"entry mode ECOMMERCE\", \"3-D Secure NOT_PERFORMED\", the fraud flag and the 3,000.00 EUR credit limit, but never addresses the cardholder's earlier transactions with BRIGHTWATER DEVICES, and it does not say that record is missing."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"ESCALATE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to judge."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3518,
+    "output_tokens": 658,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 27724,
+  "price_table": "2026-11-20"
+}

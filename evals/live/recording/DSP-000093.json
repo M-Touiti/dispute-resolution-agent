@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000093",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:01:31.001799600Z",
+    "decided_at" : "2026-11-26T18:32:09.571900300Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,42 +12,46 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute was opened on 2026-10-31. The disputed posting, TXN-008006, posted on 2026-08-08, which is 84 days earlier and inside the 120-day time limit. The card has two postings of 6060 EUR cents (60.60 EUR) at RIVERSIDE OUTFITTERS (MER-000060), both made on 2026-08-07 and both posted on 2026-08-08: TXN-008005 at 12:32 and TXN-008006 at 12:34. They share one authorisation, AUTH-008204, so a single authorisation was posted twice. However, the merchant already refunded the extra posting. Refund TXN-008007 for 6060 cents posted on 2026-08-14, and its related transaction is TXN-008006. Because the duplicate has been refunded, nothing remains in dispute, and the policy says to decline.",
-      "cited_evidence_ids" : [ "TXN-008006", "TXN-008005", "TXN-008007", "AUTH-008204" ],
+      "rationale" : "I recommend declining this dispute because the duplicate charge has already been refunded. The dispute was opened on 2026-10-31, 84 days after the disputed transaction posted on 2026-08-08. That is inside the 120-day time limit. The ledger shows one authorisation, AUTH-008204 (60.60 EUR, approved on 2026-08-07), posted twice at RIVERSIDE OUTFITTERS: TXN-008005 (60.60 EUR, 2026-08-07 12:32) and TXN-008006 (60.60 EUR, 2026-08-07 12:34), both posted on 2026-08-08. So the cardholder was charged twice. However, the merchant posted refund TXN-008007 for 60.60 EUR on 2026-08-14, and it is linked to the disputed posting TXN-008006. The duplicate-already-refunded rule says that when the merchant has already refunded the duplicate posting, nothing remains in dispute and the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-008006", "TXN-008005", "AUTH-008204", "TXN-008007" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "You were charged 60.60 EUR twice at RIVERSIDE OUTFITTERS on 2026-08-07, but the merchant already refunded the extra charge on 2026-08-14. Nothing remains in dispute.",
-        "policy_section_ids" : [ "duplicate-already-refunded" ]
+        "reason" : "You were charged twice for the same 60.60 EUR purchase at RIVERSIDE OUTFITTERS, but the merchant already refunded the extra charge in full. The 60.60 EUR refund posted to your account on 2026-08-14, so there is nothing left to dispute.",
+        "policy_section_ids" : [ "duplicate-already-refunded", "time-limits" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 5,
-    "input_tokens" : 7399,
-    "output_tokens" : 941,
-    "cache_read_input_tokens" : 23480,
+    "model_calls" : 6,
+    "input_tokens" : 12101,
+    "output_tokens" : 1124,
+    "cache_read_input_tokens" : 29184,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 51220,
+    "cost_micro_usd" : 74829,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_policy"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_authorisations"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -59,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11440,
-    "model_call_ms" : [ 1543, 2484, 1874, 972, 4507 ]
+    "wall_clock_ms" : 14387,
+    "model_call_ms" : [ 1486, 2216, 2171, 1668, 1415, 5278 ]
   }
 }

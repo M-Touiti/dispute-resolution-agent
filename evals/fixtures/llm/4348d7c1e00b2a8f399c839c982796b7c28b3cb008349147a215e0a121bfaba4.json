@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Kestrel Athletic Club membership by phone last month, yet it was still charged 45.76 EUR, which points to a recurring charge after cancellation.\"}",
+      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they phoned Kestrel Athletic Club to cancel last month but were still charged 45.76 EUR, indicating a recurring membership payment taken after cancellation.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRg5jC5FSPcF7fM7aChU",
+    "id" : "msg_011ChS2jQovCoUgQsT29tgX3",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 109,
-      "output_tokens" : 87
+      "output_tokens" : 85
     }
   }
 }

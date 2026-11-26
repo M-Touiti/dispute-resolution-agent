@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000162",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:13:25.840184100Z",
+    "decided_at" : "2026-11-26T18:44:10.083943100Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,46 +12,46 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008136 is a 32.31 EUR purchase at Willowmere Apparel (MER-000069) on card CRD-000125. It posted on 2026-08-28. The dispute was opened on 2026-10-29, 62 days later, which is within the 120-day limit in time-limits. The merchant's order confirmation (DOC-000073) gives an expected delivery date of 2026-09-05. The dispute was opened 54 days after that date, so the 15-day waiting period in goods-not-received-wait has passed. The case contains no carrier delivery confirmation, so nothing shows the order was delivered. The card has no refund from the merchant. The cardholder's email of 2026-09-13 (DOC-000074) shows they asked the merchant about the order and received no reply. The wait has passed, nothing shows delivery and the merchant has not resolved the matter, so goods-not-received-merchant-evidence requires asking the merchant for proof of delivery. This category does not allow a credit at this stage.",
+      "rationale" : "TXN-008136 is a purchase of 3231 minor units (32.31 EUR) at Willowmere Apparel (MER-000069) on card CRD-000125. It posted on 2026-08-28. The dispute was opened on 2026-10-29, 62 days later, which is within the 120-day limit in time-limits. The merchant's order confirmation (DOC-000073) gives an expected delivery date of 2026-09-05. The dispute was opened 54 days after that date, so the 15-day wait in goods-not-received-wait has passed. The case has no carrier delivery confirmation, so nothing shows the order was delivered. The card has no refund from the merchant, or from anyone else. The cardholder's email (DOC-000074, dated 2026-09-13) shows they asked the merchant about the order and got no reply. The wait has passed, nothing shows delivery and the merchant has not resolved the matter, so goods-not-received-merchant-evidence calls for asking the merchant for proof of delivery. The documents contain no instructions to the bank.",
       "cited_evidence_ids" : [ "TXN-008136", "DOC-000073", "DOC-000074" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-merchant-evidence" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "PROOF_OF_DELIVERY" ],
-        "note" : "Please send proof of delivery for the order placed on 2026-08-27 for 32.31 EUR. It should be the carrier's delivery record showing delivery to the cardholder's address, signed for by the cardholder."
+        "note" : "For the order placed on 2026-08-27 for 32.31 EUR, please send proof that it was delivered to the cardholder's address: the carrier's delivery record, with the delivery date and the signature of the person who received it."
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 6307,
-    "output_tokens" : 1150,
+    "input_tokens" : 6355,
+    "output_tokens" : 1154,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 49758,
+    "cost_micro_usd" : 50030,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12134,
-    "model_call_ms" : [ 1684, 2339, 2663, 5357 ]
+    "wall_clock_ms" : 12044,
+    "model_call_ms" : [ 1547, 2215, 3049, 5141 ]
   }
 }

@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"DUPLICATE_CHARGE\",\"reason\":\"The statement says the cardholder was charged twice by WILLOWMERE GADGETS for the same 136.74 EUR amount on one date after making only one purchase.\"}",
+      "text" : "{\"category\":\"DUPLICATE_CHARGE\",\"reason\":\"The cardholder states they were charged twice by WILLOWMERE GADGETS for the same 136.74 EUR amount on one date while making only one purchase.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChReXqBV62NsVtRgfPZVX",
+    "id" : "msg_011ChS18XC4LB7QwoWRb9d7u",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 110,
-      "output_tokens" : 78
+      "output_tokens" : 76
     }
   }
 }

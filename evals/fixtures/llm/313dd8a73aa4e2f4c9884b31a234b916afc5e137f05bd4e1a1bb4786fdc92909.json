@@ -40,7 +40,7 @@
       "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they do not recognise the 399.34 EUR payment to BRAMBLE CLOTHING and that their card was always in their possession, indicating they did not make or allow it.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfTor86MFhFyice3N4Y",
+    "id" : "msg_011ChS26WZAVdstiNvED4JB8",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

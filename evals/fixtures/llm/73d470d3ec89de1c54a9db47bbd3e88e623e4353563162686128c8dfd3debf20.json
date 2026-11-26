@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they never made the 3728.34 EUR RIVERSIDE GADGETS charge, have never shopped there, and did not share their card details with anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they never made the 3728.34 EUR charge from RIVERSIDE GADGETS, never shopped there, and never gave their card details to anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRg9vKQvcgh9oskaMerF",
+    "id" : "msg_011ChS2oaTi2QgtkBhD8JU3Z",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

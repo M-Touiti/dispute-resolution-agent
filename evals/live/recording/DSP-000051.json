@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000051",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:55:08.927600900Z",
+    "decided_at" : "2026-11-26T18:25:32.358890100Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,46 +12,50 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute is within the time limit. TXN-007929 posted on 2026-10-03, and the dispute was opened on 2026-10-27, 24 days later. The limit is 120 days. The posted amount is 198780 cents (1987.80 EUR), and it matches the authorised amount on AUTH-008135, also 198780 cents. There is no receipt or quote in the case. The cardholder says they were quoted 1769.15 EUR, which would make a difference of 21865 cents, but they do not have the quote. A cardholder's statement is a claim, not evidence of the agreed amount. Because there is no receipt and the posted amount equals the authorised amount, nothing in the records shows a different agreed amount. Under amount-no-receipt, the step is to ask the merchant for the receipt or order details.",
+      "rationale" : "The dispute was opened on 2026-10-27, 24 days after TXN-007929 posted on 2026-10-03. That is within the 120-day limit. TXN-007929 posted 198780 minor units (1987.80 EUR) at Silverbirch Travel (MER-000007, TRAVEL). Its authorisation AUTH-008135 was approved for the same 198780 minor units, ECOMMERCE, with 3-D Secure authenticated. No receipt or quote is attached. The cardholder's figure of 1769.15 EUR is a claim, not a merchant document, so no agreed amount has been shown and no difference can yet be calculated against the claimed 218.65 EUR. Under amount-no-receipt, when there is no receipt and the posted amount equals the authorised amount, the merchant must be asked for the receipt or order details.",
       "cited_evidence_ids" : [ "TXN-007929", "AUTH-008135" ],
       "cited_policy_sections" : [ "time-limits", "amount-no-receipt" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "RECEIPT" ],
-        "note" : "Please provide the receipt, quote or order details for the 1987.80 EUR transaction dated 2026-10-02, showing the amount the cardholder agreed to pay and what it covers."
+        "note" : "For the card purchase of 1987.80 EUR on 2026-10-02, please send the receipt or order details, including the quote, showing the amount the cardholder agreed to pay."
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 5062,
-    "output_tokens" : 903,
+    "input_tokens" : 5355,
+    "output_tokens" : 967,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 39819,
+    "cost_micro_usd" : 42271,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
-  }, {
-    "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
-  }, {
-    "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10184,
-    "model_call_ms" : [ 1523, 2335, 2112, 4107 ]
+    "wall_clock_ms" : 9846,
+    "model_call_ms" : [ 1505, 1306, 2486, 4501 ]
   }
 }

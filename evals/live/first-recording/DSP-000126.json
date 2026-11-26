@@ -1,0 +1,77 @@
+{
+  "dispute_id" : "DSP-000126",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000126",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:07:07.307741800Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm declining this dispute because the ledger shows two separate purchases, not one purchase posted twice. Time limit: the disputed posting was posted on 2026-10-06 and the dispute was opened on 2026-10-30, which is well within the 120-day limit. The card has two SALTMARSH ENERGY (MER-000075) postings of 95.87 EUR, both posted on 2026-10-06. TXN-008067 was made at 2026-10-05T11:49:58Z under AUTH-008260. The disputed TXN-008068 was made at 2026-10-05T13:49:58Z under AUTH-008261. The two postings do not share an authorisation. Each authorisation was approved on its own, both were contactless and neither carries a fraud flag. They were made two hours apart. The policy treats two postings with their own authorisations, made some time apart, as two purchases, even when the merchant and the amount are the same. No refund appears at this merchant.",
+      "cited_evidence_ids" : [ "TXN-008068", "TXN-008067", "AUTH-008261", "AUTH-008260" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The two 95.87 EUR charges from SALTMARSH ENERGY on 2026-10-05 were approved separately, two hours apart, and each was a contactless payment. They are two separate purchases, not one purchase charged twice. If you did not make one of them, you can open a dispute saying it was not authorised.",
+        "policy_section_ids" : [ "duplicate-separate-authorisations" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 6,
+    "input_tokens" : 12144,
+    "output_tokens" : 1332,
+    "cache_read_input_tokens" : 29184,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 79001,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "search_policy",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 14395,
+    "model_call_ms" : [ 1605, 2069, 1545, 2312, 1842, 4901 ]
+  }
+}

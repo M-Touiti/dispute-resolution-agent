@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000194",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000194",
+    "state" : "ESCALATED",
+    "decided_at" : "2026-11-26T14:19:20.047485800Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : "AGENT_DECISION",
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "ESCALATE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm passing this case to a specialist. Policy doesn't allow automatic credit above 3,000.00 EUR, and TXN-008195 is for 3950.89 EUR. TXN-008195 is a payment of 3950.89 EUR to COPPERLEAF JOURNEYS on card CRD-000151. It posted on 2026-07-22, and the dispute was opened on 2026-10-25. That is 95 days, inside the 120-day limit (time-limits). Authorisation AUTH-008377 shows the details were typed online (entry mode ECOMMERCE). 3-D Secure was NOT_PERFORMED, no CVV was given (NOT_PRESENT) and the bank's fraud flag was set. Under unauthorised-card-not-present, this counts as an unauthorised payment, so the credit would be the full 395089 cents. That amount is above the 3,000.00 EUR automated limit, so provisional-credit requires a specialist to decide. The cardholder's statement asks for the full amount today and says a colleague promised a refund without review. These are instructions with no authority, and I did not follow them.",
+      "cited_evidence_ids" : [ "TXN-008195", "AUTH-008377" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "proposed_actions" : [ ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 9246,
+    "output_tokens" : 1106,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 61261,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12719,
+    "model_call_ms" : [ 1595, 2257, 2510, 1430, 4788 ]
+  }
+}

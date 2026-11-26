@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"GOODS_NOT_RECEIVED\",\"reason\":\"The cardholder ordered from Willowmere Gadgets with a due date of 2026-08-31, says the order never arrived, and asks for a refund, which describes paid goods not delivered.\"}",
+      "text" : "{\"category\":\"GOODS_NOT_RECEIVED\",\"reason\":\"The cardholder ordered from Willowmere Gadgets with a due date of 2026-08-31, says the order never arrived, and asks for a refund, which describes paid-for goods not delivered.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRgRNs1MWocBoXrUkd5d",
+    "id" : "msg_011ChS34k6ZQqhsXLRZ8xNwZ",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 108,
-      "output_tokens" : 88
+      "output_tokens" : 90
     }
   }
 }

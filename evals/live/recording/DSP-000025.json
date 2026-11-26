@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000025",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:51:26.700741900Z",
+    "decided_at" : "2026-11-26T18:21:37.040257200Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The time limit is met. TXN-007878 posted on 2026-08-26 and the dispute was opened on 2026-10-31, 66 days later, inside the 120-day limit. The card's ledger at QUAYSIDE OUTFITTERS (MER-000006) shows two postings of 46.53 EUR made on 2026-08-25: TXN-007877 at 10:00:55Z and TXN-007878 at 10:03:55Z. Both posted on 2026-08-26 and both carry the same authorisation, AUTH-008088, so one authorisation was posted twice. However, the merchant already refunded the extra posting. Refund TXN-007879 for 46.53 EUR posted on 2026-08-28 and is linked to TXN-007878. Under duplicate-already-refunded, nothing remains in dispute, so the dispute is declined.",
-      "cited_evidence_ids" : [ "TXN-007878", "TXN-007877", "TXN-007879", "AUTH-008088" ],
+      "rationale" : "I'm declining this dispute because the extra charge has already been refunded. The disputed purchase TXN-007878 (46.53 EUR, made 2026-08-25, posted 2026-08-26) and an earlier purchase TXN-007877 (46.53 EUR, made 2026-08-25, posted 2026-08-26) were both charged at QUAYSIDE OUTFITTERS (MER-000006). Both use authorisation AUTH-008088, so one authorisation was posted twice. The dispute was opened on 2026-10-31, 66 days after posting, which is within the 120-day limit. On 2026-08-28 the merchant posted refund TXN-007879 for 46.53 EUR, and that refund is linked to TXN-007878. One charge for the single purchase remains, and nothing is left in dispute.",
+      "cited_evidence_ids" : [ "TXN-007878", "TXN-007877", "TXN-007879" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "QUAYSIDE OUTFITTERS did charge you 46.53 EUR twice on 2026-08-25. It refunded the second charge in full: a refund of 46.53 EUR was posted to your card on 2026-08-28. You have only been charged once, so there is nothing left to dispute.",
+        "reason" : "QUAYSIDE OUTFITTERS charged you 46.53 EUR twice on 2026-08-25. The merchant refunded the extra 46.53 EUR on 2026-08-28, so you have been charged only once for your purchase and nothing is left to dispute.",
         "policy_section_ids" : [ "duplicate-already-refunded" ]
       } ]
     },
@@ -26,28 +26,28 @@
   "usage" : {
     "model_calls" : 5,
     "input_tokens" : 7399,
-    "output_tokens" : 979,
+    "output_tokens" : 982,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 51668,
+    "cost_micro_usd" : 51825,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -59,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11636,
-    "model_call_ms" : [ 1544, 2283, 1847, 1147, 4683 ]
+    "wall_clock_ms" : 13787,
+    "model_call_ms" : [ 1544, 4724, 1546, 1564, 4272 ]
   }
 }

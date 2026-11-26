@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000168",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:14:19.748479300Z",
+    "decided_at" : "2026-11-26T18:45:02.898925300Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008151 at Ashgrove Grocers on card CRD-000216 posted on 2026-08-11 for 95.50 EUR (9550). The dispute was opened on 2026-10-26, which is 76 days later and within the 120-day limit in time-limits. Authorisation AUTH-008336 was approved for 83.05 EUR (8305). The merchant-issued receipt DOC-000080 also shows 83.05 EUR (8305). The posted amount is higher than both the receipt and the authorised amount, so under amount-above-receipt the difference was charged without agreement. The difference is 9550 - 8305 = 1245 minor units (12.45 EUR). This matches the amount claimed and is well below the 3,000.00 EUR provisional credit limit in provisional-credit. Only the difference is credited, not the whole transaction. The documents contained no instructions.",
+      "rationale" : "I recommend a provisional credit of 12.45 EUR. TXN-008151 on card CRD-000216 posted on 2026-08-11 for 9550 cents (95.50 EUR) at Ashgrove Grocers. The dispute was opened on 2026-10-26, 76 days after posting, which is inside the 120-day limit. The authorisation AUTH-008336 was approved for 8305 cents (83.05 EUR). The merchant's receipt DOC-000080 also shows 83.05 EUR. The posted amount is higher than both the receipt and the authorised amount, so the policy treats the difference as charged without agreement. That difference is 9550 - 8305 = 1245 cents (12.45 EUR). Only the difference is credited, not the whole transaction. It matches the amount claimed and is well under the 3,000.00 EUR automated credit limit.",
       "cited_evidence_ids" : [ "TXN-008151", "AUTH-008336", "DOC-000080" ],
       "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,36 +25,40 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 6315,
+    "input_tokens" : 5633,
     "output_tokens" : 972,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 46269,
+    "cost_micro_usd" : 43502,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
-  }, {
-    "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
-  "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
   "decision_rejections" : 0,
   "triage_fell_back" : false,
   "model_failures" : [ ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10783,
-    "model_call_ms" : [ 1494, 2323, 2998, 3854 ]
+    "wall_clock_ms" : 10399,
+    "model_call_ms" : [ 1511, 2320, 2670, 3826 ]
   }
 }

@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000125",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:06:52.911120600Z",
+    "decided_at" : "2026-11-26T18:37:40.469141400Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I checked the time limit first. TXN-008066 posted on 2026-09-24 and the dispute was opened on 2026-10-28, which is 34 days later and inside the 120-day limit. The ledger shows two purchases at MEADOWLARK ELECTRONICS (MER-000032) on card CRD-000114, both for 96300 EUR minor units (963.00 EUR) and both posted on 2026-09-24. TXN-008065 is dated 2026-09-23T09:00:38Z and TXN-008066 is dated 2026-09-23T09:04:38Z. Both carry the same authorisation, AUTH-008259, an approved request for 963.00 EUR. That means one authorisation was posted twice. Neither posting has been refunded: the merchant's transaction list for this card shows no refunds. Under the policy for one authorisation posted twice, the extra posting, TXN-008066, gets provisional credit. That credit is 963.00 EUR, the amount of one posting, which matches the claim and is below the 3,000.00 EUR limit for provisional credit.",
+      "rationale" : "I recommend a provisional credit of 963.00 EUR for one extra posting. The ledger shows two purchases on card CRD-000114 at MEADOWLARK ELECTRONICS (MER-000032), each for 963.00 EUR (96300 cents). The first is TXN-008065, made 2026-09-23T09:00:38Z. The second is TXN-008066, made 2026-09-23T09:04:38Z. Both posted on 2026-09-24. Both carry the same authorisation, AUTH-008259: one approved e-commerce authorisation of 963.00 EUR, 3-D Secure authenticated, so one authorisation was posted twice. The ledger shows no refund of either posting. Time limit: the dispute was opened on 2026-10-28, 34 days after posting, which is within the 120-day limit. Under duplicate-same-authorisation, the extra posting is credited. That is one posting of 963.00 EUR, which matches the amount claimed and is below the 3,000.00 EUR automated limit.",
       "cited_evidence_ids" : [ "TXN-008066", "TXN-008065", "AUTH-008259" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,37 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7802,
-    "output_tokens" : 1111,
+    "input_tokens" : 7833,
+    "output_tokens" : 1125,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 56232,
+    "cost_micro_usd" : 56655,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11798,
-    "model_call_ms" : [ 1530, 1493, 1545, 2300, 4882 ]
+    "wall_clock_ms" : 11631,
+    "model_call_ms" : [ 1802, 1278, 1633, 2597, 4220 ]
   }
 }

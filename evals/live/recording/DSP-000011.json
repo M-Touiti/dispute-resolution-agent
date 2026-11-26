@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000011",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:49:21.446953400Z",
+    "decided_at" : "2026-11-26T18:19:20.155085800Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,46 +12,50 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007850 (928.95 EUR, Brightwater Devices, card CRD-000034) posted on 2026-09-13. The dispute was opened on 2026-10-30, 47 days later, so it is within the 120-day limit (time-limits). The merchant's order confirmation DOC-000004 gives an expected delivery date of 2026-09-17. The dispute was opened 43 days after that date, so the 15-day wait has passed (goods-not-received-wait). The carrier's delivery record DOC-000005 shows the parcel was delivered on 2026-09-17 to the cardholder's address in Lille and signed for by H. Laurent. That matches the cardholder profile: Hugo Laurent, Lille. Under goods-not-received-proof-of-delivery, the goods count as received and the dispute is declined. The cardholder's statement that the order never arrived does not outweigh the carrier's signed delivery record. None of the documents contained instructions.",
+      "rationale" : "TXN-007850 (928.95 EUR, Brightwater Devices, MER-000050) is on card CRD-000034. It posted on 2026-09-13. The dispute was opened on 2026-10-30, 47 days later, which is within the 120-day limit in time-limits. The merchant's order confirmation DOC-000004 gives an expected delivery date of 2026-09-17. The dispute was opened 43 days after that, so the 15-day wait in goods-not-received-wait has passed. The carrier's delivery record DOC-000005 shows the parcel was delivered on 2026-09-17 to the cardholder's address in Lille and signed for by H. Laurent. That matches the cardholder profile: Hugo Laurent, Lille. Under goods-not-received-proof-of-delivery, a carrier record showing delivery to the cardholder's address, signed for in the cardholder's name, means the goods are treated as received, so the dispute is declined. No document contained instructions to the bank.",
       "cited_evidence_ids" : [ "TXN-007850", "DOC-000004", "DOC-000005" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The carrier's record shows your order was delivered to your address in Lille on 2026-09-17 and signed for in your name. Under our policy, the goods are treated as received.",
+        "reason" : "The carrier's record shows your order from Brightwater Devices was delivered to your address in Lille on 2026-09-17 and signed for by H. Laurent. Under our policy the goods are treated as received, so we cannot uphold the dispute.",
         "policy_section_ids" : [ "goods-not-received-proof-of-delivery" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 7301,
-    "output_tokens" : 1070,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 12232,
+    "output_tokens" : 1201,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 52236,
+    "cost_micro_usd" : 75682,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_cardholder",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_cardholder"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12201,
-    "model_call_ms" : [ 1516, 3027, 3000, 4570 ]
+    "wall_clock_ms" : 13217,
+    "model_call_ms" : [ 1492, 2665, 2679, 1517, 4713 ]
   }
 }

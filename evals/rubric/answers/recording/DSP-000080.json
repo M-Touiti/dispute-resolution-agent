@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000080",
   "category": "CANCELLED_RECURRING",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "9a07b716ed5a74f0a2051fc9933a1d47566af4c217a62b3d3d98b5b1c260297e",
+  "input_sha256": "27ac6bf27db74a7372425e1bc03c27f75e6fb28d99fb5625f4bb1960d8fb1a48",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsoctWJ7uBYbMn4mAMa",
+  "response_id": "msg_011ChS3oFHQZV2UZg5bcR2SA",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact is supported by the inputs: \"posted on 2026-10-12\" and \"10 days after posting\" match the records, and \"cancelled with effect from 2026-10-05\" matches DOC-000038."
+      "reason": "Every fact can be traced to the inputs: \"posted on 2026-10-12\", \"10 days after posting\", \"with effect from 2026-10-05\" and \"six days before the charge\" all match the records and the date arithmetic."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"within the 120-day limit\"), the written confirmation (\"DOC-000038\"), the effective date against the charge (\"took effect before the charge\") and the credit limit (\"far below the 3,000.00 EUR limit\")."
+      "reason": "The rationale addresses the time limit (\"well within the 120-day limit\"), the written confirmation (\"DOC-000038\"), its effective date against the charge (\"six days before the charge\") and the credit limit (\"far below the 3,000.00 EUR provisional credit limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2563,
-    "output_tokens": 430,
+    "input_tokens": 2587,
+    "output_tokens": 410,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 19344,
+  "cost_micro_usd": 19040,
   "price_table": "2026-11-20"
 }

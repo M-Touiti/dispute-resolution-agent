@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000159",
   "category": "DUPLICATE_CHARGE",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "9655329f319e9822787313292256ebc92223256ba12a5228a941b523fd27ad9f",
+  "input_sha256": "657c58eab98341cba41407793d95e0b61ba02fe7b1144f78360a177166c9aedc",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtGZ5p8z7vSsMxNFkzU",
+  "response_id": "msg_011ChS4EvvKnwTxaB7JwGekN",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The facts all match the records: \"both posted on 2026-10-14\", \"Both carry the same authorisation, AUTH-008317\", \"10 days after posting\" (2026-10-14 to 2026-10-24) and \"No refund from this merchant has posted to the card\"."
+      "reason": "Every fact in the rationale matches the records: \"opened on 2026-10-24, 10 days after posting\" is correct arithmetic from the 2026-10-14 posting date; \"Both postings carry the same authorisation, AUTH-008317\" matches both ledger entries; and \"the card's ledger shows no refund at this merchant\" matches the merchant search, which returned only the two purchases."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers every required check: the time limit (\"well within the 120-day limit\"), the shared authorisation (\"one authorisation was posted twice\"), amounts and dates, the refund (\"No refund from this merchant\") and the credit limit (\"below the 3,000 EUR limit\")."
+      "reason": "The rationale covers every check the category requires: the time limit (\"inside the 120-day limit\"), the shared authorisation, the amounts and dates of both postings, the refund (\"shows no refund at this merchant\") and the credit limit (\"under the 3,000.00 EUR provisional credit limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request, so this criterion does not apply."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 4512,
-    "output_tokens": 457,
+    "input_tokens": 3059,
+    "output_tokens": 544,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 27680,
+  "cost_micro_usd": 23608,
   "price_table": "2026-11-20"
 }

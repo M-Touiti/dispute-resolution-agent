@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000144",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000144",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:10:11.687868Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute was opened on 2026-10-26. The disputed posting TXN-008102 was posted on 2026-08-22, 65 days earlier, so it is within the 120-day limit in time-limits. The ledger shows two purchases at BRIGHTWATER DEVICES (MER-000050) for 738.71 EUR each: TXN-008101 (2026-08-21 14:22, posted 2026-08-22) and TXN-008102 (2026-08-21 14:26, posted 2026-08-22). Both carry the same authorisation, AUTH-008291, so one authorisation was posted twice. However, the merchant already refunded the extra posting: refund TXN-008103 for 738.71 EUR was posted on 2026-08-25 and is linked to TXN-008102. Under duplicate-already-refunded, nothing remains in dispute, so the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-008102", "TXN-008101", "TXN-008103", "AUTH-008291" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "You were charged 738.71 EUR twice by BRIGHTWATER DEVICES on 2026-08-21. The merchant has already refunded the second charge: a refund of 738.71 EUR was posted to your account on 2026-08-25. Nothing remains in dispute.",
+        "policy_section_ids" : [ "duplicate-already-refunded" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7073,
+    "output_tokens" : 974,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 50408,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11463,
+    "model_call_ms" : [ 1558, 2363, 2015, 1172, 4289 ]
+  }
+}

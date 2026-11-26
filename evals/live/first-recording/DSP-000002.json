@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000002",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000002",
+    "state" : "ESCALATED",
+    "decided_at" : "2026-11-26T13:48:18.406198100Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : "AGENT_DECISION",
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "ESCALATE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm escalating this case because the credit is too large for the automated process. TXN-007835 (LARKSPUR GETAWAYS, 4471.61 EUR) is on card CRD-000085. It posted on 2026-09-09 and the dispute was opened on 2026-10-23. That is 44 days, within the 120-day limit in time-limits. Authorisation AUTH-008050 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. Under unauthorised-card-not-present, the payment therefore counts as unauthorised, and the credit would be the full transaction amount of 4471.61 EUR. That is above the 3,000.00 EUR limit, and under provisional-credit the automated process never grants credit above that limit, so a specialist must decide. No action is proposed.",
+      "cited_evidence_ids" : [ "TXN-007835", "AUTH-008050" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "proposed_actions" : [ ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 6765,
+    "output_tokens" : 976,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 47849,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12285,
+    "model_call_ms" : [ 2471, 3291, 2237, 3855 ]
+  }
+}

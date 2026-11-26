@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000117",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:05:47.586331700Z",
+    "decided_at" : "2026-11-26T18:36:27.824302200Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend a provisional credit of 120.17 EUR. Time limit: TXN-008055 posted to card CRD-000078 on 2026-07-27, and the dispute was opened on 2026-10-26. That is 91 days, inside the 120-day limit. Amounts: TXN-008055 posted at 1,044.57 EUR (104457 cents). Its authorisation, AUTH-008249, was approved for 924.40 EUR (92440 cents). The merchant's receipt, DOC-000056 from Ashgrove Devices, shows a total of 924.40 EUR. The posted amount is higher than both the receipt and the authorised amount, so the difference was charged without agreement. The difference is 104457 - 92440 = 12017 cents (120.17 EUR). Only that difference is credited, not the whole transaction. It matches the amount the cardholder claims and is well under the 3,000.00 EUR limit for automated provisional credit.",
+      "rationale" : "The dispute is within the time limit. TXN-008055 posted on 2026-07-27 and the dispute was opened on 2026-10-26, which is 91 days later. The limit is 120 days. TXN-008055 posted 104457 cents (1044.57 EUR). Its authorisation, AUTH-008249, was for 92440 cents (924.40 EUR). The merchant's own receipt, DOC-000056, shows a total of 92440 cents (924.40 EUR). The posted amount is higher than both the receipt and the authorisation, so under amount-above-receipt the extra was charged without agreement. The difference is 104457 - 92440 = 12017 cents (120.17 EUR). This matches the amount the cardholder claims. Only the difference is credited, not the whole transaction. It is below the 3,000.00 EUR limit for provisional credit. The documents contained no instructions to the bank.",
       "cited_evidence_ids" : [ "TXN-008055", "AUTH-008249", "DOC-000056" ],
       "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 5,
     "input_tokens" : 9730,
-    "output_tokens" : 1051,
+    "output_tokens" : 1035,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 62631,
+    "cost_micro_usd" : 62311,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12079,
-    "model_call_ms" : [ 1399, 2098, 1970, 1816, 4724 ]
+    "wall_clock_ms" : 12549,
+    "model_call_ms" : [ 1534, 2272, 2278, 2208, 4164 ]
   }
 }

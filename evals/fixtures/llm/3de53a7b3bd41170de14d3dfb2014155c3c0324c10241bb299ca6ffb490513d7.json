@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the LUMEN TRAVEL charge, have never shopped there, and did not give their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder states they did not make the LUMEN TRAVEL charge, have never shopped there, and did not give their card details to anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChReWP26mA7YZ64qWhmDA",
+    "id" : "msg_011ChS16ZxSJpJKufY8xay3b",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000041",
+  "category": "DUPLICATE_CHARGE",
+  "outcome": "DECLINE",
+  "input_sha256": "b0ecdce90dbe594c3486f5d7db1dbab391a36a91abde95e52446a569d3268c7b",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsbGbnakZE8qCeQd44a",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact checks against the records, including \"62 days later\" (2026-08-29 to 2026-10-30), the AUTH-008115/AUTH-008116 times \"six hours apart\", \"no fraud flag\", and \"There is no refund from this merchant on this card\", which matches the merchant search showing only the two purchases."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"inside the 120-day limit\"), the authorisations (\"They do not share an authorisation\"), the amounts and dates of both postings, and the refund (\"There is no refund from this merchant\"); no credit limit check is needed for a decline."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2783,
+    "output_tokens": 529,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 22204,
+  "price_table": "2026-11-20"
+}

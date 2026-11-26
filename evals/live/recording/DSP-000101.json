@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000101",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:03:00.549241800Z",
+    "decided_at" : "2026-11-26T18:33:34.884691100Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute. TXN-008024 posted on 2026-08-18 for 2250 cents on card CRD-000030 at Harbour Brasserie (MER-000074), which is recorded as a RESTAURANT. The dispute was opened on 2026-10-23, 66 days after posting, which is within the 120-day limit. The authorisation AUTH-008221 was approved for 1891 cents. No receipt is attached; the 18.91 EUR in the statement is the cardholder's claim, not a merchant receipt. The posted amount is 359 cents above the authorised amount. 20% of the authorised amount is 378.2 cents, so 359 cents is within the restaurant tip tolerance. Under the restaurant tip rule, a difference within that tolerance is an agreed tip, not an amount mismatch.",
+      "rationale" : "I recommend declining this dispute. The charge TXN-008024 for 22.50 EUR (2250 cents) at Harbour Brasserie is on card CRD-000030. It was posted on 2026-08-18, and the dispute was opened on 2026-10-23. That is 66 days later, within the 120-day time limit. The authorisation AUTH-008221 was approved for 18.91 EUR (1891 cents). The merchant is listed as a restaurant. No receipt is attached; the 18.91 EUR bill comes only from the cardholder's statement. The posted amount is 359 cents higher than the authorised amount. 20% of the authorised amount is 378.2 cents, so the difference is within the 20% tip allowance in the restaurant tips policy. Under that policy, the 3.59 EUR is treated as an agreed tip, not an amount mismatch.",
       "cited_evidence_ids" : [ "TXN-008024", "AUTH-008221" ],
       "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "You were charged 22.50 EUR against an authorised 18.91 EUR at a restaurant. The 3.59 EUR difference is within the tip a restaurant may add, which is up to 20% of the authorised amount, so it is treated as an agreed tip and not as a wrong amount.",
+        "reason" : "Restaurants may add a tip of up to 20% of the authorised amount. Your charge was 3.59 EUR above the authorised amount of 18.91 EUR, which is within the 3.78 EUR allowed. There is no receipt showing a different agreed amount, so the extra 3.59 EUR counts as a tip.",
         "policy_section_ids" : [ "amount-restaurant-tip", "time-limits" ]
       } ]
     },
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5043,
-    "output_tokens" : 1032,
+    "output_tokens" : 1049,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 42428,
+    "cost_micro_usd" : 42768,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11053,
-    "model_call_ms" : [ 1594, 2298, 2128, 4936 ]
+    "wall_clock_ms" : 11814,
+    "model_call_ms" : [ 1487, 2296, 2149, 5795 ]
   }
 }

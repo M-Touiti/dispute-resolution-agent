@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000050",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "DECLINE",
+  "input_sha256": "77a0bd9cae898d9e3aa30dec15816996528c19ee2e7ff49cc696de71bcd84b32",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRseZLh5DD4APiCgojb6",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every stated fact matches the records and the arithmetic is correct: \"posted on 2026-09-02 and the dispute was opened on 2026-10-22, which is 50 days later\", \"8850 - 7437 = 1413 cents\" and \"20% of the authorised amount, which is 1487.4 cents\"."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit, the posted amount (\"8850 cents\"), the authorised amount (\"7437 cents\"), the missing receipt (\"No receipt is attached to the case\") and the tip tolerance (\"The difference is within that tolerance\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2389,
+    "output_tokens": 517,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 20388,
+  "price_table": "2026-11-20"
+}

@@ -1,0 +1,77 @@
+{
+  "dispute_id" : "DSP-000157",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000157",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:12:45.513259700Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute. TXN-008127 (1809.90 EUR, SALTMARSH JOURNEYS) is on card CRD-000003. It posted on 2026-08-11 and the dispute was opened on 2026-10-26. That is 76 days, inside the 120-day limit in time-limits. Its authorisation, AUTH-008315, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag. Under unauthorised-3ds-authenticated, an online payment the cardholder authenticated with 3-D Secure and without the fraud flag counts as made by the cardholder, and the matching CVV supports this. The card has no other transactions at this merchant, which is consistent with the cardholder's statement but does not override the strong authentication. The statement contained no instructions.",
+      "cited_evidence_ids" : [ "TXN-008127", "AUTH-008315" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The payment was made online and confirmed through the bank's 3-D Secure check, with the correct card security code. Under our policy, a payment confirmed this way is treated as made by the cardholder, so we cannot treat it as unauthorised.",
+        "policy_section_ids" : [ "unauthorised-3ds-authenticated" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 12059,
+    "output_tokens" : 1235,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 75327,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_card",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "search_policy",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 13669,
+    "model_call_ms" : [ 1537, 3188, 2232, 1946, 4556 ]
+  }
+}

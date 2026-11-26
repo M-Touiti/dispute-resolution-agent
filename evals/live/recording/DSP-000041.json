@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000041",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:53:33.320786200Z",
+    "decided_at" : "2026-11-26T18:23:51.470066200Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,46 +12,50 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute was opened in time. TXN-007908 posted on 2026-08-29 and the dispute was opened on 2026-10-30, which is 62 days later and inside the 120-day limit in time-limits. The card shows two purchases at the same merchant (MER-000046), each for 13728 EUR minor units. TXN-007907 was made on 2026-08-27 at 20:51 and posted on 2026-08-28 under AUTH-008115. TXN-007908 was made on 2026-08-28 at 02:51 and posted on 2026-08-29 under AUTH-008116. They do not share an authorisation. Each has its own approved contactless authorisation, made six hours apart, with no fraud flag. There is no refund from this merchant on this card. Under duplicate-separate-authorisations, two postings with their own authorisations made some time apart are two separate purchases, even when the merchant and amount are the same, so the dispute is declined.",
+      "rationale" : "I'm declining this because the ledger shows two separate purchases, not one purchase charged twice. The dispute was opened on 2026-10-30, 62 days after TXN-007908 posted on 2026-08-29, which is within the 120-day time limit. The ledger has two OAKHOLLOW PANTRY (MER-000046) purchases of 137.28 EUR on this card. TXN-007907 was made at 2026-08-27T20:51:13Z and posted 2026-08-28 under authorisation AUTH-008115. TXN-007908 was made at 2026-08-28T02:51:13Z and posted 2026-08-29 under authorisation AUTH-008116. The postings do not share an authorisation: each has its own approved contactless authorisation, and the two were made about six hours apart. There is no refund at this merchant on the card. Under duplicate-separate-authorisations, two postings with their own authorisations made some time apart count as two purchases, even when the merchant and amount are the same, so the dispute is declined.",
       "cited_evidence_ids" : [ "TXN-007908", "TXN-007907", "AUTH-008116", "AUTH-008115" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Our records show two separate purchases at OAKHOLLOW PANTRY for 137.28 EUR, about six hours apart. Each one was approved separately with your contactless card. This means the second charge was not the same payment taken twice. If you did not make one of these purchases, you can open a dispute saying the payment was not made by you.",
-        "policy_section_ids" : [ "duplicate-separate-authorisations", "time-limits" ]
+        "reason" : "The two OAKHOLLOW PANTRY charges of 137.28 EUR each have their own approval and were made about six hours apart, on 2026-08-27 and 2026-08-28. They are recorded as two separate purchases, not one purchase charged twice.",
+        "policy_section_ids" : [ "duplicate-separate-authorisations" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7312,
-    "output_tokens" : 1122,
+    "input_tokens" : 7460,
+    "output_tokens" : 1243,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 54363,
+    "cost_micro_usd" : 57336,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11965,
-    "model_call_ms" : [ 1498, 1349, 1794, 1628, 5625 ]
+    "wall_clock_ms" : 12218,
+    "model_call_ms" : [ 1546, 1338, 1572, 2324, 5316 ]
   }
 }

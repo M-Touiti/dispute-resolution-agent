@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000006",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:48:58.448328400Z",
+    "decided_at" : "2026-11-26T18:18:54.658419800Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend approving a provisional credit of 244.15 EUR. Two purchases at QUAYSIDE CLOTHING (MER-000042) on card CRD-000021 were both posted on 2026-08-19 for 24415 minor units each: TXN-007841 (2026-08-18T21:20:21Z) and the disputed TXN-007842 (2026-08-18T21:23:21Z). Both postings carry the same authorisation, AUTH-008056. That authorisation was a single approval for 24415, made online and passed 3-D Secure authentication. So one authorisation was posted twice. The dispute was opened on 2026-10-24, 66 days after posting, which is inside the 120-day limit (time-limits). The ledger shows no refund at this merchant for either posting. Under duplicate-same-authorisation, the extra posting is credited. The amount is 244.15 EUR, one posting and not both, which is well below the 3,000 EUR provisional credit limit and matches the amount claimed.",
+      "rationale" : "I recommend a provisional credit of 244.15 EUR for the extra posting. Time limit: the disputed transaction TXN-007842 posted on 2026-08-19 and the dispute was opened on 2026-10-24. That is 66 days, inside the 120-day limit. The ledger shows two purchases at QUAYSIDE CLOTHING (MER-000042) on card CRD-000021, each 244.15 EUR and both posted on 2026-08-19. TXN-007841 was made at 2026-08-18 21:20:21Z and TXN-007842 three minutes later at 21:23:21Z. Both carry the same authorisation, AUTH-008056: one approved e-commerce authorisation for 24415 minor units. No refund at this merchant is recorded on the card. Because one authorisation was posted twice for the same amount, it is a duplicate charge under duplicate-same-authorisation. Only the extra posting, TXN-007842, is credited, not both postings. That amount is 24415 minor units, which matches the claim and is below the 3,000.00 EUR limit for automated provisional credit.",
       "cited_evidence_ids" : [ "TXN-007842", "TXN-007841", "AUTH-008056" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,37 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 8080,
-    "output_tokens" : 1106,
+    "input_tokens" : 8139,
+    "output_tokens" : 1166,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 57096,
+    "cost_micro_usd" : 58512,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 13816,
-    "model_call_ms" : [ 1517, 1998, 2198, 2961, 5050 ]
+    "wall_clock_ms" : 13949,
+    "model_call_ms" : [ 1510, 2047, 2118, 2830, 5336 ]
   }
 }

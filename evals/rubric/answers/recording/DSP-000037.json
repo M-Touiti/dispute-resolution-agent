@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000037",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "a4da4ec17b2684ffeab71abef046831e6234b680b0799ab6f72be51a884d76e4",
+  "input_sha256": "4063b46d80fd6ae916ed6191233024c19eda2344802c43bbbeb032fd8e3daf32",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsa6ssEJkFAG2QmE19d",
+  "response_id": "msg_011ChS3aaRyT94xSLKqkYZG4",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale matches the records, including \"posted on 2026-07-19\" and \"opened on 2026-10-22, 95 days later\" (the arithmetic is correct), \"entry mode CHIP, PIN verified true, 3-D Secure NOT_APPLICABLE and no fraud flag\", and the before-and-after purchases at MER-000049."
+      "reason": "Every fact checks out against the records: \"posted on 2026-07-19, and the dispute was opened on 2026-10-22, 95 days later\" is correct arithmetic, \"entry mode CHIP and the PIN verified\" and \"the fraud flag was not set\" match AUTH-008111, and the four earlier transactions and one later one match the search results."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"95 days later. That is within the 120-day limit\"), the entry mode and PIN (\"entry mode CHIP, PIN verified true\"), the fraud flag, and earlier purchases at the merchant (\"other purchases at the same merchant before and after this one\"); the credit limit does not apply because this is a decline."
+      "reason": "The rationale covers each required check: the time limit (\"95 days later. The limit is 120 days\"), the entry mode and PIN (\"entry mode CHIP and the PIN verified\"), the fraud flag (\"the fraud flag was not set\") and the earlier transactions at the same merchant; no credit is proposed, so the credit limit does not apply."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so no merchant note is graded."
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3323,
-    "output_tokens": 661,
+    "input_tokens": 3880,
+    "output_tokens": 729,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 27004,
+  "cost_micro_usd": 30592,
   "price_table": "2026-11-20"
 }

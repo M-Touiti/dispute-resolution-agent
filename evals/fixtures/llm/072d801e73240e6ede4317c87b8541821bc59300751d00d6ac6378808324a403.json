@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder states they did not make the 287.49 EUR charge, have never shopped with the merchant, and did not give their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the 287.49 EUR charge, have never shopped at the merchant, and did not give their card details to anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRgMTrnPUuEHXjN1pwMN",
+    "id" : "msg_011ChS2zm9xWcu2ivte8tyU5",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

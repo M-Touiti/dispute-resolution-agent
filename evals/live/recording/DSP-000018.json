@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000018",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:50:15.072044700Z",
+    "decided_at" : "2026-11-26T18:20:14.612776900Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,9 +12,9 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007866 is a charge of 1100.56 EUR at ASHGROVE DEVICES (MER-000014) on card CRD-000156. It posted on 2026-08-12. The dispute was opened on 2026-10-27, 76 days later, so it is inside the 120-day limit in time-limits. The authorisation for this charge, AUTH-008078, was approved with entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, no CVV given (NOT_PRESENT), PIN not verified, and the fraud flag set. The card was not present, the payment was not confirmed with 3-D Secure and the fraud flag is set, so under unauthorised-card-not-present the payment counts as unauthorised. The credit is the full posted amount of 1100.56 EUR. That is the same as the amount claimed and below the 3,000.00 EUR automated limit in provisional-credit.",
+      "rationale" : "The dispute is within the time limit. TXN-007866 (ASHGROVE DEVICES, 1100.56 EUR, card CRD-000156) posted on 2026-08-12 and the dispute was opened on 2026-10-27, which is 76 days later. The limit is 120 days. Authorisation AUTH-008078 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN verified and the fraud flag set. That means the card was not present, the payment was not strongly authenticated and fraud screening flagged it, so under unauthorised-card-not-present the payment counts as unauthorised. The card has no earlier transactions at this merchant: the disputed charge is the only one. The credit is the full posted amount of 1100.56 EUR. This matches the amount claimed and is below the 3,000.00 EUR automated limit for provisional credit.",
       "cited_evidence_ids" : [ "TXN-007866", "AUTH-008078" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ {
         "action" : "issue_provisional_credit",
         "amount_minor" : 110056,
@@ -25,33 +25,41 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 8965,
-    "output_tokens" : 1057,
+    "input_tokens" : 11594,
+    "output_tokens" : 1155,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 59437,
+    "cost_micro_usd" : 71933,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11683,
-    "model_call_ms" : [ 1442, 2368, 1937, 1987, 3834 ]
+    "wall_clock_ms" : 12459,
+    "model_call_ms" : [ 1688, 2685, 2649, 1308, 3971 ]
   }
 }

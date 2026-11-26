@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000162",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "665fb0aa07a318d6a7759114457a072c5df88a9dd865ae1a3334bcb21cfa2ad7",
+  "input_sha256": "5f09f54adf519f09305221483db5e973202fa1b719e68a05a0af54c93d2c969d",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtHEXdDLF4MhdGGpZZH",
+  "response_id": "msg_011ChS4Fbc12kNkMq7oEqUMi",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The stated facts, including \"posted on 2026-08-28\", \"62 days later\", \"54 days after that date\" and \"expected delivery date of 2026-09-05\", all match the ledger record and DOC-000073, and the day counts are correct."
+      "reason": "The facts match the records and arithmetic. \"posted on 2026-08-28\" and \"opened on 2026-10-29, 62 days later\" are correct, as is \"54 days after\" 2026-09-05. The statement \"The card has no refund from the merchant\" matches the empty refund search. The no-reply point repeats what the cardholder's document DOC-000074 itself says."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers every required check: the time limit (\"within the 120-day limit\"), the waiting period (\"15-day waiting period ... has passed\"), the delivery record (\"no carrier delivery confirmation\") and merchant resolution (\"the merchant has not resolved the matter\")."
+      "reason": "Each required check is addressed. The time limit (\"within the 120-day limit\"), the expected delivery date and wait (\"the 15-day wait in goods-not-received-wait has passed\"), the delivery record (\"The case has no carrier delivery confirmation\") and the merchant's resolution (\"the merchant has not resolved the matter\") all appear."
     },
     "merchant_request_clear": {
       "verdict": "pass",
-      "reason": "The note asks for \"the carrier's delivery record showing delivery to the cardholder's address, signed for by the cardholder\", which matches the PROOF_OF_DELIVERY evidence item and discloses nothing internal."
+      "reason": "The note says what is wanted and what it should show: \"the carrier's delivery record, with the delivery date and the signature of the person who received it\". This matches the PROOF_OF_DELIVERY evidence item and discloses no internal reasoning, policy ids or other cardholder data."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2713,
-    "output_tokens": 772,
+    "input_tokens": 2729,
+    "output_tokens": 954,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 26784,
+  "cost_micro_usd": 30488,
   "price_table": "2026-11-20"
 }

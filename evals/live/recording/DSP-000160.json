@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000160",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:13:13.704397Z",
+    "decided_at" : "2026-11-26T18:43:58.038275Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,50 +12,54 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I'm declining this dispute. The two Meadowlark Fuel charges are two separate purchases, not one purchase charged twice. The dispute was opened on 2026-10-25, 18 days after the 2026-10-07 posting, so it is inside the 120-day time limit. The card shows two purchases of 109.96 EUR at MER-000030 on 2026-10-06, both posted on 2026-10-07. The first is TXN-008131 at 08:57, approved under AUTH-008318 by chip with the PIN checked. The second is TXN-008132, the disputed one, at 11:57, approved under AUTH-008319 by contactless payment. The two charges do not share an authorisation. Each was approved on its own, three hours apart, and neither is flagged as fraud. No refund of either charge was found. Under duplicate-separate-authorisations, two postings with their own authorisations made some time apart are two purchases, even when the merchant and amount are the same.",
+      "rationale" : "The time limit is met. TXN-008132 posted on 2026-10-07 and the dispute was opened on 2026-10-25, 18 days later, well inside the 120-day limit. The ledger shows two 109.96 EUR purchases at MER-000030 (MEADOWLARK FUEL) on 2026-10-06, both posted on 2026-10-07. They do not share an authorisation. TXN-008131 was made at 08:57 under AUTH-008318, approved by chip with the PIN verified. TXN-008132 was made at 11:57 under AUTH-008319, approved as contactless. Neither carries a fraud flag. The two payments were authorised separately, three hours apart, so under the policy they are two purchases rather than one authorisation posted twice. No refund appears at this merchant. The case is declined.",
       "cited_evidence_ids" : [ "TXN-008132", "TXN-008131", "AUTH-008319", "AUTH-008318" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Our records show two separate card payments to Meadowlark Fuel of 109.96 EUR each on 2026-10-06, about three hours apart. The first was made by chip and PIN, the second by contactless. Each payment was approved on its own, so they are two purchases, not one purchase charged twice.",
+        "reason" : "The two 109.96 EUR charges from MEADOWLARK FUEL on 2026-10-06 were approved separately, three hours apart. The first was a chip payment with your PIN at 08:57 and the second was contactless at 11:57. They are two separate purchases, not one purchase charged twice.",
         "policy_section_ids" : [ "duplicate-separate-authorisations", "time-limits" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 5,
-    "input_tokens" : 8809,
-    "output_tokens" : 1242,
-    "cache_read_input_tokens" : 23480,
+    "model_calls" : 6,
+    "input_tokens" : 12608,
+    "output_tokens" : 1298,
+    "cache_read_input_tokens" : 29184,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 62759,
+    "cost_micro_usd" : 80177,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "search_policy",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 13913,
-    "model_call_ms" : [ 1572, 2287, 1662, 3152, 5153 ]
+    "wall_clock_ms" : 14135,
+    "model_call_ms" : [ 1559, 2101, 1545, 2715, 1521, 4572 ]
   }
 }
