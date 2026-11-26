@@ -180,7 +180,11 @@ public final class Fakes {
                 Matcher number = Pattern.compile("\"" + Pattern.quote(numberField) + "\"\\s*:\\s*(\\d+)")
                         .matcher(objects.group());
                 if (number.find()) {
-                    return java.util.Optional.of(Long.parseLong(number.group(1)));
+                    try {
+                        return java.util.Optional.of(Long.parseLong(number.group(1)));
+                    } catch (NumberFormatException tooLarge) {
+                        return java.util.Optional.empty(); // as the Jackson adapter: not a long, no amount
+                    }
                 }
             }
             return java.util.Optional.empty();
