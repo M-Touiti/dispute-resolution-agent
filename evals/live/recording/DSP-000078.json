@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000078",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000078",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:58:49.948894200Z",
+    "reported_category" : "GOODS_NOT_RECEIVED",
+    "category" : "GOODS_NOT_RECEIVED",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007977 is a 161.86 EUR purchase at Larkspur Apparel on card CRD-000245. It posted on 2026-10-08, and the dispute was opened on 2026-10-24. That is 16 days later, well inside the 120-day limit in time-limits. The merchant's order confirmation DOC-000035 gives an expected delivery date of 2026-10-21, so the dispute was opened only 3 days after that date. goods-not-received-wait requires the cardholder to wait 15 days after the expected delivery date before opening a dispute, and a dispute opened earlier is declined. So the case is declined at this step, and delivery evidence and merchant refunds were not checked. Neither the cardholder's statement nor the document contained any instruction to the bank. The cardholder can open a new dispute on or after 2026-11-05 if the order still has not arrived.",
+      "cited_evidence_ids" : [ "TXN-007977", "DOC-000035" ],
+      "cited_policy_sections" : [ "goods-not-received-wait", "time-limits" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your dispute was opened 3 days after the expected delivery date of 2026-10-21. You need to wait 15 days after that date so a late delivery can still arrive. If the order still has not arrived, you can open a new dispute on or after 2026-11-05.",
+        "policy_section_ids" : [ "goods-not-received-wait" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5582,
+    "output_tokens" : 951,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 42898,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10681,
+    "model_call_ms" : [ 1533, 2296, 1941, 4840 ]
+  }
+}

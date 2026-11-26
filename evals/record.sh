@@ -5,6 +5,8 @@
 #   2. record: the golden set through the eval profile with LLM_ADAPTER=recording, under a spend cap
 #   3. replay: the same run from the new fixtures only; every case must be answered, with no live call
 #   4. grade the replay and write the baseline
+#   5. grade the recording as a live run, write the live thresholds from it, and keep it in evals/live/recording
+#      (ADR 0009: the report is built from that run)
 #
 # Needs the compose stack up (ledger-mcp, policy-mcp), ANTHROPIC_API_KEY in the environment or in the repository's
 # git-ignored .env, and a spend limit set in the Anthropic Console. The key is never printed.
@@ -32,7 +34,7 @@ curl -fsS -o /dev/null http://localhost:8082/health || fail "policy-mcp is not u
 
 cd investigator
 echo "== 1. live check"
-ANTHROPIC_LIVE_TEST=1 ./mvnw -B -q -ntp -pl adapters test -Dtest=AnthropicLiveTest -Dsurefire.failIfNoSpecifiedTests=false \
+ANTHROPIC_LIVE_TEST=1 ./mvnw -B -q -ntp -pl adapters -am test -Dtest=AnthropicLiveTest -Dsurefire.failIfNoSpecifiedTests=false \
     || fail "the live check failed: nothing was recorded"
 ./mvnw -B -q -ntp -pl bootstrap -am package -DskipTests
 jar=$(ls bootstrap/target/investigator-bootstrap-*.jar | grep -v original | head -1)
@@ -59,3 +61,13 @@ echo "== 4. grade and baseline"
 cd "$root/evals"
 uv run python -m evaltools.grade --results runs/replay --write-baseline
 uv run python -m evaltools.grade --results runs/replay
+
+echo "== 5. the live run: thresholds and evals/live/recording"
+uv run python -m evaltools.grade --results runs/recording --mode live --write-thresholds
+uv run python -m evaltools.grade --results runs/recording --mode live
+rm -rf live/recording
+mkdir -p live/recording
+cp runs/recording/*.json live/recording/
+printf '{\n  "recorded_on": "%s",\n  "investigator_effort": "%s"\n}\n' "$(date -u +%F)" \
+    "${INVESTIGATOR_EFFORT:-medium}" > live/recording/session.json
+echo "kept: evals/live/recording ($(ls live/recording | wc -l) files)"

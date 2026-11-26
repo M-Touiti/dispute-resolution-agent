@@ -1,0 +1,77 @@
+{
+  "dispute_id" : "DSP-000058",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000058",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:56:04.118362Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm declining this dispute. The time limit is met: TXN-007940 posted on 2026-07-29 and the dispute was opened on 2026-10-24, which is 87 days later and within the 120-day limit in time-limits. The card shows two purchases at BRIGHTWATER GROCERS (MER-000037) for 5329 EUR cents (53.29 EUR) each. TXN-007939 was made on 2026-07-27 at 17:06 and posted on 2026-07-28 under AUTH-008144, a chip payment with the PIN verified, approved with no fraud flag. The disputed TXN-007940 was made on 2026-07-28 at 01:06 and posted on 2026-07-29 under AUTH-008145, a contactless payment, approved with no fraud flag. The two postings do not share an authorisation. Each has its own, and they were made about 8 hours apart. There is no refund on the card. Under duplicate-separate-authorisations, these are two separate purchases, not one purchase posted twice, so the duplicate-charge claim is declined. If the cardholder did not make the second payment, that would be a separate unauthorised-transaction claim and is not decided here.",
+      "cited_evidence_ids" : [ "TXN-007940", "TXN-007939", "AUTH-008145", "AUTH-008144" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The two 53.29 EUR charges at BRIGHTWATER GROCERS were approved separately, on 27 July at 17:06 and on 28 July at 01:06, about 8 hours apart. They are two separate purchases, not one purchase charged twice. If you did not make one of these payments, please open a dispute for an unauthorised payment instead.",
+        "policy_section_ids" : [ "time-limits", "duplicate-separate-authorisations" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7969,
+    "output_tokens" : 1502,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 64533,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 19016,
+    "model_call_ms" : [ 1688, 5691, 1794, 2888, 6859 ]
+  }
+}

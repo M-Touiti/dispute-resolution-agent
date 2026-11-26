@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000030",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000030",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:51:48.130890200Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute. TXN-007890 is an 18.12 EUR charge (1812 cents) from LUMEN MEDIA (MER-000035) on card CRD-000050. The charge was made on 2026-09-21 and posted on 2026-09-22. The dispute was opened on 2026-10-23, 31 days after posting, which is within the 120-day time limit (time-limits). The merchant's cancellation confirmation, DOC-000015, says the subscription was cancelled with effect from 2026-09-25. That is four days after the charge. So the charge came first and belongs to a period the cardholder had not yet cancelled. Under recurring-cancelled-after-charge, the dispute is declined. Neither the cardholder's statement nor the document contained any instruction I needed to ignore.",
+      "cited_evidence_ids" : [ "TXN-007890", "DOC-000015" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-after-charge" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The Lumen Media charge of 18.12 EUR was made on 2026-09-21. The merchant's cancellation confirmation shows your subscription was cancelled with effect from 2026-09-25, which is after that charge. The charge therefore covers a period before your cancellation took effect, so it cannot be disputed as a charge made after cancellation.",
+        "policy_section_ids" : [ "recurring-cancelled-after-charge", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5304,
+    "output_tokens" : 1013,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 42893,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10119,
+    "model_call_ms" : [ 1503, 1321, 1631, 5586 ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000174",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000174",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:15:34.360751600Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "The disputed posting is TXN-008159, 242.32 EUR at FERNHILL CLOTHING (MER-000078). It was made 2026-08-15 at 11:04 and posted 2026-08-16. The dispute was opened 2026-10-22, 67 days after posting, which is inside the 120-day limit in time-limits. A second posting, TXN-008158, has the same amount and date (made 2026-08-15 at 11:01, posted 2026-08-16). Both postings carry the same authorisation, AUTH-008343: one approved e-commerce authorisation for 242.32 EUR. So one authorisation was posted twice. The ledger shows no refund of either posting. Under duplicate-same-authorisation, the extra posting gets provisional credit. That is 242.32 EUR, well under the 3,000.00 EUR limit in provisional-credit. The cardholder claims 484.64 EUR, both postings. The records support crediting only the one extra posting, because one genuine authorised purchase took place, so the larger claim does not change the credit.",
+      "cited_evidence_ids" : [ "TXN-008159", "TXN-008158", "AUTH-008343" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 24232,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 8472,
+    "output_tokens" : 1106,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 58574,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 14150,
+    "model_call_ms" : [ 1753, 1958, 1898, 3423, 5022 ]
+  }
+}

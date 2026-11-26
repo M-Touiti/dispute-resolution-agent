@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000115",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000115",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:05:35.505133600Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008050 is a 17.44 EUR charge by Ironbridge Audio on card CRD-000097. It was made on 2026-08-31 and posted on 2026-09-01. The dispute was opened on 2026-10-30, 59 days after posting, so it is inside the 120-day limit (time-limits). The merchant's cancellation confirmation, DOC-000055, says the subscription was cancelled with effect from 2026-09-04. That is after the charge on 2026-08-31. The charge therefore covers a period the cardholder had not yet cancelled, and policy recurring-cancelled-after-charge says to decline.",
+      "cited_evidence_ids" : [ "TXN-008050", "DOC-000055" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-after-charge" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Ironbridge Audio confirmed in writing that your subscription was cancelled with effect from 2026-09-04. The 17.44 EUR charge was made on 2026-08-31, before that date, so it is for a period that had not yet been cancelled.",
+        "policy_section_ids" : [ "recurring-cancelled-after-charge", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5379,
+    "output_tokens" : 842,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 39820,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9873,
+    "model_call_ms" : [ 1566, 2530, 2084, 3634 ]
+  }
+}

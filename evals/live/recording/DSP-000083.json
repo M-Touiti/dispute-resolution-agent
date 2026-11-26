@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000083",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000083",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:59:43.886350100Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend a provisional credit of 42.92 EUR, the difference between the posted amount and the receipt. The dispute is in time: TXN-007991 posted on 2026-08-15 and the dispute was opened on 2026-10-27, which is 73 days later, within the 120-day limit in time-limits. The posting at Harbour Market (MER-000064) is 145.12 EUR (14512 minor units). Its authorisation, AUTH-008191, was approved for 102.20 EUR (10220). The merchant's own receipt, DOC-000040, shows a total of 102.20 EUR. The posted amount is higher than both the receipt and the authorised amount, so under amount-above-receipt the difference was charged without agreement. Only that difference is credited, not the whole transaction: 14512 - 10220 = 4292 minor units (42.92 EUR). This matches the cardholder's claim and is well under the 3,000.00 EUR limit in provisional-credit.",
+      "cited_evidence_ids" : [ "TXN-007991", "AUTH-008191", "DOC-000040" ],
+      "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 4292,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5392,
+    "output_tokens" : 1014,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 43394,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10824,
+    "model_call_ms" : [ 1490, 2438, 2484, 4334 ]
+  }
+}

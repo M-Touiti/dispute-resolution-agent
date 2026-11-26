@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they never made the 1209.73 EUR BRAMBLE CLOTHING charge, have never shopped there, and never gave their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the BRAMBLE CLOTHING charge, have never shopped there, and did not share their card details with anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChHvYeSvCQ4zQqXj1yuSW",
+    "id" : "msg_011ChRfsu5oNZ48E31mQTNZ9",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 123,
-      "output_tokens" : 84
+      "output_tokens" : 76
     }
   }
 }

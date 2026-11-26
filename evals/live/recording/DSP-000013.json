@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000013",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000013",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:49:41.636338800Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The disputed charge TXN-007858 (22.72 EUR, Kestrel Athletic Club, card CRD-000076) was made on 2026-09-25 and posted on 2026-09-26. The dispute was opened on 2026-10-25, which is within the 120-day time limit. The merchant's cancellation confirmation DOC-000007 says the subscription was cancelled with effect from 2026-09-27. That is two days after the charge. The charge therefore covers a period the cardholder had not yet cancelled. Under recurring-cancelled-after-charge, the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-007858", "DOC-000007" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-after-charge" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The Kestrel Athletic Club charge of 22.72 EUR was made on 2026-09-25. The merchant's confirmation shows your cancellation took effect on 2026-09-27, after this charge, so the charge was for a period the subscription was still active.",
+        "policy_section_ids" : [ "recurring-cancelled-after-charge" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5351,
+    "output_tokens" : 788,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 38425,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9192,
+    "model_call_ms" : [ 1612, 2117, 1798, 3572 ]
+  }
+}

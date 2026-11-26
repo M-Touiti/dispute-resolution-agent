@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000072",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000072",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:58:04.476265600Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute. TXN-007967 (710.25 EUR, LUMEN JOURNEYS, card CRD-000176) posted on 2026-09-27. The dispute was opened on 2026-10-27, 30 days later, which is inside the 120-day limit in time-limits. The authorisation behind the payment, AUTH-008170, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH, response APPROVED and fraud flag false. Under unauthorised-3ds-authenticated, an online payment the cardholder authenticated with 3-D Secure and that has no fraud flag is treated as made by the cardholder, and the matching CVV supports this. The cardholder says the card never left them, but that does not change the result, because a card-not-present payment does not need the physical card. No documents were attached.",
+      "cited_evidence_ids" : [ "TXN-007967", "AUTH-008170" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The 710.25 EUR payment to LUMEN JOURNEYS on 2026-09-26 was an online payment that was confirmed through the bank's 3-D Secure check, and the correct card security code was entered. Under our policy, a payment confirmed this way is treated as made by the cardholder, so the dispute is declined.",
+        "policy_section_ids" : [ "unauthorised-3ds-authenticated", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 10129,
+    "output_tokens" : 1093,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 64728,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12526,
+    "model_call_ms" : [ 1885, 2660, 1768, 1027, 5047 ]
+  }
+}

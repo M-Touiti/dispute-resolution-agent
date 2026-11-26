@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000117",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000117",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:05:47.586331700Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend a provisional credit of 120.17 EUR. Time limit: TXN-008055 posted to card CRD-000078 on 2026-07-27, and the dispute was opened on 2026-10-26. That is 91 days, inside the 120-day limit. Amounts: TXN-008055 posted at 1,044.57 EUR (104457 cents). Its authorisation, AUTH-008249, was approved for 924.40 EUR (92440 cents). The merchant's receipt, DOC-000056 from Ashgrove Devices, shows a total of 924.40 EUR. The posted amount is higher than both the receipt and the authorised amount, so the difference was charged without agreement. The difference is 104457 - 92440 = 12017 cents (120.17 EUR). Only that difference is credited, not the whole transaction. It matches the amount the cardholder claims and is well under the 3,000.00 EUR limit for automated provisional credit.",
+      "cited_evidence_ids" : [ "TXN-008055", "AUTH-008249", "DOC-000056" ],
+      "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 12017,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 9730,
+    "output_tokens" : 1051,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 62631,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12079,
+    "model_call_ms" : [ 1399, 2098, 1970, 1816, 4724 ]
+  }
+}

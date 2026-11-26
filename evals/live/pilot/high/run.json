@@ -1,0 +1,12 @@
+{
+  "golden_set" : "all-categories-v2-pilot",
+  "adapter" : "anthropic",
+  "cases" : 44,
+  "cases_run" : 44,
+  "cost_micro_usd" : 2617873,
+  "max_cost_micro_usd" : 6000000,
+  "states" : {
+    "DECIDED" : 43,
+    "ESCALATED AGENT_DECISION" : 1
+  }
+}

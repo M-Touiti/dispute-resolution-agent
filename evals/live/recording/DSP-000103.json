@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000103",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000103",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:03:14.405046600Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008026 is a payment of 399.34 EUR (39934 minor units) to BRAMBLE CLOTHING (MER-000024) on card CRD-000215. It posted on 2026-08-16 and the dispute was opened on 2026-10-22. That is 67 days, inside the 120-day time limit (time-limits). Authorisation AUTH-008223 shows the card was not physically used: entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, fraud flag set. Under unauthorised-card-not-present, a card-not-present payment with no 3-D Secure check and a fraud flag counts as unauthorised. The credit is the transaction amount, 399.34 EUR. This matches the cardholder's claim and is below the 3,000.00 EUR provisional credit limit (provisional-credit).",
+      "cited_evidence_ids" : [ "TXN-008026", "AUTH-008223" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 39934,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 9954,
+    "output_tokens" : 997,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 62104,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 13852,
+    "model_call_ms" : [ 1820, 2969, 2324, 2067, 4594 ]
+  }
+}

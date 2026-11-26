@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000061",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000061",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:56:27.951641900Z",
+    "reported_category" : "GOODS_NOT_RECEIVED",
+    "category" : "GOODS_NOT_RECEIVED",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute because it was opened too early. TXN-007945 (88580 minor units, Ashgrove Devices) posted on 2026-10-07, and the dispute was opened on 2026-10-22. That is 15 days later, well inside the 120-day limit in time-limits. The merchant's order confirmation DOC-000027 gives an expected delivery date of 2026-10-16, so the dispute was opened only 6 days after that date. The policy requires a 15-day wait after the expected delivery date (goods-not-received-wait), and a dispute opened before then is declined. The cardholder may open a new dispute from 2026-10-31. Because the wait decides the case, I did not check proof of delivery or refunds. No document or record contained instructions.",
+      "cited_evidence_ids" : [ "TXN-007945", "DOC-000027" ],
+      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your dispute was opened before the required waiting period had passed. The order confirmation gives an expected delivery date of 2026-10-16, and disputes for undelivered goods can only be opened 15 days after that date. If the order still has not arrived, you may open a new dispute from 2026-10-31.",
+        "policy_section_ids" : [ "goods-not-received-wait" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5582,
+    "output_tokens" : 941,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 42464,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11042,
+    "model_call_ms" : [ 1557, 2326, 1981, 5147 ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000172",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000172",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:15:05.371957800Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008155 is a charge of 1,743.28 EUR at RIVERSIDE APPAREL (MER-000051) on card CRD-000047. It posted on 2026-10-14 and the dispute was opened on 2026-10-29, which is 15 days later and inside the 120-day limit in time-limits. The authorisation behind it, AUTH-008340, shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set. Under unauthorised-card-not-present that combination means the payment counts as unauthorised. The credit is the posted amount, 174328 minor units, which is under the 3,000 EUR automated limit in provisional-credit. The cardholder claims 2,004.77 EUR to cover bank charges and their own costs. The credit can never be more than the disputed amount, so that claim does not change it.",
+      "cited_evidence_ids" : [ "TXN-008155", "AUTH-008340" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 174328,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 9934,
+    "output_tokens" : 1023,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 62485,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_card",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11219,
+    "model_call_ms" : [ 1532, 2083, 2124, 1091, 4328 ]
+  }
+}

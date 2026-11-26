@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000070",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000070",
+    "state" : "ESCALATED",
+    "decided_at" : "2026-11-26T13:57:51.949374600Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : "AGENT_DECISION",
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "ESCALATE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007963 is a charge of 3445.02 EUR to BRIGHTWATER DEVICES (MER-000050) on card CRD-000236. It posted on 2026-09-12. The dispute was opened on 2026-10-30, 48 days later, which is within the 120-day limit in time-limits. Its authorisation, AUTH-008166, shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and no PIN, and the fraud flag is set. Under unauthorised-card-not-present, that makes it an unauthorised payment, and the full 344502 cents would be credited. Under provisional-credit, the automated process never grants a provisional credit above 3,000.00 EUR. Because this credit would be larger, a specialist must decide, and no action is proposed. No documents were attached, and the records contain no instructions.",
+      "cited_evidence_ids" : [ "TXN-007963", "AUTH-008166" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "proposed_actions" : [ ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 10211,
+    "output_tokens" : 1091,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 64984,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "search_policy",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12212,
+    "model_call_ms" : [ 1577, 2353, 2095, 2244, 3800 ]
+  }
+}

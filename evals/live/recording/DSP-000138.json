@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000138",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000138",
+    "state" : "ESCALATED",
+    "decided_at" : "2026-11-26T14:08:57.535043800Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : "AGENT_DECISION",
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "ESCALATE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute is within the time limit. TXN-008091 (HARBOUR GADGETS, 3004.60 EUR) was posted on 2026-09-22 and the dispute was opened on 2026-10-26, 34 days later, inside the 120-day limit. Its authorisation AUTH-008282 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. That meets the card-not-present rule, so the payment counts as unauthorised and the rules would credit the full transaction amount of 300460 minor units. That is above the 3,000.00 EUR limit for provisional credit in the automated process, so policy says a specialist must decide. No action is proposed.",
+      "cited_evidence_ids" : [ "TXN-008091", "AUTH-008282" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit", "escalation" ],
+      "proposed_actions" : [ ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 11155,
+    "output_tokens" : 1065,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 68330,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_card",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10708,
+    "model_call_ms" : [ 1596, 1973, 1856, 2052, 3165 ]
+  }
+}

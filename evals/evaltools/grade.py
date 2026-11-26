@@ -23,11 +23,11 @@ ROOT = graders.ROOT
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--golden", type=Path, default=ROOT / "golden" / "unauthorised-v1.json")
+    parser.add_argument("--golden", type=Path, default=ROOT / "golden" / "all-categories-v2.json")
     parser.add_argument("--results", type=Path, default=ROOT / "runs" / "latest")
     parser.add_argument("--data", type=Path, default=graders.REPOSITORY / "data" / "generated")
     parser.add_argument("--corpus", type=Path, default=graders.REPOSITORY / "data" / "policy-corpus")
-    parser.add_argument("--baseline", type=Path, default=ROOT / "baseline" / "unauthorised-v1.json")
+    parser.add_argument("--baseline", type=Path, default=ROOT / "baseline" / "all-categories-v2.json")
     parser.add_argument("--thresholds", type=Path, default=ROOT / "baseline" / "live-thresholds.json")
     parser.add_argument(
         "--mode", choices=("replay", "live"), help="which gate applies (default: from the adapter in run.json)"

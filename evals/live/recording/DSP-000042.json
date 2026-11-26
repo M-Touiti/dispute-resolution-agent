@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000042",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000042",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:53:45.175957500Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute is within the time limit. TXN-007910 posted on 2026-09-05 and the dispute was opened on 2026-10-24, 49 days later, under the 120-day limit. The ledger does show a duplicate. TXN-007909 and TXN-007910 both posted on 2026-09-05 at RIVERSIDE GADGETS (MER-000068), each for 22921 EUR minor units, from the same transaction date of 2026-09-04. Both carry authorisation AUTH-008117, so one authorisation was posted twice. However, the merchant has already refunded the extra posting. Refund TXN-007911 for 22921, posted on 2026-09-11, refunds TXN-007910. Under the policy, when the duplicate posting has already been refunded, nothing remains in dispute and the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-007910", "TXN-007909", "TXN-007911", "AUTH-008117" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The second charge of 229.21 EUR from RIVERSIDE GADGETS (TXN-007910) was already refunded to your card by the merchant on 2026-09-11 (TXN-007911), so nothing remains in dispute.",
+        "policy_section_ids" : [ "duplicate-already-refunded" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7417,
+    "output_tokens" : 1066,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 53609,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11845,
+    "model_call_ms" : [ 1468, 2362, 1529, 2238, 4127 ]
+  }
+}

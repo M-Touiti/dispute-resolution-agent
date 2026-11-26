@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000145",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000145",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:10:24.442114900Z",
+    "reported_category" : "GOODS_NOT_RECEIVED",
+    "category" : "GOODS_NOT_RECEIVED",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "REQUEST_MERCHANT_EVIDENCE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008104 is a purchase of 228.20 EUR (22820 minor units) on card CRD-000010 at merchant MER-000005, Bramble Devices. It posted on 2026-08-15. The dispute was opened on 2026-10-31, 77 days after posting, which is within the 120-day limit (time-limits). The merchant's order confirmation DOC-000065 gives an expected delivery date of 2026-08-22. That is 70 days before the dispute was opened, so the 15-day wait has passed (goods-not-received-wait). The case has no delivery confirmation from the carrier. The ledger shows no refund from MER-000005 on this card. DOC-000066 shows the cardholder emailed the merchant on 2026-08-31 asking about the order and got no reply. Because nothing shows delivery and the merchant has not resolved the matter, the next step is to ask the merchant for proof of delivery (goods-not-received-merchant-evidence). Under the policy, this dispute category does not lead to a provisional credit. No document contained an instruction to the bank.",
+      "cited_evidence_ids" : [ "TXN-008104", "DOC-000065", "DOC-000066" ],
+      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-merchant-evidence" ],
+      "proposed_actions" : [ {
+        "action" : "request_merchant_evidence",
+        "evidence" : [ "PROOF_OF_DELIVERY" ],
+        "note" : "Please send proof of delivery for the order placed on 2026-08-14 for 228.20 EUR, with an expected delivery date of 2026-08-22. Include the carrier's delivery record showing delivery to the cardholder's address and the signature of the person who received it."
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 6326,
+    "output_tokens" : 1301,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 52901,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12752,
+    "model_call_ms" : [ 1542, 1407, 2885, 6807 ]
+  }
+}

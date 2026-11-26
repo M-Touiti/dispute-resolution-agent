@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000060",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000060",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:56:16.907505300Z",
+    "reported_category" : "GOODS_NOT_RECEIVED",
+    "category" : "GOODS_NOT_RECEIVED",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "REQUEST_MERCHANT_EVIDENCE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007944 is a charge of 862.10 EUR from Willowmere Gadgets (MER-000041) on card CRD-000188. It posted on 2026-08-05, and the dispute was opened on 2026-10-29. That is 85 days, inside the 120-day limit in time-limits. The merchant's order confirmation (DOC-000025) gives an expected delivery date of 2026-08-13. The dispute was opened 77 days after that date, so the 15-day wait in goods-not-received-wait has passed. The case has no delivery record from a carrier. The cardholder's email to the merchant on 2026-08-20 (DOC-000026) says no reply came. The ledger shows no refund from this merchant on the card. The wait has passed, nothing shows delivery and the merchant has not resolved the matter, so goods-not-received-merchant-evidence requires asking the merchant for proof of delivery to the cardholder. This category does not allow provisional credit.",
+      "cited_evidence_ids" : [ "TXN-007944", "DOC-000025", "DOC-000026" ],
+      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-merchant-evidence" ],
+      "proposed_actions" : [ {
+        "action" : "request_merchant_evidence",
+        "evidence" : [ "PROOF_OF_DELIVERY" ],
+        "note" : "For the order placed on 2026-08-04 for 862.10 EUR, please send proof that it was delivered to the cardholder's address, with the carrier's delivery record and the signature on delivery."
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 6358,
+    "output_tokens" : 1196,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 50605,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12778,
+    "model_call_ms" : [ 1613, 2156, 3188, 5733 ]
+  }
+}
