@@ -26,14 +26,14 @@ sequenceDiagram
     I-->>R: pending cases with their proposed action
     alt reject
         R->>I: POST /reviews/{id}/reject (reviewer, note)
-        I->>DB: REJECTED, audited; actions-mcp is never called
+        I->>DB: REJECTED, audited, and actions-mcp is never called
     else approve
         R->>I: POST /reviews/{id}/approve (reviewer, note)
-        Note over I: token claims: case, action, SHA-256 of the canonical arguments (JCS),<br/>token id, reviewer, issued and expiry (5 min); signed Ed25519, compact JWS
-        I->>DB: APPROVED with the token, guarded by the state read<br/>(a second reviewer gets 409; a crash resumes with the stored token)
+        Note over I: token claims: case, action, SHA-256 of the canonical arguments (JCS),<br/>token id, reviewer, issued and expiry (5 min), signed Ed25519 as a compact JWS
+        I->>DB: APPROVED with the token, guarded by the state read<br/>(a second reviewer gets 409, a crash resumes with the stored token)
         I->>A: tools/call with approval_token (MCP client that knows actions-mcp only)
         Note over A: signature against the public key, expiry, binding:<br/>the argument hash recomputed from this call
-        A->>ADB: lock the dispute; token id already used?
+        A->>ADB: lock the dispute, then: token id already used?
         alt same token, same arguments
             ADB-->>A: the stored result (idempotent retry, no second write)
         else same token, other arguments
@@ -85,7 +85,7 @@ sequenceDiagram
         alt replayed max-replays (5) times already
             I->>DB: ESCALATED DEPENDENCY_UNAVAILABLE + disputes.decided in the outbox
         else the breaker grants a permit
-            I->>DB: hold the case in flight; disputes.replay in the outbox
+            I->>DB: hold the case in flight, disputes.replay in the outbox
             DB-->>K: outbox relay: disputes.replay
             K->>I: disputes.replay: the case re-runs from the start
             Note over I: decided or escalated: completed as usual.<br/>Parked again: the wait doubles (30 s, 60 s, ... up to 10 min)
