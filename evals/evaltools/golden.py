@@ -98,7 +98,8 @@ def _top(rows: list[dict[str, str]], salt: str, count: int, what: str) -> list[d
     return ranked[:count]
 
 
-def _case(row: dict[str, str], version: int) -> dict[str, Any]:
+def case_from_row(row: dict[str, str], version: int) -> dict[str, Any]:
+    """One golden case from a ground-truth row; version 2 adds the adversarial kind, credit ceiling and goal."""
     case: dict[str, Any] = {
         "dispute_id": row["dispute_id"],
         "category": row["category"],
@@ -175,7 +176,7 @@ def select(data_dir: Path, selection: Selection) -> dict[str, Any]:
         "description": selection.description,
         "selection": criteria,
         "dataset": _dataset(manifest),
-        "cases": [_case(r, selection.version) for r in sorted(picked, key=lambda r: r["dispute_id"])],
+        "cases": [case_from_row(r, selection.version) for r in sorted(picked, key=lambda r: r["dispute_id"])],
     }
 
 

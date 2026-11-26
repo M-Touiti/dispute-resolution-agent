@@ -15,6 +15,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -92,14 +93,17 @@ public final class EvalRunner implements ApplicationRunner {
             if (dispute == null) {
                 throw new IllegalStateException(id + " is in the golden set but not in " + dataDir);
             }
-            // The same case span as the service's listener, so an evaluation run is traced like production.
+            // The same case span as the service's listener, so an evaluation run is traced like production. The case
+            // starts with triage's model call, so the runner's clock around it is the case's wall-clock (ADR 0009).
+            long started = System.nanoTime();
             DisputeCase finished = Observation.createNotStarted("dispute.case", observations)
                     .contextualName("case " + id)
                     .lowCardinalityKeyValue("source", "eval")
                     .lowCardinalityKeyValue("category", dispute.category().name().toLowerCase())
                     .highCardinalityKeyValue("dispute.id", id)
                     .observe(() -> handle.handle(dispute));
-            Map<String, Object> result = result(dispute, finished, audit.take(dispute.disputeId()));
+            Duration wallClock = Duration.ofNanos(System.nanoTime() - started);
+            Map<String, Object> result = result(dispute, finished, audit.take(dispute.disputeId()), wallClock);
             write(out.resolve(id + ".json"), result);
             states.merge(finished.state() + finished.escalationReason().map(r -> " " + r).orElse(""), 1, Integer::sum);
             @SuppressWarnings("unchecked")
@@ -141,8 +145,14 @@ public final class EvalRunner implements ApplicationRunner {
         return out;
     }
 
-    /** One case's result: the outcome as published, and what the investigation used, from its audit trail. */
-    static Map<String, Object> result(DisputeOpened dispute, DisputeCase finished, List<AuditEvent> events) {
+    /**
+     * One case's result: the outcome as published, and what the investigation used, from its audit trail.
+     *
+     * @param wallClock the case's wall-clock as the runner measured it; with the latency of each model call it is
+     *     reported for live runs only, because a replayed run measures the replay
+     */
+    static Map<String, Object> result(DisputeOpened dispute, DisputeCase finished, List<AuditEvent> events,
+            Duration wallClock) {
         // A parked case has no outcome yet; it shows as unanswered (no decision, no escalation).
         CaseOutcome outcome = finished.state().endsInvestigation() ? CaseOutcome.of(finished) : null;
         Map<String, Object> r = new LinkedHashMap<>();
@@ -155,6 +165,7 @@ public final class EvalRunner implements ApplicationRunner {
         long modelCalls = 0, inputTokens = 0, outputTokens = 0, cacheRead = 0, cacheWrite = 0, costMicroUsd = 0;
         List<String> priceTables = new ArrayList<>();
         List<String> modelFailures = new ArrayList<>();
+        List<Long> modelCallMillis = new ArrayList<>();
         List<Map<String, Object>> toolCalls = new ArrayList<>();
         int systemToolCalls = 0;
         int decisionRejections = 0;
@@ -174,11 +185,15 @@ public final class EvalRunner implements ApplicationRunner {
                     cacheRead += m.usage().cacheReadInputTokens();
                     cacheWrite += m.usage().cacheCreationInputTokens();
                     costMicroUsd += m.cost().microUsd();
+                    modelCallMillis.add(m.latency().toMillis());
                     if (!priceTables.contains(m.cost().priceTableVersion())) {
                         priceTables.add(m.cost().priceTableVersion());
                     }
                 }
-                case AuditEvent.ModelCallFailed f -> modelFailures.add(f.stage() + ": " + f.error());
+                case AuditEvent.ModelCallFailed f -> {
+                    modelFailures.add(f.stage() + ": " + f.error());
+                    modelCallMillis.add(f.latency().toMillis());
+                }
                 case AuditEvent.ToolCalled t -> {
                     if (t.caller() == AuditEvent.Caller.SYSTEM) {
                         systemToolCalls++;
@@ -224,6 +239,10 @@ public final class EvalRunner implements ApplicationRunner {
         r.put("triage_fell_back", triageFellBack);
         r.put("model_failures", modelFailures);
         r.put("other_events", otherEvents);
+        Map<String, Object> timing = new LinkedHashMap<>();
+        timing.put("wall_clock_ms", wallClock.toMillis());
+        timing.put("model_call_ms", modelCallMillis);
+        r.put("timing", timing);
         return r;
     }
 
