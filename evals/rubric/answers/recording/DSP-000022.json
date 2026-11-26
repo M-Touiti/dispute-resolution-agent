@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000022",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "DECLINE",
+  "input_sha256": "241e0db7248b23e7884a8481c5c725b240ad610ba223b664660e80f04ecd15af",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsWCutefUdZmv4hgc5S",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "The rationale's facts, including \"posted on 2026-06-19\", \"opened on 2026-10-29, 132 days later\" (a correct day count), and \"3-D Secure not performed, no CVV and the fraud flag set\", all match the transaction and authorisation records, and the policy is quoted correctly."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale stops at the deciding time-limit check and says why, stating \"That is past the 120-day limit\" and \"Because the time limit is applied first, the dispute must be declined.\""
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 1649,
+    "output_tokens": 432,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 15728,
+  "price_table": "2026-11-20"
+}

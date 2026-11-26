@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000117",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "c6ac34c0b1dbd01dc2ae0d567c7b8198106c538d6bf169ad7dca8677e5e5e35b",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRt2m134kymu6Mi1H7gU",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact is supported by the records, including \"posted to card CRD-000078 on 2026-07-27\", \"That is 91 days\" (27 July to 26 October), \"approved for 924.40 EUR\" and \"104457 - 92440 = 12017 cents\", which is correct arithmetic."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"91 days, inside the 120-day limit\"), the posted, authorised and receipt amounts, and that \"Only that difference is credited\"; no tip tolerance is needed for a devices merchant."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2689,
+    "output_tokens": 430,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 19848,
+  "price_table": "2026-11-20"
+}

@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000067",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "DECLINE",
+  "input_sha256": "3965a9b3a543c660394b911aeb79d5c613af20b8d3c5081939df6c90ba7134f9",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsjaJ8TUB4ZhxLhuZxn",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact checks against the records, including \"15 days after TXN-007960 posted on 2026-10-07\", \"4392 cents\", \"4105 cents\" and \"20% of 4105, which is 821 cents\", and the bill is rightly called \"only the cardholder's claim\"."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the posted and authorised amounts, the missing receipt (\"No documents are attached, so there is no receipt\") and the restaurant tip tolerance (\"A 287-cent difference is inside that tolerance\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2357,
+    "output_tokens": 408,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 18080,
+  "price_table": "2026-11-20"
+}

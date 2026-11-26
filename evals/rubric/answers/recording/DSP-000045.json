@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000045",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "DECLINE",
+  "input_sha256": "df82c8fc559b69c0faa6510e4b253084d0073ff29e217b8e6e58ecabae1757af",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRscueGaj4W82vR6BtTR",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact checks against the records: \"posted on 2026-09-30\" to opening on 2026-10-26 is \"26 days\", 2026-10-04 to 2026-10-26 is \"22 days\", and \"signed for by V. Laurent\" matches DOC-000021 and the cardholder record for Vera Laurent of Lille."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"26 days, well inside the 120-day time limit\"), the expected delivery date and wait (\"the 15-day waiting period had passed\") and the delivery record and signer, then stops at that deciding check, saying \"the goods count as received, and the dispute is declined\", so it need not address merchant resolution."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2718,
+    "output_tokens": 659,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 24544,
+  "price_table": "2026-11-20"
+}

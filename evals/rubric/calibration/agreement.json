@@ -1,0 +1,46 @@
+{
+  "rubric_version": "rubric-v1",
+  "run": "recording",
+  "criteria": {
+    "faithful": {
+      "applicable": 30,
+      "excluded": 0,
+      "agreement": 0.9333,
+      "kappa": 0.0,
+      "table": {
+        "both_pass": 28,
+        "human_pass_grader_fail": 2,
+        "human_fail_grader_pass": 0,
+        "both_fail": 0
+      },
+      "calibrated": false
+    },
+    "evidence_check_complete": {
+      "applicable": 30,
+      "excluded": 0,
+      "agreement": 0.9667,
+      "kappa": 0.8387,
+      "table": {
+        "both_pass": 26,
+        "human_pass_grader_fail": 1,
+        "human_fail_grader_pass": 0,
+        "both_fail": 3
+      },
+      "calibrated": true
+    },
+    "merchant_request_clear": {
+      "applicable": 6,
+      "excluded": 0,
+      "agreement": 0.8333,
+      "kappa": 0.0,
+      "table": {
+        "both_pass": 5,
+        "human_pass_grader_fail": 1,
+        "human_fail_grader_pass": 0,
+        "both_fail": 0
+      },
+      "calibrated": false
+    }
+  },
+  "labelled_by": "Claude (claude-opus-5-5 in Claude Code), at the user's request, on 26 Nov 2026: not a person. Labelled from sheet.md and rubric-v1.md before any grader answer was opened. The grader is the same model, so agreement with these labels is model-model consistency, not the human calibration ADR 0009 describes."
+}

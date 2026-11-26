@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000030",
+  "category": "CANCELLED_RECURRING",
+  "outcome": "DECLINE",
+  "input_sha256": "16ab98e7b0ac509d1e07ed1571b94432433f78211f9bb4c62295f16b77c680b3",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsXwtotxmPNfJnySvyD",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every stated fact is supported by the records, including \"posted on 2026-09-22\", \"31 days after posting\" (correct from 2026-09-22 to 2026-10-23), \"with effect from 2026-09-25\" and \"four days after the charge\", and the policy is described accurately."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale addresses the time limit (\"within the 120-day time limit\"), the existence of the written confirmation (\"DOC-000015\"), and its effective date against the charge (\"four days after the charge\"); the credit limit does not apply to a decline."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 1894,
+    "output_tokens": 449,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 17048,
+  "price_table": "2026-11-20"
+}

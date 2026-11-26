@@ -191,7 +191,7 @@ def test_the_merchant_criterion_only_counts_for_a_merchant_request(tmp_path: Pat
 
 
 def test_the_dry_run_estimates_and_sends_nothing(tmp_path: Path, capsys) -> None:
-    results = tmp_path / "recording"
+    results = tmp_path / "dry-run-of-a-test"
     results.mkdir()
     for c in V1["cases"]:
         (results / f"{c['dispute_id']}.json").write_text(json.dumps(recorded_result(c["dispute_id"])), "utf-8")
@@ -201,7 +201,7 @@ def test_the_dry_run_estimates_and_sends_nothing(tmp_path: Path, capsys) -> None
     assert code == 0
     out = capsys.readouterr().out
     assert out.startswith("30 decided cases; claude-opus-5-5 at medium; estimated $") and "dry run" in out
-    assert not (rubric.RUBRIC_DIR / "answers" / "recording").exists()
+    assert not (rubric.RUBRIC_DIR / "answers" / "dry-run-of-a-test").exists()
 
 
 # Calibration ------------------------------------------------------------------------------------------------------
@@ -275,6 +275,9 @@ def test_agreement_per_criterion_with_its_table_and_the_publish_threshold(tmp_pa
     assert result["criteria"]["evidence_check_complete"]["kappa"] is None
     assert not result["criteria"]["evidence_check_complete"]["calibrated"]
     assert result["criteria"]["merchant_request_clear"]["applicable"] == 0
+    assert "labelled_by" not in result
+    labels["labelled_by"] = "a model, not a person"
+    assert rubric.agreement(labels, rubric.load_answers(tmp_path))["labelled_by"] == "a model, not a person"
 
 
 def test_agreement_needs_every_label_and_every_answer(tmp_path: Path) -> None:

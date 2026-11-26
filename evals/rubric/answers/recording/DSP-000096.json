@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000096",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "DECLINE",
+  "input_sha256": "de605683db44af7183c4fb1d98612afa7b9c4e1839aa6f86a0fa0d1b76ef3e9b",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsubsuEzCufwczUFCER",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "The statements check out against the records, including \"posted on 2026-09-07\", \"48 days later\", \"44 days after that date\" and \"signed for by H. Quinn\"; the name and city match the cardholder record (Hugo Quinn, Tampere)."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit, the expected delivery date and the 15-day wait, and the delivery record with its signer, then says why it stopped: \"Because the delivery decides the case, I did not check for a refund.\""
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2781,
+    "output_tokens": 433,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 20276,
+  "price_table": "2026-11-20"
+}

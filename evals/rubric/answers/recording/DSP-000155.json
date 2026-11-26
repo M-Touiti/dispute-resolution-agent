@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000155",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "ESCALATE",
+  "input_sha256": "e25bf043ed6999d62e6187b1d682a9d7a743271cb1efddb7a4d71c7b370ede62",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtFKUVRcDpV7xd7i7BY",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact, including \"posted on 2026-09-21\", \"opened on 2026-10-22, 31 days later\", \"3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN and the fraud flag set\" and the 3,000.00 EUR credit limit, matches the records and the policy text."
+    },
+    "evidence_check_complete": {
+      "verdict": "fail",
+      "reason": "The rationale covers the time limit, entry mode, 3-D Secure, the fraud flag and the \"3,000.00 EUR\" credit limit, but never addresses the cardholder's earlier transactions with RIVERSIDE GADGETS, and it does not say that this record is missing."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"ESCALATE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to judge."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3933,
+    "output_tokens": 695,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 30124,
+  "price_table": "2026-11-20"
+}

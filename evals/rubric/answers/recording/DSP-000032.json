@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000032",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "cebc68858a3db15935ad95b7838d2c010ae37af0f10fca6204b02c40d401f7d3",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsYg2MdVsx1WQ2jGrZ9",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every stated fact matches the records, including \"posted on 2026-09-30\", \"25 days later\", \"approved only 32.84 EUR (3284 cents)\", \"chip payment with PIN verified\" and the \"426-cent difference\" (3710 \u2212 3284)."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"25 days later, which is inside the 120-day limit\"), the posted, authorised and receipt amounts, and the credit of the difference only (\"only that difference is credited\"); a tip tolerance check is not needed because Lumen Energy is not a restaurant."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2713,
+    "output_tokens": 476,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 20864,
+  "price_table": "2026-11-20"
+}
