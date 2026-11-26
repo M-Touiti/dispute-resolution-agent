@@ -5,7 +5,7 @@ WORKDIR /src
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 COPY src/ src/
-RUN --mount=type=cache,target=/root/.m2 sh mvnw -B -q package -DskipTests && cp target/ledger-mcp-*.jar /app.jar
+RUN --mount=type=cache,id=m2-ledger-mcp,sharing=locked,target=/root/.m2 sh mvnw -B -q package -DskipTests && cp target/ledger-mcp-*.jar /app.jar
 
 FROM eclipse-temurin:21-jre-noble
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/* \

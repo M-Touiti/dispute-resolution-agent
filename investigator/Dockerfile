@@ -9,7 +9,7 @@ COPY domain/ domain/
 COPY application/ application/
 COPY adapters/ adapters/
 COPY bootstrap/ bootstrap/
-RUN --mount=type=cache,target=/root/.m2 sh mvnw -B -q package -DskipTests \
+RUN --mount=type=cache,id=m2-investigator,sharing=locked,target=/root/.m2 sh mvnw -B -q package -DskipTests \
     && cp bootstrap/target/investigator-bootstrap-*.jar /app.jar
 
 FROM eclipse-temurin:21-jre-noble
