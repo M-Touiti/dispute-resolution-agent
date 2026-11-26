@@ -1,11 +1,13 @@
 # Evaluation
 
-Python 3.13, uv, standard library only at run time. Run from this directory.
+Python 3.13, uv, standard library only at run time, except the live rubric grader (the optional `rubric` group:
+`uv sync --group rubric`). Run from this directory.
 
 | Path | Contents | Status |
 |---|---|---|
 | `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases; M3: `all-categories-v2.json`, 160 cases, and its nightly slices |
-| `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders (v2 since M3), the regression rule for replayed runs and the thresholds rule for live runs | done |
+| `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders (v2 since M3), the regression rule for replayed runs and the thresholds rule for live runs; `rubric.py`, the model-graded rubric and its calibration | done |
+| `rubric/` | The written rubric (`rubric-v1.md`), the grader's price table; from task 3.9 the stored grader answers (`answers/<run>/`) and the calibration (`calibration/`) | rubric and tooling done (3.7) |
 | `runs/` | Results of evaluation runs, one JSON per case (git-ignored) | |
 | `baseline/` | The committed summary a run must not fall below | recorded in task 1.16 |
 | `record.sh` | The recording session: live check, record under a spend cap, replay with no key, grade and write the baseline | done |
@@ -126,3 +128,66 @@ not failed. It fails on:
 The recording's per-case results are `baseline/live-thresholds.json`, written from the full recording with
 `--write-thresholds` (refused unless every case of the set has a result; task 3.8 writes it). Without that file only
 the first rule applies.
+
+## The model-graded rubric
+
+Code grades decisions, citations, actions and amounts. The prose is graded by a model, and only as far as its
+agreement with a person's labels allows (ADR 0009, section 3).
+
+**What is graded.** Each decided case gets three verdicts, `pass`, `fail` or `na`, each with a one-sentence reason
+that quotes the words judged. The criteria are written in `rubric/rubric-v1.md`, which is the grader's system prompt:
+
+- **faithful**: every fact in the rationale and the action's text is in the dispute or a tool result;
+- **evidence_check_complete**: the rationale addresses each check the category requires;
+- **merchant_request_clear**: only for `REQUEST_MERCHANT_EVIDENCE`; the note says what is wanted and discloses
+  nothing it should not. On any other outcome the grader's verdict is replaced with `na`.
+
+**What the grader sees** (`rubric.case_packet`):
+
+- the rubric;
+- the dispute as the agent received it;
+- every tool call and result. These come from the recorded fixtures: a case's last investigation request holds the
+  whole conversation. Skills are left out because they are instructions, not records;
+- the decision;
+- the full text of each cited policy section.
+
+It never sees the expected decision or anything else from the golden set.
+
+**How it runs.** `claude-opus-5-5` at `medium` effort, through the Python SDK, non-streaming. The answer comes back
+as structured output; `RUBRIC_MODEL` and `RUBRIC_EFFORT` override the model and effort.
+
+- No fallback model: a refusal is stored as unscored, because an answer from another model is not the grader the
+  calibration measured.
+- Every answer is stored with its input hash, usage and cost in `rubric/answers/<run>/<dispute id>.json`.
+- A stored answer for the same input (rubric, case, model and effort) is reused, so a run stopped at its cap
+  continues where it stopped.
+
+```sh
+uv run python -m evaltools.rubric grade --results runs/recording      # dry run: cases and estimated cost, sends nothing
+uv sync --group rubric
+uv run --group rubric python -m evaltools.rubric grade --results runs/recording --live --max-cost-usd 10
+uv run python -m evaltools.rubric summary --answers rubric/answers/recording
+```
+
+The live run costs money and needs a go-ahead. On the v1 replay the dry run estimates $1.12 for 30 cases, which is
+about $6 for the 160 of v2.
+
+**Calibration.**
+
+1. `pick` takes 6 decided cases per category, ranked by SHA-256 of `rubric-v1:<dispute id>`. While fewer than 6
+   merchant requests are among them, it swaps a category's lowest-ranked other pick for that category's best-ranked
+   merchant request, so criterion 3 has cases.
+2. `pick` writes `rubric/calibration/sheet.md` (the grader's inputs, no grader output) and `labels.json` to fill
+   in. It will not overwrite labels.
+3. A person labels every case before looking at `rubric/answers/`, and the labels are committed on their own.
+4. `agree` reports, per criterion: the applicable cases, raw agreement, Cohen's kappa and the 2x2 table. A criterion
+   is published as a metric only with agreement of at least 0.8 and kappa of at least 0.6. Kappa is undefined when
+   both people and grader gave one label throughout; such a criterion is not calibrated.
+
+```sh
+uv run python -m evaltools.rubric pick --results runs/recording
+uv run python -m evaltools.rubric agree --answers rubric/answers/recording
+```
+
+The tests run offline: a fake grader stands in for the model, and stored answers stand in for a run. One test drives
+the real SDK through a mock transport; it is skipped where the `rubric` group is not installed, as in CI.
