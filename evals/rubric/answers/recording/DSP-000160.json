@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000160",
   "category": "DUPLICATE_CHARGE",
   "outcome": "DECLINE",
-  "input_sha256": "908528f2a0aa726c830edfa67950f9fa38e6dc3f5001a918559bf8d55a139e43",
+  "input_sha256": "3f369699b7007d9f9a7fc199d434e86d37afc734cbd1135f5768b1a12e36b0e3",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtGsDDv2WZC6x2ypGGh",
+  "response_id": "msg_011ChS4FHiyeCJ7Der58g9r7",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale and the cardholder reason matches the records, including \"opened on 2026-10-25, 18 days after the 2026-10-07 posting\", \"TXN-008131 at 08:57, approved under AUTH-008318 by chip with the PIN checked\" and \"AUTH-008319 by contactless payment\"."
+      "reason": "Every fact matches the records, including \"posted on 2026-10-07 and the dispute was opened on 2026-10-25, 18 days later\", \"TXN-008131 was made at 08:57 under AUTH-008318, approved by chip with the PIN verified\" and \"No refund appears at this merchant\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"inside the 120-day time limit\"), the authorisations (\"do not share an authorisation\"), the amounts and dates (\"two purchases of 109.96 EUR ... on 2026-10-06, both posted on 2026-10-07\") and the refund (\"No refund of either charge was found\"); the credit limit does not apply to a decline."
+      "reason": "The rationale covers each required check: the time limit (\"well inside the 120-day limit\"), the authorisations (\"They do not share an authorisation\"), the amounts and dates (\"two 109.96 EUR purchases ... on 2026-10-06, both posted on 2026-10-07\") and any refund (\"No refund appears at this merchant\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3982,
-    "output_tokens": 564,
+    "input_tokens": 4167,
+    "output_tokens": 517,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 27700,
+  "cost_micro_usd": 27500,
   "price_table": "2026-11-20"
 }

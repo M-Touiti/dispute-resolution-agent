@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they do not recognise the 3950.89 EUR payment to COPPERLEAF JOURNEYS and that the card was always in their possession, so they did not make or allow it.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they do not recognise a 3950.89 EUR payment to COPPERLEAF JOURNEYS and that the card remained in their possession, meaning they did not make or allow the payment.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRgh5GnTevkMJpoabR3L",
+    "id" : "msg_011ChS3MY3kMNuurZURngPZE",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 164,
-      "output_tokens" : 91
+      "output_tokens" : 95
     }
   }
 }

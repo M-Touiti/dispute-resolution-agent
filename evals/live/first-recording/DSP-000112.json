@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000112",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000112",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:05:04.115110700Z",
+    "reported_category" : "GOODS_NOT_RECEIVED",
+    "category" : "GOODS_NOT_RECEIVED",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm declining this dispute because it was opened too early. TXN-008041 is a charge of 2259 EUR cents to Brightwater Gadgets (MER-000059) on card CRD-000199. It posted on 2026-10-12, and the dispute was opened on 2026-10-28, 16 days later. That is well within the 120-day time limit. The merchant's order confirmation DOC-000051 gives an expected delivery date of 2026-10-22. The dispute was opened only 6 days after that date. Policy requires the cardholder to wait 15 days after the expected delivery date, so a late delivery can still arrive. A dispute opened before then is declined, and the cardholder may open a new one once the wait has passed. The case has no delivery record and no correspondence with the merchant. That doesn't affect this decision, because the waiting period decides it first. This category does not allow a provisional credit. The cardholder can open a new dispute from 2026-11-06 if the order still has not arrived.",
+      "cited_evidence_ids" : [ "TXN-008041", "DOC-000051" ],
+      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your order's expected delivery date was 2026-10-22, and a non-delivery dispute can only be opened 15 days after that date, so a late delivery has time to arrive. This dispute was opened on 2026-10-28, before the waiting period ended. If the order still has not arrived, you can open a new dispute from 2026-11-06.",
+        "policy_section_ids" : [ "goods-not-received-wait" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5595,
+    "output_tokens" : 1050,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 44789,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12266,
+    "model_call_ms" : [ 1479, 2555, 1887, 6299 ]
+  }
+}

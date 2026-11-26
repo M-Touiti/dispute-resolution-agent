@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000087",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "ESCALATE",
-  "input_sha256": "250f0d2bdbac7992d8f515c577e568e0d72a3fa49d9d02298a4985c74dd2fdd3",
+  "input_sha256": "c7eafea98ce235c0ff2ce46e63a495a82368303586d2a031bbb1c1a993cec96c",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsqjA6RRsCVMgvekf5z",
+  "response_id": "msg_011ChS3qRcpa8UCXuGzcPodf",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact is supported by the records, including \"posted on 2026-09-27 and the dispute was opened on 2026-10-26, 29 days later\" (a correct day count), \"3-D Secure NOT_PERFORMED\", \"the fraud flag set\" and \"the full 414,681 cents\", which matches the 414681 minor units."
+      "reason": "Every fact in the rationale matches the records: \"posted on 2026-09-27\", \"29 days later\" (correct from 2026-09-27 to 2026-10-26), \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN and the fraud flag set\", and the provisional-credit section is quoted accurately."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED\", the fraud flag and the \"3,000.00 EUR\" credit limit, but it never addresses the cardholder's earlier transactions with COPPERLEAF JOURNEYS. That check was not made and is not mentioned as missing."
+      "verdict": "pass",
+      "reason": "The rationale covers every required check: the time limit (\"within the 120-day time limit\"), entry mode, the 3-D Secure result, the fraud flag, earlier transactions (\"TXN-007995 is the only one\") and the credit limit (\"never grants credit above 3,000.00 EUR\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"ESCALATE\" and \"No action is proposed\", so there is no merchant note to judge."
+      "reason": "The outcome is \"ESCALATE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to judge."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2578,
-    "output_tokens": 573,
+    "input_tokens": 3501,
+    "output_tokens": 497,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 22264,
+  "cost_micro_usd": 24436,
   "price_table": "2026-11-20"
 }

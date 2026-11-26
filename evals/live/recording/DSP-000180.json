@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000180",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:16:37.392831Z",
+    "decided_at" : "2026-11-26T18:47:24.145983600Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008171 posted on 2026-09-12. The dispute was opened on 2026-10-26, 44 days later, which is within the 120-day limit (time-limits). The posted amount is 37142 cents. The authorisation AUTH-008355 was approved for 25267 cents. The merchant's receipt DOC-000089 shows a total of 252.67 EUR (25267 cents). The posted amount is higher than both the receipt and the authorised amount, so under amount-above-receipt the difference was charged without agreement: 37142 - 25267 = 11875 cents (118.75 EUR). Under provisional-credit, only the part in dispute is credited, and this amount is well below the 3,000 EUR limit. The cardholder asked for the whole 371.42 EUR. The larger claim does not change the credit, because the receipt shows they agreed to pay 252.67 EUR. Only the difference is credited.",
+      "rationale" : "I recommend a provisional credit of 118.75 EUR, the difference between the posted amount and the receipt. TXN-008171 is on card CRD-000181. It posted on 2026-09-12 for 37142 cents. The dispute was opened on 2026-10-26, 44 days later, which is inside the 120-day limit in time-limits. The authorisation AUTH-008355 was for 25267 cents. The merchant's receipt DOC-000089 shows a total of 25267 cents (252.67 EUR). The posted amount is higher than both the receipt and the authorisation, so under amount-above-receipt the extra 37142 - 25267 = 11875 cents was charged without agreement. The policy allows credit for the difference only. The cardholder asks for the full 371.42 EUR, but that does not change the amount: provisional-credit never allows more than the part in dispute. 118.75 EUR is well under the 3,000.00 EUR limit for automated credit.",
       "cited_evidence_ids" : [ "TXN-008171", "AUTH-008355", "DOC-000089" ],
       "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 6356,
-    "output_tokens" : 989,
+    "output_tokens" : 1005,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 46672,
+    "cost_micro_usd" : 46992,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 9527,
-    "model_call_ms" : [ 1498, 1434, 2448, 4096 ]
+    "wall_clock_ms" : 10726,
+    "model_call_ms" : [ 1476, 2488, 2493, 4213 ]
   }
 }

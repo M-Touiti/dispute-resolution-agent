@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000138",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "ESCALATE",
-  "input_sha256": "50151bf414c503ed896a6a028a55e51b50f7aa2ef7b1022448a82fb126125455",
+  "input_sha256": "ee46c5279b38fdaf858f0ba002aba81ea7a83781a500a6f03935e12c2cfe8aba",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt8bAMYXJ76ZTzqo34W",
+  "response_id": "msg_011ChS47BauWhvvgrRDaFumE",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every stated fact matches the records: \"posted on 2026-09-22\", the dispute opened \"34 days later\" (correct arithmetic), \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set\", and the amount \"300460 minor units\" being above the 3,000.00 EUR limit."
+      "reason": "Every fact in the rationale matches the records, including \"posted on 2026-09-22, and the dispute was opened on 2026-10-26. That is 34 days\", \"3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN, and the fraud flag set\", and \"TXN-008091 is the only one\"."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, entry mode, 3-D Secure, fraud flag and credit limit, but never addresses the cardholder's earlier transactions with HARBOUR GADGETS, which were neither retrieved nor noted as missing, before concluding \"the payment counts as unauthorised\"."
+      "verdict": "pass",
+      "reason": "The rationale addresses each required check: the time limit (\"well inside the 120-day time limit\"), the entry mode, the 3-D Secure result, the fraud flag, earlier transactions (\"no earlier transactions at this merchant\") and the credit limit (\"above the 3,000.00 EUR limit for automated provisional credit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"ESCALATE\", not a merchant evidence request."
+      "reason": "The outcome is \"ESCALATE\", not a merchant evidence request, so there is no note to the merchant to judge."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3145,
-    "output_tokens": 630,
+    "input_tokens": 4780,
+    "output_tokens": 556,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 25672,
+  "cost_micro_usd": 30732,
   "price_table": "2026-11-20"
 }

@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled the Kestrel Athletic Club subscription and it was still charged 47.77 EUR on 2026-08-27, which is a recurring payment taken after cancellation.\"}",
+      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled the Kestrel Athletic Club subscription and were charged again on 2026-08-27, which is a recurring payment taken after cancellation.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfpWGn7NYDCZaDM631i",
+    "id" : "msg_011ChS2URm4JzfvjMXS7kk7C",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 106,
-      "output_tokens" : 90
+      "output_tokens" : 81
     }
   }
 }

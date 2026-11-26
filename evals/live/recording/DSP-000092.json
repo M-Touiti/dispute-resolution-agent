@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000092",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:01:19.560117200Z",
+    "decided_at" : "2026-11-26T18:31:55.175203Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute is within the time limit. TXN-008004 posted on 2026-10-14 and the dispute was opened on 2026-10-25, which is 11 days later. The limit is 120 days. The card has two postings of 94.76 EUR at HARBOUR MARKET (MER-000064). TXN-008004 was made at 2026-10-13T04:16:14Z, posted 2026-10-14 and authorised under AUTH-008203. TXN-008003 was made at 2026-10-12T20:16:14Z, posted 2026-10-13 and authorised under AUTH-008202. The two postings do not share an authorisation. Each authorisation was approved separately with no fraud flag. AUTH-008202 was a chip payment with the PIN verified. AUTH-008203 was a contactless payment made about 8 hours later. The ledger shows no refund at this merchant. Under the policy, two postings with their own authorisations made some time apart count as two purchases, even when the merchant and the amount are the same, so the dispute is declined.",
+      "rationale" : "I recommend declining this dispute because the records show two separate purchases, not one purchase charged twice. The dispute was opened on 2026-10-25, 11 days after the disputed posting on 2026-10-14. That is well inside the 120-day limit (time-limits). The card has two purchases at HARBOUR MARKET (MER-000064), each for 9476 minor units (94.76 EUR). TXN-008003 was made at 2026-10-12T20:16:14Z and posted on 2026-10-13 under authorisation AUTH-008202, which was approved by chip and PIN. TXN-008004 was made at 2026-10-13T04:16:14Z and posted on 2026-10-14 under authorisation AUTH-008203, which was approved contactless. The two postings do not share an authorisation, were made about 8 hours apart and used different entry methods. Neither authorisation carries a fraud flag, and the ledger shows no refund from this merchant. Under duplicate-separate-authorisations, two postings with their own authorisations made some time apart are two purchases, even when the merchant and amount are the same, so the dispute is declined.",
       "cited_evidence_ids" : [ "TXN-008004", "TXN-008003", "AUTH-008203", "AUTH-008202" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The two 94.76 EUR charges from HARBOUR MARKET were approved as two separate payments about 8 hours apart: a chip payment with your PIN on 12 October 2026 and a contactless payment on 13 October 2026. They are two separate purchases, not one purchase charged twice, so the dispute cannot be upheld as a duplicate charge.",
+        "reason" : "Our records show two separate purchases at HARBOUR MARKET for 94.76 EUR. You approved each one on its own: the first by chip and PIN on the evening of 2026-10-12, and the second contactless early on 2026-10-13, about 8 hours later. The same authorisation was not posted twice, so this is not a duplicate charge. If you did not make one of these payments, you can open a new dispute saying so.",
         "policy_section_ids" : [ "duplicate-separate-authorisations", "time-limits" ]
       } ]
     },
@@ -25,37 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7377,
-    "output_tokens" : 1263,
+    "input_tokens" : 8137,
+    "output_tokens" : 1332,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 57498,
+    "cost_micro_usd" : 61879,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
-  }, {
-    "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 14831,
-    "model_call_ms" : [ 1559, 2074, 1702, 3554, 5844 ]
+    "wall_clock_ms" : 14076,
+    "model_call_ms" : [ 1557, 2080, 1805, 2535, 5977 ]
   }
 }

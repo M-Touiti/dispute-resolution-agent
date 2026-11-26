@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000192",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:18:55.629426900Z",
+    "decided_at" : "2026-11-26T18:49:53.134952700Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend a provisional credit of 20.76 EUR. TXN-008193 on card CRD-000055 posted on 2026-07-29. The dispute was opened on 2026-10-30, 93 days later, which is within the 120-day limit. The posted amount is 10382 cents (103.82 EUR). Authorisation AUTH-008375 was approved for 8306 cents (83.06 EUR). The merchant's receipt DOC-000098 shows the same 83.06 EUR. The posted amount is higher than both, so under amount-above-receipt the extra amount was charged without agreement: 10382 - 8306 = 2076 cents (20.76 EUR). This is well below the 3,000.00 EUR limit for provisional credit. The cardholder asked for the full 103.82 EUR back, but that does not change the amount. The policy credits only the difference, because the 83.06 EUR on the receipt was agreed.",
+      "rationale" : "I recommend a provisional credit of 20.76 EUR, the overcharge only. Transaction TXN-008193 at Meadowlark Fuel was on card CRD-000055 and posted on 2026-07-29. The dispute was opened on 2026-10-30, 93 days later, which is within the 120-day limit in time-limits. The posted amount is 103.82 EUR (10382 cents). Authorisation AUTH-008375 approved 83.06 EUR (8306 cents). The merchant's receipt DOC-000098 also totals 83.06 EUR (8306 cents). The posting is higher than both the receipt and the authorisation, so the extra amount was charged without agreement: 10382 - 8306 = 2076 cents (20.76 EUR). Under amount-above-receipt and provisional-credit, only that difference can be credited, not the whole transaction. The cardholder's request for the full 103.82 EUR does not change this, because the 83.06 EUR on the receipt was agreed. The credit is well below the 3,000.00 EUR limit for automatic credits.",
       "cited_evidence_ids" : [ "TXN-008193", "AUTH-008375", "DOC-000098" ],
       "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,36 +25,36 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 8086,
-    "output_tokens" : 994,
+    "input_tokens" : 9010,
+    "output_tokens" : 1112,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 54825,
+    "cost_micro_usd" : 60881,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
-  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
   "decision_rejections" : 0,
   "triage_fell_back" : false,
   "model_failures" : [ ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10005,
-    "model_call_ms" : [ 1517, 1259, 1616, 1683, 3867 ]
+    "wall_clock_ms" : 12060,
+    "model_call_ms" : [ 1548, 2093, 1938, 1879, 4546 ]
   }
 }

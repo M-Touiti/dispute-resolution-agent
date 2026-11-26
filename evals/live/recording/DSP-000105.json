@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000105",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:03:39.662977500Z",
+    "decided_at" : "2026-11-26T18:34:15.477820100Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute. TXN-008030 (110.12 EUR, MEADOWLARK FUEL, merchant MER-000030) is on card CRD-000248. It posted on 2026-08-11 and the dispute was opened on 2026-10-28. That is 78 days, inside the 120-day limit in time-limits. Its authorisation, AUTH-008227, shows entry mode CHIP, PIN verified, response APPROVED and no fraud flag. This means the card and its PIN were both used at the terminal. The card also has several other approved purchases at the same merchant before and after this one: TXN-008028, TXN-007809, TXN-008029, TXN-007800 and TXN-007813. Under unauthorised-chip-and-pin, a chip payment with the PIN verified and no fraud flag counts as made by the cardholder, so the dispute is declined. The cardholder's statement that the card stayed with them does not outweigh the chip and PIN record.",
+      "rationale" : "I'm declining this dispute. TXN-008030 is a 110.12 EUR charge (11012 minor units) at MEADOWLARK FUEL on card CRD-000248. It posted on 2026-08-11 and the dispute was opened on 2026-10-28, which is 78 days later and inside the 120-day limit (time-limits). Its authorisation, AUTH-008227, shows entry mode CHIP with the PIN verified (pin_verified true), 3-D Secure NOT_APPLICABLE, response APPROVED and no fraud flag. That means the physical card and the correct PIN were used at the terminal, so under unauthorised-chip-and-pin the payment counts as made by the cardholder. The card has other approved purchases at the same merchant, before and after this one: TXN-008028 (2026-06-10), TXN-007809 (2026-06-25), TXN-008029 (2026-07-21), TXN-007800 (2026-08-29) and TXN-007813 (2026-10-14). These support the decline but do not decide it. The cardholder says the card was with them the whole time, which fits a chip-and-PIN payment by the cardholder. The statement contained no instructions.",
       "cited_evidence_ids" : [ "TXN-008030", "AUTH-008227", "TXN-008028", "TXN-007809", "TXN-008029", "TXN-007800", "TXN-007813" ],
-      "cited_policy_sections" : [ "unauthorised-chip-and-pin", "time-limits" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-chip-and-pin" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The payment of 110.12 EUR to MEADOWLARK FUEL on 2026-08-10 was made with your card's chip, and your PIN was entered correctly. Your card has also been used at this merchant several times before and after this date. Under our policy, a chip payment with a correct PIN counts as made by the cardholder, so we cannot treat it as unauthorised.",
+        "reason" : "The 110.12 EUR payment at MEADOWLARK FUEL on 2026-08-10 was made with your card's chip and the correct PIN, and it was not flagged as suspicious. This means the card and its PIN were both present when the payment was made, so it is treated as a payment you made. Your card also shows regular earlier and later purchases at the same merchant.",
         "policy_section_ids" : [ "unauthorised-chip-and-pin" ]
       } ]
     },
@@ -25,33 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 10632,
-    "output_tokens" : 1233,
+    "input_tokens" : 12424,
+    "output_tokens" : 1366,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 69598,
+    "cost_micro_usd" : 79329,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
-    "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 13556,
-    "model_call_ms" : [ 1503, 2712, 2029, 1470, 5786 ]
+    "wall_clock_ms" : 14279,
+    "model_call_ms" : [ 1584, 2772, 2452, 1438, 5899 ]
   }
 }

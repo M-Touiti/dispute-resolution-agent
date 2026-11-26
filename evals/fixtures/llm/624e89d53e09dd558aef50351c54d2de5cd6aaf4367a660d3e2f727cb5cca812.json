@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Meadowlark Athletic Club subscription and were then charged 29.16 EUR again, which is a recurring payment taken after cancellation.\"}",
+      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Meadowlark Athletic Club subscription yet were charged 29.16 EUR again, which is a recurring payment taken after cancellation.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfdixTkwDJmpXSnhjxR",
+    "id" : "msg_011ChS2Gm1qk559au9Tya9mz",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

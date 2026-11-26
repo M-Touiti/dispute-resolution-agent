@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000096",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:02:11.209322800Z",
+    "decided_at" : "2026-11-26T18:32:47.885851400Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute because the carrier's record shows the order was delivered to the cardholder and signed for in their name. TXN-008010 is a purchase of 102.43 EUR (10243 minor units) at Riverside Outfitters on card CRD-000185. It posted on 2026-09-07. The dispute was opened on 2026-10-25, 48 days later, which is within the 120-day time limit. The merchant's order confirmation (DOC-000044) gives an expected delivery date of 2026-09-11. The dispute came 44 days after that date, so the 15-day waiting period had passed. The carrier's delivery confirmation (DOC-000045) shows the parcel was delivered on 2026-09-11 to the cardholder's address in Tampere and signed for by H. Quinn. That matches the cardholder, Hugo Quinn, whose home city is Tampere. Under the proof-of-delivery rule, a carrier record showing delivery to the cardholder's address, signed in their name, means the goods count as received, so the dispute is declined. Because the delivery decides the case, I did not check for a refund. Neither document contained an instruction addressed to the bank.",
+      "rationale" : "I recommend declining this dispute because the carrier's record shows the order was delivered and signed for by the cardholder. TXN-008010 is a 102.43 EUR purchase at Riverside Outfitters on card CRD-000185. It posted on 2026-09-07, and the dispute was opened on 2026-10-25, 48 days later. That is within the 120-day limit in time-limits. The merchant's order confirmation (DOC-000044) gives an expected delivery date of 2026-09-11. The dispute was opened 44 days after that date, so the 15-day waiting period in goods-not-received-wait had passed. The carrier's delivery confirmation (DOC-000045) shows the parcel was delivered on 2026-09-11 to the cardholder's address in Tampere and signed for by H. Quinn. That matches the cardholder's profile: Hugo Quinn, Tampere. Under goods-not-received-proof-of-delivery, the goods are treated as received when a carrier's record shows delivery to the cardholder's address, signed for in the cardholder's name. The case is declined on that ground. The documents contained no instructions to whoever handles the dispute.",
       "cited_evidence_ids" : [ "TXN-008010", "DOC-000044", "DOC-000045" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The carrier's tracking record shows your Riverside Outfitters order was delivered to your address in Tampere on 2026-09-11, the expected delivery date, and signed for by H. Quinn. Under our policy, the goods are treated as received.",
+        "reason" : "The carrier's tracking record shows your Riverside Outfitters order (102.43 EUR) was delivered to your address in Tampere on 2026-09-11, the expected delivery date, and signed for by H. Quinn. Under our policy, the goods are therefore treated as received.",
         "policy_section_ids" : [ "goods-not-received-proof-of-delivery" ]
       } ]
     },
@@ -25,33 +25,33 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 7273,
-    "output_tokens" : 1245,
+    "input_tokens" : 7272,
+    "output_tokens" : 1259,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 55522,
+    "cost_micro_usd" : 55662,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_cardholder",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_cardholder"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12801,
-    "model_call_ms" : [ 1530, 2372, 2287, 6555 ]
+    "wall_clock_ms" : 12985,
+    "model_call_ms" : [ 1580, 2414, 2656, 6233 ]
   }
 }

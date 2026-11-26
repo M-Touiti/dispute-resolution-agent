@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000186",
+  "category": "DUPLICATE_CHARGE",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "86e1d9139bf89584b75a15f8a63a900cf564d217397d689d16a445e9cfd639c2",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtScgPwyEMCtLnvHGXP",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact in the rationale matches the records, including \"Both carry the same authorisation, AUTH-008363\", \"opened 51 days after posting\" (2026-09-02 to 2026-10-23 is 51 days) and \"No refund appears for either charge\", which agrees with the merchant search."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"inside the 120-day time limit\"), the shared authorisation, the amounts and dates, the refund check (\"No refund appears for either charge\") and the credit limit (\"below the 3,000 EUR limit\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3271,
+    "output_tokens": 485,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 23276,
+  "price_table": "2026-11-20"
+}

@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000139",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:09:09.640026300Z",
+    "decided_at" : "2026-11-26T18:39:53.748349500Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,46 +12,50 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute is within the time limit. TXN-008094 (14.35 EUR, OAKHOLLOW CHEMIST) posted on 2026-07-28 and the dispute was opened on 2026-10-23, which is 87 days later. The limit is 120 days. The authorisation behind the payment, AUTH-008285, shows that the card and PIN were used at the merchant's terminal: entry mode CHIP, PIN verified true, 3-D Secure NOT_APPLICABLE, fraud flag false, approved. The same card also made earlier approved purchases at this merchant, TXN-008092 and TXN-008093 in May 2026, and another one afterwards, TXN-006207 in August 2026. Under the chip-and-PIN rule, a chip payment with a verified PIN and no fraud flag counts as made by the cardholder, so the dispute is declined. The cardholder's statement that the card never left them does not outweigh this record.",
+      "rationale" : "TXN-008094 (1435 EUR cents at OAKHOLLOW CHEMIST, MER-000049) is on card CRD-000196. It posted on 2026-07-28 and the dispute was opened on 2026-10-23, 87 days later, so it is within the 120-day limit in time-limits. Its authorisation AUTH-008285 shows entry mode CHIP, PIN verified true, 3-D Secure NOT_APPLICABLE, response APPROVED and no fraud flag. That means the card and the PIN were both present. Under unauthorised-chip-and-pin the payment is treated as made by the cardholder, so the dispute is declined. The card's history at this merchant supports this: earlier approved purchases TXN-008092 (2026-05-27) and TXN-008093 (2026-05-28), and a later purchase TXN-006207 (2026-08-13) that is not disputed. The cardholder says the card never left them, but that does not outweigh a chip-and-PIN authorisation.",
       "cited_evidence_ids" : [ "TXN-008094", "AUTH-008285", "TXN-008092", "TXN-008093", "TXN-006207" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-chip-and-pin" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-chip-and-pin" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The payment of 14.35 EUR at OAKHOLLOW CHEMIST on 2026-07-27 was made with your card's chip, and your PIN was entered correctly at the merchant's terminal. Our fraud checks did not flag it. This card has also made other purchases at the same merchant. Because of this, we treat the payment as made by you, and we are closing the dispute.",
-        "policy_section_ids" : [ "unauthorised-chip-and-pin", "time-limits" ]
+        "reason" : "Our records show the 14.35 EUR payment at OAKHOLLOW CHEMIST on 2026-07-27 was made with your card's chip and the correct PIN, with no sign of fraud. We therefore treat it as made by you. You have also made other purchases at this merchant with the same card.",
+        "policy_section_ids" : [ "unauthorised-chip-and-pin" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 10308,
-    "output_tokens" : 1254,
+    "input_tokens" : 10860,
+    "output_tokens" : 1265,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 68652,
+    "cost_micro_usd" : 71080,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "search_policy",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
-    "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12099,
-    "model_call_ms" : [ 1494, 1282, 2474, 1739, 4959 ]
+    "wall_clock_ms" : 12743,
+    "model_call_ms" : [ 1545, 1988, 2695, 1481, 4932 ]
   }
 }

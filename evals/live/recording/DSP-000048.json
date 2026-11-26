@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000048",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:54:38.324976400Z",
+    "decided_at" : "2026-11-26T18:25:02.067530500Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,13 +12,13 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "The charge on TXN-007926 is on card CRD-000127 and is for 758 EUR minor units (7.58 EUR) at Silverbirch Media (MER-000044), a merchant that bills on a recurring basis. The charge was made on 2026-10-01 and posted on 2026-10-02. The dispute was opened on 2026-10-24, 22 days after posting, which is within the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing. No merchant cancellation confirmation is attached and the records show none, so there is no cancellation date to compare with the charge date. Under recurring-no-proof, the next step is to ask the merchant for its cancellation records and its terms for the subscription.",
+      "rationale" : "TXN-007926 is a charge of 7.58 EUR (758 minor units) on card CRD-000127 at Silverbirch Media (MER-000044), a streaming merchant that bills on a recurring basis. The charge was made on 2026-10-01 and posted on 2026-10-02. The dispute was opened on 2026-10-24, 22 days after posting, which is well within the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing. No merchant cancellation confirmation is attached and the records do not show one, so there is no cancellation date to compare with the charge date. Under recurring-no-proof, the next step is to ask the merchant for its cancellation records and its terms for the subscription. No provisional credit is proposed at this stage.",
       "cited_evidence_ids" : [ "TXN-007926" ],
       "cited_policy_sections" : [ "time-limits", "recurring-no-proof" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "CANCELLATION_POLICY" ],
-        "note" : "Please send your cancellation records for this card's subscription, including any cancellation request received by phone and its date, and the subscription terms that applied to the charge of 7.58 EUR on 2026-10-01."
+        "note" : "Regarding the subscription charge of 7.58 EUR made on 2026-10-01: please provide your cancellation records for this card's subscription, including any cancellation request received by phone and its date, and the cancellation terms that applied to the subscription."
       } ]
     },
     "guard_violations" : [ ]
@@ -26,28 +26,28 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 4386,
-    "output_tokens" : 806,
+    "output_tokens" : 833,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 35081,
+    "cost_micro_usd" : 35660,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist" ],
@@ -59,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 9484,
-    "model_call_ms" : [ 1608, 2151, 1618, 4037 ]
+    "wall_clock_ms" : 13992,
+    "model_call_ms" : [ 1630, 6830, 1639, 3802 ]
   }
 }

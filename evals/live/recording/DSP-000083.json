@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000083",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:59:43.886350100Z",
+    "decided_at" : "2026-11-26T18:30:09.630993Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend a provisional credit of 42.92 EUR, the difference between the posted amount and the receipt. The dispute is in time: TXN-007991 posted on 2026-08-15 and the dispute was opened on 2026-10-27, which is 73 days later, within the 120-day limit in time-limits. The posting at Harbour Market (MER-000064) is 145.12 EUR (14512 minor units). Its authorisation, AUTH-008191, was approved for 102.20 EUR (10220). The merchant's own receipt, DOC-000040, shows a total of 102.20 EUR. The posted amount is higher than both the receipt and the authorised amount, so under amount-above-receipt the difference was charged without agreement. Only that difference is credited, not the whole transaction: 14512 - 10220 = 4292 minor units (42.92 EUR). This matches the cardholder's claim and is well under the 3,000.00 EUR limit in provisional-credit.",
+      "rationale" : "We are approving a provisional credit of 42.92 EUR. TXN-007991 at Harbour Market (MER-000064) is on card CRD-000192. It was posted on 2026-08-15 and the dispute was opened on 2026-10-27, 73 days later. That is inside the 120-day time limit. Three amounts were compared. The posted amount is 14512 cents (145.12 EUR). The authorisation AUTH-008191 was approved, contactless, for 10220 cents (102.20 EUR). The merchant's receipt DOC-000040 shows 102.20 EUR. The posted amount is higher than both the receipt and the authorised amount. Under amount-above-receipt, the difference was charged without agreement. Only that difference is credited: 14512 - 10220 = 4292 cents (42.92 EUR). This matches the amount claimed and is far below the 3,000.00 EUR limit in provisional-credit.",
       "cited_evidence_ids" : [ "TXN-007991", "AUTH-008191", "DOC-000040" ],
       "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,33 +25,37 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 5392,
-    "output_tokens" : 1014,
+    "input_tokens" : 5594,
+    "output_tokens" : 991,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 43394,
+    "cost_micro_usd" : 43742,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10824,
-    "model_call_ms" : [ 1490, 2438, 2484, 4334 ]
+    "wall_clock_ms" : 11098,
+    "model_call_ms" : [ 1516, 2379, 2724, 4369 ]
   }
 }

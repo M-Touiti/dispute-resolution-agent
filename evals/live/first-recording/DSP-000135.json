@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000135",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000135",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:08:13.131559800Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute is within the time limit. TXN-008088 posted on 2026-07-31 and the dispute was opened on 2026-10-31, which is 92 days later, inside the 120-day limit. The authorisation AUTH-008279 was for 119.56 EUR (11956 cents). The posted amount is 138.68 EUR (13868 cents), so the difference is 19.12 EUR (1912 cents). The merchant, MER-000047 (Oakhollow Bistro), is in the RESTAURANT category. No receipt is attached, so the cardholder's figure of 119.56 EUR is a claim and not a receipt. The policy allows a restaurant to post up to 20% above the authorised amount as a tip. 20% of 11956 cents is 2391.20 cents, and the 1912-cent difference is within that, so it counts as an agreed tip and not an amount mismatch. The dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-008088", "AUTH-008279" ],
+      "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your bill was authorised for 119.56 EUR and posted at 138.68 EUR. Restaurants may add a tip of up to 20% of the authorised amount when they post the final charge. The difference of 19.12 EUR is within that limit, so it is treated as an agreed tip and not as an incorrect amount.",
+        "policy_section_ids" : [ "amount-restaurant-tip", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7747,
+    "output_tokens" : 1075,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 55183,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11426,
+    "model_call_ms" : [ 1678, 1407, 2053, 1494, 4730 ]
+  }
+}

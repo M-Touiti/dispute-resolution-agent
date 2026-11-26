@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000141",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "DECLINE",
+  "input_sha256": "a2a5977f8218c60082dccfac7156e0ce3590382d0a07eec389a1d50dd8ef6216",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRt9xjfcJvv95X6piFRK",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "The statement that the dispute \"was opened on 2026-10-29, 141 days later\" than the posting on \"2026-06-10\" is arithmetically correct, and the authorisation details (\"ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and fraud flag set\") and the policy paraphrase all match the inputs."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale stops at the deciding time-limit check and says why, noting \"Section rule-order applies the time limit first\" and that the fraud indicators do \"not override the time limit\"."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2744,
+    "output_tokens": 425,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 19968,
+  "price_table": "2026-11-20"
+}

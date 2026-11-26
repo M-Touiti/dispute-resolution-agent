@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000086",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:00:05.074784400Z",
+    "decided_at" : "2026-11-26T18:30:35.606135800Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,9 +12,9 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "Disputed transaction TXN-007994 is on card CRD-000099. It is 877.46 EUR at MER-000068 (RIVERSIDE GADGETS) and posted on 2026-08-07. The dispute was opened on 2026-10-23, 77 days after posting, which is within the 120-day limit in time-limits. The authorisation behind it, AUTH-008194, shows entry mode ECOMMERCE, so the card was not present. It also shows 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. Under unauthorised-card-not-present, a card-not-present payment with no 3-D Secure authentication and a fraud flag counts as unauthorised. The credit is the transaction amount of 87,746 minor units (877.46 EUR), which matches the claim and is below the 3,000.00 EUR automated limit in provisional-credit.",
+      "rationale" : "I recommend provisional credit of 877.46 EUR. TXN-007994 (877.46 EUR, RIVERSIDE GADGETS, MER-000068) is on card CRD-000099. It posted on 2026-08-07 and the dispute was opened on 2026-10-23, 77 days later. That is within the 120-day limit in time-limits. The authorisation AUTH-008194 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set. The card was not present, the payment was not confirmed with 3-D Secure and fraud screening flagged it, so it counts as unauthorised under unauthorised-card-not-present. The card has no other transactions at this merchant: no earlier approved purchases suggest the cardholder dealt with it. The credit equals the transaction amount, which matches the amount claimed. It is below the 3,000.00 EUR limit in provisional-credit. The cardholder's statement contained no instructions.",
       "cited_evidence_ids" : [ "TXN-007994", "AUTH-008194" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ {
         "action" : "issue_provisional_credit",
         "amount_minor" : 87746,
@@ -25,37 +25,41 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 10530,
-    "output_tokens" : 1057,
+    "input_tokens" : 11334,
+    "output_tokens" : 1234,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 65588,
+    "cost_micro_usd" : 72383,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
-  }, {
-    "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -67,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10538,
-    "model_call_ms" : [ 1543, 2001, 1686, 1280, 3955 ]
+    "wall_clock_ms" : 12915,
+    "model_call_ms" : [ 1563, 2721, 2709, 1649, 4174 ]
   }
 }

@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000035",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "dfd6b9cb30d5deb1fc7e36d030d42d724c9b3374b85f378e6e791e28050d0f46",
+  "input_sha256": "083ed38deb469d8c1c3d1e4b3420059d9ba7d955af501a9fefaae86f5c2ff67b",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsZMfaz9nqzLo78BCJ3",
+  "response_id": "msg_011ChS3Zyz385WUWQEi3zAFv",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every stated fact is in the records, including \"posted on 2026-08-27\", \"63 days later\" (correct from 2026-08-27 to 2026-10-29), \"3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, and the fraud flag set\" and the \"3,000.00 EUR automated limit in provisional-credit\"."
+      "reason": "Every factual statement matches the records, including \"posted on 2026-08-27\", \"63 days later\" (correct from 2026-08-27 to 2026-10-29) and \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN verified, and the fraud flag set\"."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, entry mode, 3-D Secure, fraud flag and credit limit, but it never addresses the cardholder's earlier transactions with BRAMBLE DEVICES; it moves from \"the fraud screening flagged it\" straight to the credit without saying whether any prior history with MER-000005 exists."
+      "verdict": "pass",
+      "reason": "The rationale covers all required checks: the time limit (\"inside the 120-day time limit\"), entry mode, 3-D Secure, the fraud flag, earlier transactions with the merchant (\"found none\") and the credit limit (\"under the 3,000.00 EUR limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2659,
-    "output_tokens": 530,
+    "input_tokens": 3597,
+    "output_tokens": 491,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21728,
+  "cost_micro_usd": 24700,
   "price_table": "2026-11-20"
 }

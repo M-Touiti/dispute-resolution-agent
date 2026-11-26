@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000073",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000073",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:58:15.492642400Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute because it was opened after the time limit. Transaction TXN-007968 (678.54 EUR at merchant MER-000050, card CRD-000054) posted on 2026-06-19. The dispute was opened on 2026-10-26, which is 129 days later. Section time-limits requires a dispute to be opened within 120 days of posting and says a later dispute is declined, even when the transaction has fraud indicators. The authorisation, AUTH-008171, does look like a card-not-present payment the cardholder may not have made: entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, no security code given and the fraud flag set. Policy applies the time limit first, so these signals do not change the outcome.",
+      "cited_evidence_ids" : [ "TXN-007968", "AUTH-008171" ],
+      "cited_policy_sections" : [ "time-limits" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The dispute was opened 129 days after the transaction posted on 2026-06-19. Disputes must be opened within 120 days of the posting date, so this one cannot be accepted.",
+        "policy_section_ids" : [ "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 6534,
+    "output_tokens" : 959,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 46589,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_card",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11021,
+    "model_call_ms" : [ 1465, 3030, 1896, 4531 ]
+  }
+}

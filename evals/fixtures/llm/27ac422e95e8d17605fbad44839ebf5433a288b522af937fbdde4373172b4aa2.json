@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"AMOUNT_MISMATCH\",\"reason\":\"The cardholder says the agreed bill was 50.18 EUR but they were charged 55.19 EUR, so the charged amount differs from the agreed amount.\"}",
+      "text" : "{\"category\":\"AMOUNT_MISMATCH\",\"reason\":\"The cardholder states the agreed bill was 50.18 EUR but the card was charged 55.19 EUR, a difference in amount rather than a duplicate, unauthorised, undelivered, or cancelled charge.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRg7Jow4oQ1X7WeNugRw",
+    "id" : "msg_011ChS2kycukAAW82Ax9iUjs",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 100,
-      "output_tokens" : 77
+      "output_tokens" : 96
     }
   }
 }

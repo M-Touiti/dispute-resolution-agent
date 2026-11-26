@@ -3,7 +3,7 @@
   "adapter" : "recording",
   "cases" : 160,
   "cases_run" : 160,
-  "cost_micro_usd" : 8413312,
+  "cost_micro_usd" : 9036180,
   "max_cost_micro_usd" : 14000000,
   "states" : {
     "ESCALATED AGENT_DECISION" : 10,

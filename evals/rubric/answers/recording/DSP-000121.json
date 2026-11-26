@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000121",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "ESCALATE",
-  "input_sha256": "db58b5cacb227243da2c1443c79e11a061eab02feb75ed25ec553068cd47b4b6",
+  "input_sha256": "ff55fe1a8b84af71aadaec0465c48a72525feb940514e3774baf263422bc8724",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt48mk3h95gGp631SVN",
+  "response_id": "msg_011ChS436YgiZY8J7P9Sq75d",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact matches the records, including \"posted on 2026-08-25\", \"66 days later\" (correct from 2026-08-25 to 2026-10-30), \"3-D Secure NOT_PERFORMED, CVV NOT_PRESENT\" and \"the fraud flag set\", and the policy is quoted accurately in \"never grants provisional credit above 3,000.00 EUR\"."
+      "reason": "Every fact in the rationale matches the tool results: \"posted to card CRD-000157 on 2026-08-25\", \"66 days later\" (correct from 2026-08-25 to 2026-10-30), \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN, and the fraud flag set\", and the 3,000.00 EUR limit."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, \"entry mode ECOMMERCE\", \"3-D Secure NOT_PERFORMED\", the fraud flag and the credit limit, but it never addresses the cardholder's earlier transactions with SILVERBIRCH TRAVEL (MER-000007) or says that record is missing."
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"66 days later and inside the 120-day time limit\"), entry mode and 3-D Secure, the fraud flag, earlier transactions (\"no earlier transactions at this merchant\"), and the credit limit (\"above the 3,000.00 EUR limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"ESCALATE\", not a merchant evidence request, and \"No action is proposed.\""
+      "reason": "The outcome is \"ESCALATE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3454,
-    "output_tokens": 665,
+    "input_tokens": 3896,
+    "output_tokens": 494,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 27608,
+  "cost_micro_usd": 25956,
   "price_table": "2026-11-20"
 }

@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000131",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:07:41.114144900Z",
+    "decided_at" : "2026-11-26T18:38:32.254641400Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend a provisional credit of 16.87 EUR. TXN-008078 is a 16.87 EUR charge on card CRD-000075 from Lumen Media (MER-000035), a merchant that bills on a recurring basis. The charge was made on 2026-09-17 and posted on 2026-09-18. The dispute was opened on 2026-10-27, 39 days after posting, which is within the 120-day limit (time-limits). Lumen Media's own written cancellation confirmation, DOC-000062, says the subscription was cancelled with effect from 2026-09-03. That is two weeks before the charge, so the charge should not have been made (recurring-cancelled-before-charge). The credit covers only the disputed charge. It equals the cardholder's claim and is well under the 3,000.00 EUR limit for provisional credit (provisional-credit).",
+      "rationale" : "The disputed charge, TXN-008078, is for 16.87 EUR (1687 minor units). It was made at Lumen Media (MER-000035, a recurring-billing merchant) on CRD-000075 on 2026-09-17 and posted on 2026-09-18. The dispute was opened on 2026-10-27, 39 days after posting, which is inside the 120-day time limit. Lumen Media issued a written cancellation confirmation, DOC-000062, saying the subscription was cancelled with effect from 2026-09-03. That is before the charge date of 2026-09-17, so the charge should not have been made. The document contains no instructions to the processor. The credit is the disputed charge only, 16.87 EUR. This matches the amount claimed and is well below the 3,000.00 EUR limit for automated provisional credit.",
       "cited_evidence_ids" : [ "TXN-008078", "DOC-000062" ],
       "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -24,34 +24,38 @@
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 5871,
-    "output_tokens" : 1014,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 10743,
+    "output_tokens" : 1091,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 45142,
+    "cost_micro_usd" : 67350,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 5,
   "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
@@ -63,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 9675,
-    "model_call_ms" : [ 1417, 1336, 2352, 4454 ]
+    "wall_clock_ms" : 11775,
+    "model_call_ms" : [ 1567, 1999, 2412, 1880, 3735 ]
   }
 }

@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000156",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "aa3eb45427e92a5f7911111ad50ac73171bfa7b3d4d83fab9aa9e863dcebccc0",
+  "input_sha256": "ff4226a2392c6d6b757bb61c390aa7c65e7024715f1cfd763ccf172a7c4a5aab",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtFnB6QaZiNPmGcZt7d",
+  "response_id": "msg_011ChS4E4Vijug1UJDzZffKR",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale and the cardholder reason matches the records: \"posted on 2026-08-02, and the dispute was opened on 2026-10-30. That is 89 days\" is correct arithmetic, and \"entry mode CHIP with the PIN verified, no fraud flag\" matches AUTH-008314."
+      "reason": "Every fact checks out against the records: \"posted on 2026-08-02\", \"opened on 2026-10-30, 89 days later\" (correct count), \"entry mode CHIP, PIN verified true and fraud flag false\", and the dates of the four other OAKHOLLOW CHEMIST transactions all match the search results."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale addresses the time limit (\"89 days, inside the 120-day limit\"), the entry mode and PIN verification (\"entry mode CHIP with the PIN verified\"), the fraud flag (\"no fraud flag\") and earlier transactions (\"earlier purchases at the same merchant, TXN-008125 ... and TXN-008124\"); no credit is proposed, so the credit limit does not apply."
+      "reason": "The rationale covers the time limit (\"89 days later, which is inside the 120-day limit\"), the entry mode, PIN verification and fraud flag (\"entry mode CHIP, PIN verified true and fraud flag false\"), and earlier transactions at the merchant (\"TXN-008125 on 2026-05-23 and TXN-008124 on 2026-06-17\"); the credit limit does not apply to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3196,
-    "output_tokens": 662,
+    "input_tokens": 3799,
+    "output_tokens": 868,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 26516,
+  "cost_micro_usd": 33048,
   "price_table": "2026-11-20"
 }

@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000125",
   "category": "DUPLICATE_CHARGE",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "9df49b713da615b3a6b01820afe71cccd770cba5fa5c35caf1484595b8640e07",
+  "input_sha256": "ae620f40f8a7ef5aed31060d00bffc53f94efbb80b5e1a377effeba7f4bac55b",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt4uZH2PNMMostZbyWt",
+  "response_id": "msg_011ChS43o7DpeGhDB2jQZDf3",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale matches the records: \"34 days later\" is correct arithmetic from 2026-09-24 to 2026-10-28, \"Both carry the same authorisation, AUTH-008259\" is in the ledger, and \"shows no refunds\" reflects a search that returned only purchases."
+      "reason": "Every fact matches the records, including \"Both carry the same authorisation, AUTH-008259\", \"Both posted on 2026-09-24\" and \"34 days after posting\" (2026-09-24 to 2026-10-28 is 34 days)."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale addresses each required check: the time limit (\"inside the 120-day limit\"), the shared authorisation (\"Both carry the same authorisation\"), the amounts and dates of both postings, the refund (\"Neither posting has been refunded\") and the credit limit (\"below the 3,000.00 EUR limit\")."
+      "reason": "The rationale covers each required check: the time limit (\"34 days after posting, which is within the 120-day limit\"), the shared authorisation, the amounts and dates, \"no refund of either posting\" and \"below the 3,000.00 EUR automated limit\"."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request, so there is no merchant note to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3257,
-    "output_tokens": 467,
+    "input_tokens": 3241,
+    "output_tokens": 452,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 22860,
+  "cost_micro_usd": 22496,
   "price_table": "2026-11-20"
 }

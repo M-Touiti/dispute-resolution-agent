@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000012",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000012",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:49:32.440759Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend a provisional credit of 18.18 EUR. TXN-007854 is a Harbour Media (MER-000008) charge of 18.18 EUR on card CRD-000160. The charge was made on 2026-10-13 and posted on 2026-10-14. The dispute was opened on 2026-10-28, 14 days after posting, which is within the 120-day limit in time-limits. DOC-000006 is a cancellation confirmation issued by the merchant. It says the subscription was cancelled with effect from 2026-10-10. The cancellation took effect three days before the charge was made, so under recurring-cancelled-before-charge the charge should not have been made. The credit is the disputed charge only. That matches the 18.18 EUR the cardholder claims and is well below the 3,000.00 EUR provisional credit limit. The document contains no instructions to the bank.",
+      "cited_evidence_ids" : [ "TXN-007854", "DOC-000006" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 1818,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5875,
+    "output_tokens" : 1041,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 45737,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10992,
+    "model_call_ms" : [ 1593, 2326, 2263, 4762 ]
+  }
+}

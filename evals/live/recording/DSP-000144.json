@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000144",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:10:11.687868Z",
+    "decided_at" : "2026-11-26T18:40:56.632810400Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute was opened on 2026-10-26. The disputed posting TXN-008102 was posted on 2026-08-22, 65 days earlier, so it is within the 120-day limit in time-limits. The ledger shows two purchases at BRIGHTWATER DEVICES (MER-000050) for 738.71 EUR each: TXN-008101 (2026-08-21 14:22, posted 2026-08-22) and TXN-008102 (2026-08-21 14:26, posted 2026-08-22). Both carry the same authorisation, AUTH-008291, so one authorisation was posted twice. However, the merchant already refunded the extra posting: refund TXN-008103 for 738.71 EUR was posted on 2026-08-25 and is linked to TXN-008102. Under duplicate-already-refunded, nothing remains in dispute, so the dispute is declined.",
-      "cited_evidence_ids" : [ "TXN-008102", "TXN-008101", "TXN-008103", "AUTH-008291" ],
+      "rationale" : "The dispute was opened in time. TXN-008102 posted on 2026-08-22 and the dispute was opened on 2026-10-26, 65 days later, which is inside the 120-day limit. The ledger does show a double charge at BRIGHTWATER DEVICES (MER-000050). TXN-008101 (73871 minor units, made 2026-08-21T14:22, posted 2026-08-22) and TXN-008102 (73871 minor units, made 2026-08-21T14:26, posted 2026-08-22) were both posted under the same authorisation, AUTH-008291. However, the merchant has already refunded the disputed posting. Refund TXN-008103 (73871 minor units, posted 2026-08-25) is linked to TXN-008102. Under the duplicate-already-refunded rule, nothing remains in dispute, so the case is declined. The cardholder paid once and has been charged once in net terms.",
+      "cited_evidence_ids" : [ "TXN-008102", "TXN-008101", "TXN-008103" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "You were charged 738.71 EUR twice by BRIGHTWATER DEVICES on 2026-08-21. The merchant has already refunded the second charge: a refund of 738.71 EUR was posted to your account on 2026-08-25. Nothing remains in dispute.",
+        "reason" : "You were charged twice by BRIGHTWATER DEVICES for 738.71 EUR on 2026-08-21. The merchant refunded the extra charge in full (738.71 EUR) on 2026-08-25, so nothing is left to dispute.",
         "policy_section_ids" : [ "duplicate-already-refunded" ]
       } ]
     },
@@ -25,29 +25,29 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7073,
-    "output_tokens" : 974,
+    "input_tokens" : 7075,
+    "output_tokens" : 971,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 50408,
+    "cost_micro_usd" : 50356,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -59,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11463,
-    "model_call_ms" : [ 1558, 2363, 2015, 1172, 4289 ]
+    "wall_clock_ms" : 10656,
+    "model_call_ms" : [ 1473, 1260, 1979, 1246, 4600 ]
   }
 }

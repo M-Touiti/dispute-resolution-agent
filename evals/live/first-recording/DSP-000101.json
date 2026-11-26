@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000101",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000101",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:03:00.549241800Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute. TXN-008024 posted on 2026-08-18 for 2250 cents on card CRD-000030 at Harbour Brasserie (MER-000074), which is recorded as a RESTAURANT. The dispute was opened on 2026-10-23, 66 days after posting, which is within the 120-day limit. The authorisation AUTH-008221 was approved for 1891 cents. No receipt is attached; the 18.91 EUR in the statement is the cardholder's claim, not a merchant receipt. The posted amount is 359 cents above the authorised amount. 20% of the authorised amount is 378.2 cents, so 359 cents is within the restaurant tip tolerance. Under the restaurant tip rule, a difference within that tolerance is an agreed tip, not an amount mismatch.",
+      "cited_evidence_ids" : [ "TXN-008024", "AUTH-008221" ],
+      "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "You were charged 22.50 EUR against an authorised 18.91 EUR at a restaurant. The 3.59 EUR difference is within the tip a restaurant may add, which is up to 20% of the authorised amount, so it is treated as an agreed tip and not as a wrong amount.",
+        "policy_section_ids" : [ "amount-restaurant-tip", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5043,
+    "output_tokens" : 1032,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 42428,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11053,
+    "model_call_ms" : [ 1594, 2298, 2128, 4936 ]
+  }
+}

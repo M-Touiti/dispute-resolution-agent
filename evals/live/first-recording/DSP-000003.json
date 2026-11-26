@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000003",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000003",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:48:32.501892100Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007838 (13903 EUR minor units, LARKSPUR GROCERS, MER-000073) is on card CRD-000191. It posted on 2026-09-16 and the dispute was opened on 2026-10-30. That is 44 days, inside the 120-day limit in time-limits. Its authorisation AUTH-008053 has entry mode CHIP, PIN verified true, fraud flag false and response APPROVED. That means the physical card and the correct PIN were both used at the terminal. The same card also made earlier approved purchases at this merchant: TXN-007837 on 2026-08-22 and TXN-007836 on 2026-07-25. Under unauthorised-chip-and-pin, a chip transaction with the PIN verified and no fraud flag counts as made by the cardholder, so the dispute is declined. The cardholder's statement that the card stayed with them fits with the card being present, and it does not outweigh the PIN verification.",
+      "cited_evidence_ids" : [ "TXN-007838", "AUTH-008053", "TXN-007837", "TXN-007836" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-chip-and-pin" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Our records show this payment was made with your physical card's chip and the correct PIN at the merchant's terminal. Our fraud checks did not flag it. Your card was also used for earlier purchases at the same merchant. Because of this, we treat the payment as made by you and are closing the dispute.",
+        "policy_section_ids" : [ "unauthorised-chip-and-pin" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 10695,
+    "output_tokens" : 1172,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 68572,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 14084,
+    "model_call_ms" : [ 1452, 2079, 2317, 1556, 6580 ]
+  }
+}

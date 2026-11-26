@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000124",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "b7792738ca08a153b97db2ce3a96b6af614d863a848e327c5267fa73b41a5e3e",
+  "input_sha256": "2b057ffa8a876217bb8a579ee6abcc4846343ef13f99d46d0bc7fa01a5567c39",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt4ZBgVbpXupqrjoJSe",
+  "response_id": "msg_011ChS43RpZT6kQyCqCDthK4",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The statements \"posted on 2026-05-12\", \"opened on 2026-10-26\" and \"167 days after posting\" match the records and the arithmetic. \"online payment with no 3-D Secure check, no CVV and the fraud flag set\" matches AUTH-008258, and the policy is paraphrased accurately."
+      "reason": "The statements \"posted on 2026-05-12\", \"167 days after posting\" (correct from 2026-05-12 to 2026-10-26), \"no 3-D Secure check, no CVV, and the fraud flag set\" and \"no other transactions at this merchant\" all match the ledger records, and the policy is quoted accurately."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale stops at the deciding check and says why: \"the time limit is applied first and decides the case\". It also notes the entry mode, 3-D Secure result and fraud flag."
+      "reason": "The rationale stops at the deciding check and says why (\"Under the policy order the time limit is checked first, so it decides the case\"); it also addresses the entry mode, the 3-D Secure result, the fraud flag and the earlier transactions with this merchant."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 1661,
-    "output_tokens": 447,
+    "input_tokens": 2007,
+    "output_tokens": 570,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 16076,
+  "cost_micro_usd": 19920,
   "price_table": "2026-11-20"
 }

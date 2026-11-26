@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000136",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:08:27.359559600Z",
+    "decided_at" : "2026-11-26T18:39:15.201265700Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,13 +12,13 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008089 on card CRD-000158 posted on 2026-10-07 for 379.50 EUR (37950). The dispute was opened on 2026-10-24, 17 days later, which is inside the 120-day limit in time-limits. Authorisation AUTH-008280 was approved for the same 37950, so the posted amount equals the authorised amount and the difference is 0. The cardholder says the quote was 235.29 EUR, which would make the overcharge 144.21 EUR. But they have no quote, no receipt is attached, and an amount stated by the cardholder is a claim, not a receipt. Nothing in the records shows a different agreed amount. Under amount-no-receipt, we ask the merchant for the receipt or order details.",
+      "rationale" : "TXN-008089 is on card CRD-000158. It posted on 2026-10-07 and the dispute was opened on 2026-10-24, 17 days later, so it is inside the 120-day limit (time-limits). The posted amount is 37950 cents (379.50 EUR). Authorisation AUTH-008280 is for the same 37950 cents: an e-commerce payment, 3-D Secure authenticated, CVV matched and approved. No receipt or quote is attached. The cardholder says the quote was 235.29 EUR, which would leave a difference of 14421 cents. But the cardholder also says they do not have the quote, and an amount the cardholder states is a claim, not evidence. With no receipt and the posted amount equal to the authorised amount, nothing in the records shows a different agreed amount. Under amount-no-receipt, the next step is to ask the merchant for the receipt or order details.",
       "cited_evidence_ids" : [ "TXN-008089", "AUTH-008280" ],
       "cited_policy_sections" : [ "time-limits", "amount-no-receipt" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "RECEIPT" ],
-        "note" : "Please provide the receipt or order details for the purchase of 379.50 EUR made on 2026-10-06. They should show the amount the cardholder agreed to pay, including any quote issued before the purchase."
+        "note" : "Please provide the receipt or order details for the purchase of 379.50 EUR made on 2026-10-06. They should show the amount the cardholder agreed to pay, including any quote given before the order."
       } ]
     },
     "guard_violations" : [ ]
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5061,
-    "output_tokens" : 887,
+    "output_tokens" : 936,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 39538,
+    "cost_micro_usd" : 40518,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 14226,
-    "model_call_ms" : [ 1549, 6147, 2359, 4097 ]
+    "wall_clock_ms" : 10544,
+    "model_call_ms" : [ 1491, 2329, 2304, 4347 ]
   }
 }

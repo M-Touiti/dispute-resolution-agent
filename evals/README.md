@@ -3,18 +3,18 @@
 Python 3.13, uv, standard library only at run time, except the live rubric grader (the optional `rubric` group:
 `uv sync --group rubric`). Run from this directory.
 
-| Path | Contents | Status |
-|---|---|---|
+| Path | Contents | Status                                                                                                                                                                   |
+|---|---|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases; M3: `all-categories-v2.json`, 160 cases (the default since 3.8), its nightly slices and the pilot of 3.8 (`-pilot.json`, 44 cases) |
-| `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders (v2 since M3), the regression rule for replayed runs and the thresholds rule for live runs; `rubric.py`, the model-graded rubric and its calibration | done |
-| `rubric/` | The written rubric (`rubric-v1.md`), the grader's price table, the stored grader answers (`answers/recording/`, 160) and the calibration (`calibration/`: sheet, labels, agreement) | run and calibrated in 3.9 (labels by a person) |
-| `runs/` | Results of evaluation runs, one JSON per case (git-ignored) | |
-| `baseline/` | The committed summary a replayed run must not fall below (`all-categories-v2.json`), and the live thresholds (`live-thresholds.json`) | recorded in 3.8 |
-| `live/` | The live runs the report is built from: `recording/` (every case result, `run.json`, `summary.json`, `grades.json`, `session.json` with date and effort) and `pilot/<effort>/` (summaries of the 3.8 pilot) | recorded in 3.8 |
-| `record.sh` | The recording session: live check, record under a spend cap, replay with no key, grade and write the baseline, then grade the recording as a live run, write the live thresholds and keep it in `live/recording/` | done |
-| `fixtures/llm/` | Recorded model requests and responses, `<sha256 of the canonical request>.json` (ADR 0006); served by the replay adapter in CI | format and adapters done (1.11); recorded in 1.16 |
-| `nightly/` | Dated results of the scheduled 30-case live slice, committed on the branch `eval-nightly`, never on `main` (ADR 0009) | M3 |
-| `REPORT.md` | Published metrics and the unfixed failures | M3 |
+| `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders (v2 since M3), the regression rule for replayed runs and the thresholds rule for live runs; `rubric.py`, the model-graded rubric and its calibration | done                                                                                                                                                                     |
+| `rubric/` | The written rubric (`rubric-v1.md`), the grader's price table, the stored grader answers per run (`answers/first-recording/`, `answers/recording/`, 160 each) and the calibration (`calibration/`: sheet, labels, agreement; made on the first recording) | run and calibrated in 3.9, rerun in 3.10 (labels by a person)                                                                                                            |
+| `runs/` | Results of evaluation runs, one JSON per case (git-ignored) |                                                                                                                                                                          |
+| `baseline/` | The committed summary a replayed run must not fall below (`all-categories-v2.json`), and the live thresholds (`live-thresholds.json`) | recorded in 3.8                                                                                                                                                          |
+| `live/` | The live runs the report is built from: `recording/` (the reported run: every case result, `run.json`, `summary.json`, `grades.json`, `session.json` with date and effort), `first-recording/` (the run 3.10's fixes replaced) and `pilot/<effort>/` (summaries of the 3.8 pilot) | recorded in 3.8 and 3.10                                                                                                                                                 |
+| `record.sh` | The recording session: live check, record under a spend cap, replay with no key, grade and write the baseline, then grade the recording as a live run, write the live thresholds and keep it in `live/recording/` | done                                                                                                                                                                     |
+| `fixtures/llm/` | Recorded model requests and responses, `<sha256 of the canonical request>.json` (ADR 0006); served by the replay adapter in CI | format and adapters done (1.11); recorded in 1.16                                                                                                                        |
+| `nightly/` | Dated results of the scheduled 30-case live slice, committed on the branch `eval-nightly`, never on `main` (ADR 0009) | M3                                                                                                                                                                       |
+| `REPORT.md` | Published metrics and every failure with its analysis, generated by `evaltools.report` from `live/`, `rubric/` and the hand-written `report/` (`analysis.md`, `failures.json`) | done (3.10)                                                                                                                                                              |
 
 ## Golden set v1
 
@@ -107,7 +107,8 @@ The recording, at medium: 160 of 160 correct (each category and each adversarial
 no unsafe proposal, 12 of 12 injections not obeyed, escalation precision and recall 10/10; $8.41 in total (median
 $0.052 a case, p99 $0.078), cache hit ratio 0.735, case wall-clock median 11.6 s and p99 19.0 s; 713 model calls.
 Synthetic data whose rules the policy states exactly: the numbers say the agent applies them, not that it would on
-real disputes.
+real disputes. It is kept as `live/first-recording/`: task 3.10 fixed two skills after its rubric run and recorded
+again (160/160, $9.04, 727 model calls; `live/recording/`). The figures are in `REPORT.md`.
 
 **Checks per case** (`pass`, `fail`, or `n/a` when the model gave no decision): answered, decision correct, no unsafe
 proposal (M1's meaning: the guard did not refuse it), no forbidden action, cited evidence belongs to the case, required
@@ -204,13 +205,13 @@ about $6 for the 160 of v2.
 
 ```sh
 uv run python -m evaltools.rubric pick --results runs/recording
-uv run python -m evaltools.rubric agree --answers rubric/answers/recording
+uv run python -m evaltools.rubric agree --answers rubric/answers/first-recording
 ```
 
 `agree` copies the labels' `labelled_by` (who made them) into `agreement.json`; the table's `human_*` cells name
 the labeller, whoever that was.
 
-**The run of task 3.9 (26 Nov 2026), on the v2 recording** (`--results live/recording`): 160 cases graded, none
+**The run of task 3.9 (26 Nov 2026), on the first v2 recording** (now `live/first-recording`): 160 cases graded, none
 refused, $3.62. Grader verdicts:
 
 | Criterion | Pass | Fail | n/a | Calibrated |
@@ -240,3 +241,19 @@ What the run shows about the agent (for the report's analysis, task 3.10):
 
 The tests run offline: a fake grader stands in for the model, and stored answers stand in for a run. One test drives
 the real SDK through a mock transport; it is skipped where the `rubric` group is not installed, as in CI.
+
+## The report
+
+`REPORT.md` is generated; only `report/analysis.md` (the prose) and `report/failures.json` (one entry per failure of
+the reported run, `"<dispute id> <check or criterion>": {"status": "left" | "fixed", "why": ...}`) are written by
+hand. A failure is a failed deterministic check, an unsafe proposal, a rubric criterion graded `fail`, or an unscored
+rubric answer. The build stops when a failure has no entry, and `tests/test_report.py` fails when the committed report
+differs from the generator's output or an entry is stale.
+
+```sh
+uv run python -m evaltools.report           # write REPORT.md
+uv run python -m evaltools.report --check   # exit 1 when it is stale
+```
+
+After a new recording: move `live/recording` and `rubric/answers/recording` aside if the report should compare with
+them, run the rubric on the new run, explain every failure in `report/failures.json`, and regenerate.

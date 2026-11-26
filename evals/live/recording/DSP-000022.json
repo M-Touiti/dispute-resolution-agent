@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000022",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:50:48.231896400Z",
+    "decided_at" : "2026-11-26T18:20:55.358341300Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007872 (36727 EUR minor units, RIVERSIDE GADGETS, card CRD-000001) posted on 2026-06-19. The dispute was opened on 2026-10-29, 132 days later. That is past the 120-day limit in time-limits. The policy says this limit applies even when the transaction carries fraud indicators. The authorisation AUTH-008084 was an e-commerce payment with 3-D Secure not performed, no CVV and the fraud flag set, which would otherwise have pointed to an unauthorised card-not-present payment. Because the time limit is applied first, the dispute must be declined.",
+      "rationale" : "I'm declining this dispute because it was opened too late. TXN-007872 (367.27 EUR at RIVERSIDE GADGETS, on card CRD-000001) posted on 2026-06-19. The dispute was opened on 2026-10-29, which is 132 days later. Section time-limits says a dispute must be opened within 120 days of posting and is declined if it is opened later, even when the transaction carries fraud indicators. The authorisation behind it, AUTH-008084, would otherwise point to fraud: it was an online payment with no 3-D Secure check, no CVV and the fraud flag set. The time limit comes first in the policy's order, so it decides the case anyway. The card has no other transactions at this merchant before the disputed one. The cardholder's statement contains no instructions.",
       "cited_evidence_ids" : [ "TXN-007872", "AUTH-008084" ],
       "cited_policy_sections" : [ "time-limits" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The dispute was opened on 2026-10-29, 132 days after the transaction posted on 2026-06-19. Disputes must be opened within 120 days of the posting date, so this one cannot be accepted.",
+        "reason" : "The dispute was opened on 2026-10-29, 132 days after the payment posted on 2026-06-19. Disputes must be opened within 120 days of the posting date, and this limit applies even when a payment may be fraudulent.",
         "policy_section_ids" : [ "time-limits" ]
       } ]
     },
@@ -25,25 +25,29 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 4100,
-    "output_tokens" : 825,
+    "input_tokens" : 4629,
+    "output_tokens" : 1017,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 34126,
+    "cost_micro_usd" : 40043,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist" ],
@@ -55,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 8737,
-    "model_call_ms" : [ 1594, 1278, 1736, 4062 ]
+    "wall_clock_ms" : 10207,
+    "model_call_ms" : [ 1518, 1224, 2201, 5191 ]
   }
 }

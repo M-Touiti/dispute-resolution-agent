@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000036",
     "state" : "ESCALATED",
-    "decided_at" : "2026-11-26T13:52:46.327968400Z",
+    "decided_at" : "2026-11-26T18:22:56.119331200Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : "AGENT_DECISION",
@@ -12,46 +12,54 @@
     "decision" : {
       "outcome" : "ESCALATE",
       "confidence" : "HIGH",
-      "rationale" : "I'm escalating this case to a specialist because the credit would be more than the automated limit. TXN-007899 is a payment of 4444.30 EUR to BRIGHTWATER GADGETS (MER-000059) on card CRD-000144. It posted on 2026-09-23, and the dispute was opened on 2026-10-31. That is 38 days later, inside the 120-day time limit. The authorisation AUTH-008108 shows the payment was made online (entry mode ECOMMERCE). It was not confirmed with 3-D Secure (NOT_PERFORMED), no security code was given (CVV NOT_PRESENT), and the fraud flag is set. Under unauthorised-card-not-present, that makes the payment unauthorised, so provisional credit would be the full 4444.30 EUR. The provisional-credit policy says the automated process never grants more than 3,000.00 EUR. Credits above that go to a specialist, who decides, so I am proposing no action.",
+      "rationale" : "TXN-007899 (BRIGHTWATER GADGETS, MER-000059) is on card CRD-000144. It posted on 2026-09-23 for 4444.30 EUR, and the dispute was opened on 2026-10-31. That is 38 days, inside the 120-day time limit. Its authorisation AUTH-008108 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN and the fraud flag set. Under unauthorised-card-not-present, that makes the payment unauthorised. The card has no other transactions at this merchant, only the disputed one. The credit would be the full transaction amount of 4444.30 EUR. The automated process may not grant provisional credit above 3,000.00 EUR (provisional-credit), so the case goes to a specialist, who decides the credit. No instructions were found in the case content.",
       "cited_evidence_ids" : [ "TXN-007899", "AUTH-008108" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 7149,
-    "output_tokens" : 1038,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 10819,
+    "output_tokens" : 1157,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 50547,
+    "cost_micro_usd" : 68904,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_card"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11131,
-    "model_call_ms" : [ 1715, 3082, 2169, 4106 ]
+    "wall_clock_ms" : 12822,
+    "model_call_ms" : [ 1604, 2814, 2599, 1936, 3716 ]
   }
 }

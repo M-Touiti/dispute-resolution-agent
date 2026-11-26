@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000164",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:13:49.911409300Z",
+    "decided_at" : "2026-11-26T18:44:32.514870200Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute because the carrier's record shows the parcel was delivered to the cardholder and signed for in their name. Time limit: TXN-008138 (147.80 EUR at Harbour Gadgets, MER-000023, on card CRD-000070) posted on 2026-09-10. The dispute was opened on 2026-10-22, which is 42 days later and within the 120-day limit. Waiting period: the merchant's order confirmation DOC-000076 gives an expected delivery date of 2026-09-15. The dispute was opened 37 days after that, so the 15-day wait had passed. Proof of delivery: the carrier's delivery confirmation DOC-000077 shows the parcel was delivered on 2026-09-15 to the cardholder's address in Leipzig and signed for by Z. Kowalski. That matches the cardholder profile, Zeno Kowalski of Leipzig. Under the proof-of-delivery policy, the goods count as received, and that decides the case. I did not complete the check for a merchant refund because the refund search returned an error, but that step only applies when nothing shows delivery. Neither the statement nor the documents contained any instructions.",
+      "rationale" : "TXN-008138 is a purchase of 147.80 EUR (14780 minor units) on card CRD-000070 at Harbour Gadgets. It posted on 2026-09-10, and the dispute was opened on 2026-10-22, 42 days later. That is inside the 120-day limit (time-limits). The merchant's order confirmation DOC-000076 gives an expected delivery date of 2026-09-15. The dispute was opened 37 days after that date, so the 15-day waiting period has passed (goods-not-received-wait). The carrier's tracking record DOC-000077 shows the parcel was delivered on 2026-09-15 to the cardholder's address in Leipzig and signed for by Z. Kowalski. That matches the cardholder, Zeno Kowalski of Leipzig (CH-000059). Under goods-not-received-proof-of-delivery, a carrier record showing delivery to the cardholder's address, signed for in the cardholder's name, means the goods count as received, so the dispute is declined. No refund from the merchant appears on the card. None of the documents contained instructions.",
       "cited_evidence_ids" : [ "TXN-008138", "DOC-000076", "DOC-000077" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The carrier's record shows your Harbour Gadgets order (147.80 EUR) was delivered to your address in Leipzig on 2026-09-15 and signed for by Z. Kowalski, so the goods are treated as received.",
+        "reason" : "The carrier's record shows your Harbour Gadgets order was delivered to your address in Leipzig on 2026-09-15 and signed for by Z. Kowalski. Under our policy, the goods count as received.",
         "policy_section_ids" : [ "goods-not-received-proof-of-delivery" ]
       } ]
     },
@@ -25,37 +25,41 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 7509,
-    "output_tokens" : 1368,
+    "input_tokens" : 7655,
+    "output_tokens" : 1355,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 58926,
+    "cost_micro_usd" : 59289,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_cardholder",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_cardholder"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : true
+    "is_error" : false,
+    "tool" : "search_transactions"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_card"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -67,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 13562,
-    "model_call_ms" : [ 1639, 1865, 3305, 6640 ]
+    "wall_clock_ms" : 12293,
+    "model_call_ms" : [ 1480, 1587, 3404, 5771 ]
   }
 }

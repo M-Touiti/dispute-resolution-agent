@@ -556,15 +556,15 @@
     }
   },
   "cost_micro_usd": {
-    "total": 8413312,
-    "median": 51745,
-    "p90": 67045,
-    "p99": 78053
+    "total": 9036180,
+    "median": 55223,
+    "p90": 74624,
+    "p99": 82523
   },
   "tool_calls_median": 5.0,
   "wall_clock_ms": null,
-  "cache_hit_ratio": 0.7351,
-  "cache_read_ratio": 0.7351,
+  "cache_hit_ratio": 0.7225,
+  "cache_read_ratio": 0.7235,
   "golden_set": "all-categories-v2",
   "mode": "replay",
   "capped": false

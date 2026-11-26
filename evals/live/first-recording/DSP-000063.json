@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000063",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000063",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:56:48.853723100Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007950 is a 67.98 EUR charge from Lumen Fitness (MER-000054, a merchant that bills on a recurring basis) on card CRD-000009. The charge was made on 2026-10-04 and posted on 2026-10-05. The dispute was opened on 2026-10-26, 21 days after posting, which is within the 120-day time limit. DOC-000030 is a cancellation confirmation issued by the merchant. It says the subscription was cancelled with effect from 2026-09-19, which is before the 2026-10-04 charge, so the charge should not have been made. The credit is the disputed posting of 67.98 EUR. This matches the amount claimed and is well below the 3,000.00 EUR provisional credit limit.",
+      "cited_evidence_ids" : [ "TXN-007950", "DOC-000030" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 6798,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5890,
+    "output_tokens" : 879,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 42471,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 8840,
+    "model_call_ms" : [ 1502, 1466, 2299, 3461 ]
+  }
+}

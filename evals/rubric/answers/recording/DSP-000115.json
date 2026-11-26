@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000115",
   "category": "CANCELLED_RECURRING",
   "outcome": "DECLINE",
-  "input_sha256": "207fcc8f647f2ffc84fc3fa0029c32ed56b1e5e7b0d652c41405a980073b38d5",
+  "input_sha256": "9c5cdecb1e8091b9fc1cbeddb3cd3d4dc4cc03bb84445b6e79f809fb10fe4195",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt2Nxj4WAx87RmGCxS8",
+  "response_id": "msg_011ChS41N2J5GaGWKTvWBWzv",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale and the reason is in the records: \"posted on 2026-09-01\", \"opened on 2026-10-30, 59 days after posting\" (the count is correct), \"with effect from 2026-09-04\" from DOC-000055, and the policy paraphrase \"covers a period the cardholder had not yet cancelled\"."
+      "reason": "Every fact matches the records, including \"posted on 2026-09-01, and the dispute was opened on 2026-10-30. That is 59 days later\" (the count is correct) and \"cancelled with effect from 2026-09-04, which is after the charge\" as DOC-000055 states."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"59 days after posting, so it is inside the 120-day limit\"), the existence of a written confirmation (\"The merchant's cancellation confirmation, DOC-000055\") and its effective date against the charge (\"That is after the charge on 2026-08-31\"); no credit is proposed, so the credit limit does not apply."
+      "reason": "The rationale covers the time limit (\"inside the 120-day limit\"), the written confirmation (\"DOC-000055\") and its effective date against the charge date (\"with effect from 2026-09-04, which is after the charge\"); the credit limit does not apply to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 1817,
-    "output_tokens": 463,
+    "input_tokens": 1816,
+    "output_tokens": 459,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 17020,
+  "cost_micro_usd": 16936,
   "price_table": "2026-11-20"
 }

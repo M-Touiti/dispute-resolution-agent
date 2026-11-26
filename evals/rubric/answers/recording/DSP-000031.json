@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000031",
   "category": "CANCELLED_RECURRING",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "6dd1255eccbf40b324a0a8c3da00fbd7f1fa8a695bf195625eba624f4bb5b40c",
+  "input_sha256": "e100754bd152331c3e91a23013d4b413582bcd11dac6a86e5b3b32373327b6ce",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsYFQXDn3wUjjG3fNmc",
+  "response_id": "msg_011ChS3YqVYAHfdsssSgdy23",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every stated fact is supported by the records, including \"posted on 2026-09-20\", \"opened on 2026-10-29, 39 days after posting\" (which is correct), and the cardholder's claim, which is presented as a claim: \"The cardholder says they cancelled by phone\"."
+      "reason": "Every fact is in the records: \"posted on 2026-09-20\", \"39 days after posting\" (correct from 2026-09-20 to 2026-10-29), and the cardholder's claim is attributed as \"The cardholder says they cancelled by phone\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the absence of written confirmation, and the effective date (\"no merchant-issued cancellation confirmation and no effective date to compare with the charge date\"); no credit is proposed, so the credit limit check does not apply."
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the absence of written confirmation (\"no merchant cancellation confirmation is attached\") and the effective-date comparison (\"there is no effective cancellation date to compare with the charge date\")."
     },
     "merchant_request_clear": {
       "verdict": "fail",
-      "reason": "The note asks for \"your cancellation records for this cardholder's membership... and the cancellation terms\", but the evidence list contains only \"CANCELLATION_POLICY\", so the requested cancellation records are not in the list."
+      "reason": "The note asks for \"your cancellation records for this cardholder's membership, including any record of a phone cancellation request\" as well as terms, but the evidence list contains only \"CANCELLATION_POLICY\", so it does not match the note."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 1926,
-    "output_tokens": 650,
+    "input_tokens": 1896,
+    "output_tokens": 654,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21196,
+  "cost_micro_usd": 21156,
   "price_table": "2026-11-20"
 }

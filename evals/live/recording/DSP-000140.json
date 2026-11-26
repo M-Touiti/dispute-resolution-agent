@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000140",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:09:21.402888300Z",
+    "decided_at" : "2026-11-26T18:40:06.672342100Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute. It was opened in time: TXN-008095 (43,776 cents, QUAYSIDE GETAWAYS, card CRD-000060) posted on 2026-07-27 and the dispute was opened on 2026-10-22, 87 days later, inside the 120-day limit. The authorisation behind it, AUTH-008286, shows an online payment (entry mode ECOMMERCE) that the cardholder confirmed with the bank's 3-D Secure check (result AUTHENTICATED). The security code from the back of the card was correct (CVV MATCH), the fraud flag was not set, and the payment was approved. Under the policy, an online payment confirmed with 3-D Secure and without a fraud flag counts as made by the cardholder, so it is declined. The statement that the card never left the cardholder does not change this, because no card needs to be present for an online payment.",
-      "cited_evidence_ids" : [ "TXN-008095", "AUTH-008286" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "rationale" : "TXN-008095 (43776 minor units EUR, QUAYSIDE GETAWAYS, MER-000034) is on card CRD-000060. It posted on 2026-07-27 and the dispute was opened on 2026-10-22. That is 87 days, inside the 120-day limit in time-limits. Its authorisation, AUTH-008286, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH, response APPROVED and fraud flag false. Under unauthorised-3ds-authenticated, an online payment authenticated with 3-D Secure and not flagged for fraud is treated as made by the cardholder, and the matching CVV supports this. The card also has an earlier approved purchase at the same merchant: TXN-001899 on 2026-07-10. That adds weight but is not what decides the case. The cardholder says they do not recognise the payment and that the card never left them. For an online payment, having the card does not change the authentication result.",
+      "cited_evidence_ids" : [ "TXN-008095", "AUTH-008286", "TXN-001899" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-3ds-authenticated" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The payment of 437.76 EUR to QUAYSIDE GETAWAYS on 2026-07-26 was made online and confirmed through the bank's 3-D Secure check, with the correct card security code. Our records show nothing suspicious about it, so we treat it as a payment you made and cannot dispute it as unauthorised.",
+        "reason" : "This was an online payment that was confirmed through 3-D Secure authentication, the card's security code matched, and the payment was not flagged as suspicious. Under our policy, a payment like this counts as made by the cardholder. You also made an earlier purchase from the same merchant on this card.",
         "policy_section_ids" : [ "unauthorised-3ds-authenticated" ]
       } ]
     },
@@ -25,29 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 9649,
-    "output_tokens" : 1122,
+    "input_tokens" : 11288,
+    "output_tokens" : 1255,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 63278,
+    "cost_micro_usd" : 72533,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -59,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11760,
-    "model_call_ms" : [ 1496, 1608, 2091, 1221, 5254 ]
+    "wall_clock_ms" : 12914,
+    "model_call_ms" : [ 1845, 1766, 2552, 1404, 5243 ]
   }
 }

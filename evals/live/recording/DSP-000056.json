@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000056",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:55:45.102500600Z",
+    "decided_at" : "2026-11-26T18:26:10.323623400Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,42 +12,42 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007936 (BRIGHTWATER GADGETS, 345.58 EUR, card CRD-000014) was posted on 2026-06-09. The dispute was opened on 2026-10-30, which is 143 days after posting. The policy allows 120 days. Under the rule order, the time limit is checked first, and a dispute opened late is declined whatever else the evidence shows. Authorisation AUTH-008142 does look like possible fraud: entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. However, the policy says the time limit still applies when a transaction carries fraud indicators, so these signs do not change the outcome.",
+      "rationale" : "I recommend declining this dispute because it was opened too late. TXN-007936 (345.58 EUR, BRIGHTWATER GADGETS, card CRD-000014) posted on 2026-06-09. The dispute was opened on 2026-10-30, 143 days later. Under time-limits a dispute must be opened within 120 days of posting, and the limit applies even when the transaction carries fraud indicators. Authorisation AUTH-008142 does point to a payment the cardholder may not have made: entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, fraud flag set. The card has no earlier transactions at this merchant; TXN-007936 is the only one. None of this changes the result, because the time limit is applied first. The cardholder's statement contained no instructions.",
       "cited_evidence_ids" : [ "TXN-007936", "AUTH-008142" ],
-      "cited_policy_sections" : [ "time-limits", "rule-order" ],
+      "cited_policy_sections" : [ "time-limits" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The dispute was opened on 2026-10-30, 143 days after the transaction was posted on 2026-06-09. Disputes must be opened within 120 days of the posting date, and this limit applies even when a transaction is marked as possible fraud.",
-        "policy_section_ids" : [ "time-limits", "rule-order" ]
+        "reason" : "The dispute was opened on 2026-10-30, 143 days after the charge posted on 2026-06-09. Disputes must be opened within 120 days of the posting date, and this limit applies even when a transaction shows signs of fraud.",
+        "policy_section_ids" : [ "time-limits" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 5,
-    "input_tokens" : 10117,
-    "output_tokens" : 1056,
-    "cache_read_input_tokens" : 23480,
+    "model_calls" : 4,
+    "input_tokens" : 6685,
+    "output_tokens" : 1076,
+    "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 64002,
+    "cost_micro_usd" : 49552,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
-    "server" : "policy",
-    "tool" : "search_policy",
-    "is_error" : false
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -59,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11516,
-    "model_call_ms" : [ 1499, 2323, 1688, 2090, 3799 ]
+    "wall_clock_ms" : 11375,
+    "model_call_ms" : [ 1591, 2365, 2206, 5006 ]
   }
 }

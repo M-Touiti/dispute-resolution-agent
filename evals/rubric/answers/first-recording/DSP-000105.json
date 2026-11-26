@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000105",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "DECLINE",
+  "input_sha256": "5a2528f6ae7229a5d6aa15bad6d6748cdd9a542bd8852b4db4d42c3051cafba9",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsxAzn4BvMkpqh2ymcx",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact is supported by the records: \"78 days\" is correct from 2026-08-11 to 2026-10-28, \"entry mode CHIP, PIN verified, response APPROVED and no fraud flag\" matches AUTH-008227, and the listed same-merchant transactions fall before and after 2026-08-10 as stated."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"78 days, inside the 120-day limit\"), the entry mode and PIN (\"entry mode CHIP, PIN verified\"), the fraud flag (\"no fraud flag\") and earlier same-merchant purchases (\"TXN-008028, TXN-007809, TXN-008029\"); the credit limit does not apply to a decline."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3329,
+    "output_tokens": 699,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 27788,
+  "price_table": "2026-11-20"
+}

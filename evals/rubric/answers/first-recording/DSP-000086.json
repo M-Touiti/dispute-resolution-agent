@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000086",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "e2cd05728ed679c6e537d54659e7a242c3deb4cff1475f02aba178e54b0b62f6",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsqT8ScWJDqR1TsHdLT",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact in the rationale matches the records, including \"77 days after posting\" (2026-08-07 to 2026-10-23), \"entry mode ECOMMERCE\", \"3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set\", and \"87,746 minor units (877.46 EUR)\"."
+    },
+    "evidence_check_complete": {
+      "verdict": "fail",
+      "reason": "The rationale covers the time limit, entry mode, 3-D Secure, fraud flag and credit limit (\"below the 3,000.00 EUR automated limit\"), but never addresses the cardholder's earlier transactions with RIVERSIDE GADGETS (MER-000068), nor says that record is missing."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2836,
+    "output_tokens": 475,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 21336,
+  "price_table": "2026-11-20"
+}

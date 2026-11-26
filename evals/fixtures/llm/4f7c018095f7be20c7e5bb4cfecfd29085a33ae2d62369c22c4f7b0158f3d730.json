@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder states they did not make the 1809.90 EUR charge from SALTMARSH JOURNEYS, has never shopped there, and never gave their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder states they never made the 1809.90 EUR SALTMARSH JOURNEYS charge, have never shopped there, and did not share their card details with anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRgBvQvssizJ4hBDEhDh",
+    "id" : "msg_011ChS2qaSX95EHir6foKN7X",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 124,
-      "output_tokens" : 87
+      "output_tokens" : 85
     }
   }
 }

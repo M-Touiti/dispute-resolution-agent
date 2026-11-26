@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000093",
   "category": "DUPLICATE_CHARGE",
   "outcome": "DECLINE",
-  "input_sha256": "42f15b584c81e876ce2d4fac6fab2d6e37fc212c88672a4344d0b71a129eae7b",
+  "input_sha256": "28b0d9be49b7e0e467a0163e1ba2004e3f59c289bf2edb2338e5db35aeb4d4a8",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRstLrzuAXZrDwdYbxaB",
+  "response_id": "msg_011ChS3sYjFhqCnQLm3vo2no",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The statements \"posted on 2026-08-08, which is 84 days earlier\", \"They share one authorisation, AUTH-008204\" and \"Refund TXN-008007 for 6060 cents posted on 2026-08-14\" all match the ledger records, and the day count is correct."
+      "reason": "Every fact checks against the records: the day count \"84 days after the disputed transaction posted on 2026-08-08\" is right, both postings are on \"AUTH-008204\", and the \"refund TXN-008007 for 60.60 EUR on 2026-08-14\" is linked to TXN-008006."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"inside the 120-day time limit\"), the shared authorisation (\"They share one authorisation, AUTH-008204\"), the amounts and dates of both postings, and the refund (\"the merchant already refunded the extra posting\"); no credit is proposed, so the credit limit does not apply."
+      "reason": "The rationale covers the time limit (\"inside the 120-day time limit\"), the shared authorisation (\"one authorisation, AUTH-008204 ... posted twice\"), both postings' amounts and dates, and the refund (\"merchant posted refund TXN-008007\"); no credit limit check is needed for a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2540,
-    "output_tokens": 562,
+    "input_tokens": 3687,
+    "output_tokens": 614,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21892,
+  "cost_micro_usd": 27520,
   "price_table": "2026-11-20"
 }

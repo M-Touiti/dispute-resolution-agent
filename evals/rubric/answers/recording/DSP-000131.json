@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000131",
   "category": "CANCELLED_RECURRING",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "f374135e66bf2db7ef95c888effc0ea2498c0bcab957c1f097138f94b4e29d89",
+  "input_sha256": "7a1da3973ce8d64d2632811726a45d8b48c407f12c066b4e24b748b048ea6728",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt6VcBdVXsCkczUZwhm",
+  "response_id": "msg_011ChS45AV8Yr19Z8VZK3Vpb",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact in the rationale matches the records, including \"posted on 2026-09-18\", \"39 days after posting\" (2026-09-18 to 2026-10-27), and \"with effect from 2026-09-03. That is two weeks before the charge\"."
+      "reason": "Statements such as \"posted on 2026-09-18\", \"39 days after posting\" (to 2026-10-27) and \"cancelled with effect from 2026-09-03\" match the transaction record and DOC-000062, and the day count is correct."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"39 days after posting, which is within the 120-day limit\"), the written confirmation (\"Lumen Media's own written cancellation confirmation, DOC-000062\"), its effective date against the charge (\"two weeks before the charge\") and the credit limit (\"well under the 3,000.00 EUR limit\")."
+      "reason": "The rationale covers the time limit (\"39 days after posting, which is inside the 120-day time limit\"), the written confirmation (\"DOC-000062\"), its effective date against the charge (\"before the charge date of 2026-09-17\") and the credit limit (\"well below the 3,000.00 EUR limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2549,
-    "output_tokens": 454,
+    "input_tokens": 3625,
+    "output_tokens": 445,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 19768,
+  "cost_micro_usd": 23892,
   "price_table": "2026-11-20"
 }

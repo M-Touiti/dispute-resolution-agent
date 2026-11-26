@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000039",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:53:08.875216700Z",
+    "decided_at" : "2026-11-26T18:23:23.968247500Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,42 +12,50 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I'm declining this dispute because it was opened too late. TXN-007904 is a charge of 1413.00 EUR at HARBOUR GADGETS on card CRD-000193. It was posted on 2026-06-13, and the dispute was opened on 2026-10-26. That is 135 days later. The time-limits section requires a dispute to be opened within 120 days of posting, and says the limit applies even when the transaction carries fraud indicators. The approval for the charge, AUTH-008113, does suggest fraud: it was an online payment with 3-D Secure NOT_PERFORMED, no security code given (CVV NOT_PRESENT), and the bank's fraud flag set. Under the policy order the time limit is checked first, so these signals cannot change the outcome. The cardholder's statement contained no instructions.",
+      "rationale" : "I recommend declining this dispute because it was opened too late. TXN-007904 (HARBOUR GADGETS, MER-000023, 141300 minor units EUR) is on card CRD-000193 and posted on 2026-06-13. The dispute was opened on 2026-10-26, 135 days after posting. Policy time-limits allows 120 days from posting and says a later dispute is declined even when the transaction carries fraud indicators. Under rule-order, the time limit is checked first and decides the case before the unauthorised-transaction rules are applied. For context only: authorisation AUTH-008113 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and fraud flag set. Without the time limit, these values would have pointed to an unauthorised card-not-present payment. The card has no other transactions at this merchant; TXN-007904 is the only one. The cardholder's statement contained no instructions.",
       "cited_evidence_ids" : [ "TXN-007904", "AUTH-008113" ],
-      "cited_policy_sections" : [ "time-limits" ],
+      "cited_policy_sections" : [ "time-limits", "rule-order" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Disputes must be opened within 120 days of the date a transaction is posted. This charge was posted on 2026-06-13 and the dispute was opened on 2026-10-26, which is 135 days later. The time limit applies even when a transaction shows signs of fraud.",
-        "policy_section_ids" : [ "time-limits" ]
+        "reason" : "The dispute was opened on 2026-10-26, 135 days after the charge posted on 2026-06-13. Disputes must be opened within 120 days of the posting date, so we cannot accept this one.",
+        "policy_section_ids" : [ "time-limits", "rule-order" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 6528,
-    "output_tokens" : 1007,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 11645,
+    "output_tokens" : 1270,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 47591,
+    "cost_micro_usd" : 74538,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_card"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -59,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10226,
-    "model_call_ms" : [ 1492, 2175, 1936, 4554 ]
+    "wall_clock_ms" : 14444,
+    "model_call_ms" : [ 1600, 3239, 2443, 2638, 4416 ]
   }
 }

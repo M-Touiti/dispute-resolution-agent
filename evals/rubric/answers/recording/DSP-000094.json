@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000094",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "3029732ebc8439402042acfefcba917c3ff9df6d78ac3d562137e6dd61457a6e",
+  "input_sha256": "5eb7dd1776872cbab04a3495cf9ce82303fcbc30e003ba2e170a6c6c69566beb",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRstkCw3uFUW5tx1eEgx",
+  "response_id": "msg_011ChS3sxCtF7rFGYDyDnu4k",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
-      "verdict": "fail",
-      "reason": "The rationale states \"This category never approves a credit,\" but none of the policy sections or other inputs the agent received say this, so it is an unsupported claim about policy."
+      "verdict": "pass",
+      "reason": "The facts check out against the records: \"posted on 2026-07-17 and the dispute was opened on 2026-10-23. That is 98 days\" and \"opened 88 days after that date\" are both correct, and the amounts, ids and document contents match the inputs."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"98 days after posting\"), the waiting period (\"88 days after that date\"), the delivery record (\"no carrier delivery record\") and merchant resolution (\"the merchant has not resolved the matter\")."
+      "reason": "The rationale covers every required check: the time limit (\"98 days, inside the 120-day limit\"), the wait (\"the 15-day wait has passed\"), the delivery record (\"no delivery confirmation from a carrier\") and resolution (\"the merchant has not resolved the matter\")."
     },
     "merchant_request_clear": {
       "verdict": "pass",
-      "reason": "The note asks for \"the carrier's record showing the parcel was delivered to the cardholder's address, with the signature obtained on delivery,\" which matches the PROOF_OF_DELIVERY evidence item and discloses nothing internal."
+      "reason": "The note asks for \"the carrier's delivery record showing the address, the delivery date and the signature of the person who received it\", which matches PROOF_OF_DELIVERY and discloses nothing internal."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3132,
-    "output_tokens": 761,
+    "input_tokens": 3007,
+    "output_tokens": 545,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 28240,
+  "cost_micro_usd": 23420,
   "price_table": "2026-11-20"
 }

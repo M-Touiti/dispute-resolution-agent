@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000040",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:53:21.354505900Z",
+    "decided_at" : "2026-11-26T18:23:39.248054700Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "The disputed posting TXN-007906 (156.74 EUR, transaction at 2026-08-17T18:33:38Z, posted 2026-08-18) and TXN-007905 (156.74 EUR, transaction at 2026-08-17T18:30:38Z, posted 2026-08-18) are both on card CRD-000107 at merchant MER-000005, BRAMBLE DEVICES. Both carry the same authorisation, AUTH-008114. That authorisation was approved once for 156.74 EUR. So one authorisation was posted twice. There is no refund at this merchant on the card. The dispute was opened on 2026-10-29, 72 days after posting, which is inside the 120-day time limit. Under duplicate-same-authorisation, provisional credit is due for the extra posting only: 156.74 EUR, the amount of one posting. That is below the 3,000.00 EUR provisional credit limit and does not exceed the amount the cardholder claims.",
+      "rationale" : "I recommend provisional credit of 156.74 EUR for the extra posting. Both postings were at BRAMBLE DEVICES (MER-000005), and both carry authorisation AUTH-008114. TXN-007905 was made at 2026-08-17T18:30:38Z and TXN-007906, the disputed one, three minutes later at 18:33:38Z. Each is 156.74 EUR and each was posted on 2026-08-18. AUTH-008114 is a single approved request for 15674 minor units (156.74 EUR), so one authorisation was posted twice. The ledger shows no refund on this card from 2026-08-10 to 2026-10-29. The dispute was opened on 2026-10-29, 72 days after posting, which is within the 120-day limit in time-limits. Under duplicate-same-authorisation the extra posting gets provisional credit. That is one posting of 156.74 EUR, which is below the 3,000.00 EUR limit in provisional-credit and equal to the cardholder's claim. The other purchases at this merchant on this card have different amounts and authorisations, so they play no part in this decision.",
       "cited_evidence_ids" : [ "TXN-007906", "TXN-007905", "AUTH-008114" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -24,38 +24,46 @@
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 5,
-    "input_tokens" : 8084,
-    "output_tokens" : 1097,
-    "cache_read_input_tokens" : 23480,
+    "model_calls" : 6,
+    "input_tokens" : 11323,
+    "output_tokens" : 1453,
+    "cache_read_input_tokens" : 29184,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 56920,
+    "cost_micro_usd" : 78137,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : true,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +75,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12476,
-    "model_call_ms" : [ 1527, 2518, 1762, 2377, 4186 ]
+    "wall_clock_ms" : 15277,
+    "model_call_ms" : [ 1555, 2568, 3166, 1177, 2103, 4530 ]
   }
 }

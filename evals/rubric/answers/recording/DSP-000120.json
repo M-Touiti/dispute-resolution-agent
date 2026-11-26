@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000120",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "c55cff7b0526675f2ef9fdf5fb190ec732be05f0413a0ecc3a4b19eca451e8b4",
+  "input_sha256": "fe24d50721689b8312eeb839710bb0a1772f24d69dc372d6444b6c004188b49d",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt3onVcBMHGjqEDDAiW",
+  "response_id": "msg_011ChS42ndS27NaVRhqmesDq",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact matches the records, including \"posted on 2026-07-25\", \"92 days later\" (correct from 2026-07-25 to 2026-10-25) and \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set\"."
+      "reason": "Every fact in the rationale matches the records, including \"posted on 2026-07-25\", \"92 days later\" (correct from 2026-07-25 to 2026-10-25), \"3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN verified, and the fraud flag set\" and \"TXN-008058 is the only one\"."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, the entry mode, 3-D Secure, the fraud flag and the \"3,000.00 EUR limit\", but never addresses the cardholder's earlier transactions with ASHGROVE DEVICES, either by stating what the record shows or by saying it is missing."
+      "verdict": "pass",
+      "reason": "The rationale addresses every required check: the time limit (\"92 days later and inside the 120-day limit\"), the entry mode, 3-D Secure, the fraud flag, earlier transactions (\"no earlier transactions at this merchant\") and the credit limit (\"below the 3,000.00 EUR automated limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2817,
-    "output_tokens": 462,
+    "input_tokens": 3980,
+    "output_tokens": 504,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21000,
+  "cost_micro_usd": 26492,
   "price_table": "2026-11-20"
 }

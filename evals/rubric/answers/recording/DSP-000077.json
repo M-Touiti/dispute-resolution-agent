@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000077",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "11965f739b0a591837a6aa6e10109ad2ae8ec2684ed49d2be3b4bd14d3d4804b",
+  "input_sha256": "9566b4af235f32f01348f8049db0e357c6b3045c8a7d7da23330e02a0e78e8da",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsnNMsMQv9tsDkuhU5S",
+  "response_id": "msg_011ChS3n2fc9BZTXfc36ERYX",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact checks out against the inputs, including \"posted on 2026-09-07\", \"opened on 2026-10-28, which is 51 days later\" and \"opened 43 days after that date\" (2026-09-15), all computed correctly from the records and documents."
+      "reason": "Every fact checks out against the inputs, including the day counts \"51 days after posting\" (2026-09-07 to 2026-10-28) and \"43 days after that date\" (2026-09-15 to 2026-10-28), the expected delivery date from DOC-000033, and the empty refund search."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the delivery wait (\"the 15-day wait in goods-not-received-wait has passed\"), the delivery record (\"The case has no carrier delivery confirmation\") and merchant resolution (\"no refund from the merchant\" and \"got no reply\")."
+      "reason": "The rationale covers every required check: the time limit (\"within the 120-day time limit\"), the expected delivery date and the wait (\"the 15-day waiting period has passed\"), the missing delivery record (\"The case has no carrier delivery confirmation\") and merchant resolution (\"the merchant has not resolved the matter\")."
     },
     "merchant_request_clear": {
       "verdict": "pass",
-      "reason": "The note asks for \"the carrier's record showing delivery to the cardholder's address, with the date and the recipient's signature\", which matches the PROOF_OF_DELIVERY evidence item and discloses nothing internal."
+      "reason": "The note asks for \"the carrier's delivery record\" showing \"delivery to the cardholder's address, with the delivery date and the signature\", which matches PROOF_OF_DELIVERY and discloses nothing internal."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2715,
-    "output_tokens": 685,
+    "input_tokens": 2722,
+    "output_tokens": 607,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 25052,
+  "cost_micro_usd": 23520,
   "price_table": "2026-11-20"
 }

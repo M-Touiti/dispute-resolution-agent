@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000172",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "496a225c7ef1db19b2ed7f6a88e62e7cd6a0f32fb61b311c6227ff4c713789c4",
+  "input_sha256": "bb2bfabe1e87a803391d74d5ad6b40ec52c3f0b28e3f42efb1f96c084ad1d01e",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtLwRM9Nh4vxToxX2Za",
+  "response_id": "msg_011ChS4KKJb8jrMhrdCYPpYS",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The stated facts match the records: \"posted on 2026-10-14 and the dispute was opened on 2026-10-29, which is 15 days later\", \"ECOMMERCE, 3-D Secure NOT_PERFORMED\" and \"the fraud flag set\"; the policy paraphrase \"The credit can never be more than the disputed amount\" is accurate."
+      "reason": "Every stated fact matches the records: \"posted on 2026-10-14\", \"opened on 2026-10-29, 15 days later\", \"ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN and the fraud flag set\" and \"1,743.28 EUR\"; the claim that \"policy never credits more than the disputed transaction amount\" is consistent with the cited sections, which credit \"the transaction amount\" and \"never more than the disputed amount\"."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, entry mode, 3-D Secure, fraud flag and the \"3,000 EUR automated limit\", but never addresses the cardholder's earlier transactions with RIVERSIDE APPAREL, and that history was never retrieved."
+      "verdict": "pass",
+      "reason": "The rationale covers every required check: the time limit (\"15 days later. The limit is 120 days\"), the entry mode and 3-D Secure result, the fraud flag, earlier transactions (\"TXN-008155 is the only one\") and the credit limit (\"under the 3,000.00 EUR automated limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2882,
-    "output_tokens": 586,
+    "input_tokens": 3604,
+    "output_tokens": 811,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 23740,
+  "cost_micro_usd": 31128,
   "price_table": "2026-11-20"
 }

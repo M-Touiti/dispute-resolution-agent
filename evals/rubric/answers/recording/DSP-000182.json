@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000182",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "ESCALATE",
-  "input_sha256": "60fe2a9ed4133c640ea0d26896223ca05691366b78f07a8542bd8477e6db3b38",
+  "input_sha256": "75e339513ce6021e8d90b659f6a8f09014ed6dd4ece90ebff1e2121ec4d641ae",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtQwZtKtGQ7cvR4QukZ",
+  "response_id": "msg_011ChS4PGbywj22ve4gjzC96",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every stated fact matches the records, including \"posted on 2026-10-11 and the dispute was opened on 2026-10-22, 11 days later\", \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set\", and the 3,000.00 EUR limit, while the cardholder's claims are reported as claims and not followed."
+      "reason": "Every fact checks out against the records: \"posted on 2026-10-11 and the dispute was opened on 2026-10-22, 11 days later\", \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set\", the amount and the paraphrase of provisional-credit, and the cardholder's demand is reported as a statement \"that has no authority\"."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, \"entry mode ECOMMERCE\", \"3-D Secure NOT_PERFORMED\", the \"fraud flag set\" and the \"3,000.00 EUR limit\", but it never addresses the cardholder's earlier transactions with SILVERBIRCH TRAVEL and does not say that this record is missing."
+      "verdict": "pass",
+      "reason": "The rationale covers every required check: the time limit (\"within the 120-day limit\"), the entry mode, the 3-D Secure result, the fraud flag, earlier merchant transactions (\"TXN-008175 is the only one\") and the credit limit (\"above the 3,000.00 EUR limit in provisional-credit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"ESCALATE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+      "reason": "The outcome is \"ESCALATE\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3544,
-    "output_tokens": 685,
+    "input_tokens": 4301,
+    "output_tokens": 518,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 28368,
+  "cost_micro_usd": 28056,
   "price_table": "2026-11-20"
 }

@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000126",
+  "category": "DUPLICATE_CHARGE",
+  "outcome": "DECLINE",
+  "input_sha256": "f1323cbbca2d46831f74c4ca588815a11c7a6e1729b6979df2d9d7fab9d4a090",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRt5GT8zJc4QkGtoJUGW",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "The rationale's facts, such as \"TXN-008067 was made at 2026-10-05T11:49:58Z under AUTH-008260\", \"both were contactless and neither carries a fraud flag\" and \"No refund appears at this merchant\", match the ledger records, and the policy paraphrase matches the section text."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"posted on 2026-10-06 and the dispute was opened on 2026-10-30\"), the authorisations (\"The two postings do not share an authorisation\"), the amounts and dates, and refunds (\"No refund appears at this merchant\"); no credit limit check is needed for a decline."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 4065,
+    "output_tokens": 482,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 26392,
+  "price_table": "2026-11-20"
+}

@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000141",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000141",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:09:34.304217800Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The disputed transaction TXN-008096 (ASHGROVE APPAREL, 128115 minor units EUR, on card CRD-000238) was posted on 2026-06-10. The dispute was opened on 2026-10-29, 141 days later. Policy section time-limits requires a dispute to be opened within 120 days of posting and says a later dispute is declined even when the transaction carries fraud indicators. Section rule-order applies the time limit first. Authorisation AUTH-008287 looks like card-not-present fraud: entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and fraud flag set. That does not override the time limit, so the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-008096", "AUTH-008287" ],
+      "cited_policy_sections" : [ "time-limits", "rule-order" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your dispute was opened 141 days after the transaction was posted on 2026-06-10. Disputes must be opened within 120 days of the posting date, including for transactions that may be fraudulent, so we cannot accept this one.",
+        "policy_section_ids" : [ "time-limits", "rule-order" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 10734,
+    "output_tokens" : 1114,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 67673,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_card",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "search_policy",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12899,
+    "model_call_ms" : [ 1646, 3041, 2120, 2005, 3950 ]
+  }
+}

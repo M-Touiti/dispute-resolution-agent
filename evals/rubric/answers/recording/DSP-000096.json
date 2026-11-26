@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000096",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "DECLINE",
-  "input_sha256": "de605683db44af7183c4fb1d98612afa7b9c4e1839aa6f86a0fa0d1b76ef3e9b",
+  "input_sha256": "9cffadd37b3e80d10219b081b1f939cbcf92a283504559d25a0e491242a34148",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsubsuEzCufwczUFCER",
+  "response_id": "msg_011ChS3tgpCVjz18nAmD8zgd",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The statements check out against the records, including \"posted on 2026-09-07\", \"48 days later\", \"44 days after that date\" and \"signed for by H. Quinn\"; the name and city match the cardholder record (Hugo Quinn, Tampere)."
+      "reason": "The stated facts match the records: \"posted on 2026-09-07\", \"48 days later\", \"44 days after that date\" and \"signed for by H. Quinn\" against the profile \"Hugo Quinn, Tampere\"; the day counts are correct, and the policy wording is accurately paraphrased."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit, the expected delivery date and the 15-day wait, and the delivery record with its signer, then says why it stopped: \"Because the delivery decides the case, I did not check for a refund.\""
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the expected delivery date and wait (\"15-day waiting period ... had passed\") and the delivery record and signer (\"signed for by H. Quinn\"); it then stops at the deciding proof-of-delivery rule, saying \"The case is declined on that ground.\""
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2781,
-    "output_tokens": 433,
+    "input_tokens": 2791,
+    "output_tokens": 679,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 20276,
+  "cost_micro_usd": 25236,
   "price_table": "2026-11-20"
 }

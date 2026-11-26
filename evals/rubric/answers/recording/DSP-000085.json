@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000085",
   "category": "AMOUNT_MISMATCH",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "b0a800df52260e8a4d27dff6369db3aa359428ec93ed6db65af1ecf92a41376e",
+  "input_sha256": "cecbf03b92b713a00d538319d3b6ec6305491dd1cd9ba4b8e7b37ffc61d111ee",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsq6Ywc8nC3J3JvuGm2",
+  "response_id": "msg_011ChS3peNkJKeKDSmSTEp3q",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact checks out against the records: \"That is 81 days\" is correct from 2026-08-07 to 2026-10-27, \"11736 cents\" matches TXN-007993 and AUTH-008193, and the quote is framed as \"only the cardholder's claim\"."
+      "reason": "Every fact is supported by the records and the arithmetic is correct: \"posted on 2026-08-07 ... opened on 2026-10-27, which is 81 days later\" is right, the amounts and 3-D Secure/CVV results match AUTH-008193, and the quote is framed as a claim: \"The cardholder says the quote was 75.12 EUR\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the posted and authorised amounts (\"equals the authorised amount on AUTH-008193\") and the missing quote (\"no receipt or quote is attached\"); the tip tolerance does not apply because this is a travel merchant."
+      "reason": "The rationale covers the time limit (\"81 days later. The limit is 120 days\"), the posted and authorised amounts (\"equals the authorised amount of 11736\") and the missing receipt (\"the cardholder has no quote and no documents are attached\"); the tip check does not apply because the merchant is a travel business."
     },
     "merchant_request_clear": {
       "verdict": "pass",
-      "reason": "The note \"Please send the receipt, quote or order details for the 117.36 EUR transaction of 2026-08-06, showing the amount the cardholder agreed to pay\" says what is wanted and what it should show, matches the RECEIPT evidence item, and discloses nothing internal."
+      "reason": "The note says what is wanted and what it should show, \"the receipt, quote or order details for the 117.36 EUR transaction ... showing the amount the cardholder agreed to pay\", which matches the RECEIPT evidence item and discloses nothing internal."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2277,
-    "output_tokens": 534,
+    "input_tokens": 3134,
+    "output_tokens": 668,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 20280,
+  "cost_micro_usd": 26388,
   "price_table": "2026-11-20"
 }

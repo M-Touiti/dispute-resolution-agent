@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000138",
     "state" : "ESCALATED",
-    "decided_at" : "2026-11-26T14:08:57.535043800Z",
+    "decided_at" : "2026-11-26T18:39:40.980330400Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : "AGENT_DECISION",
@@ -12,50 +12,58 @@
     "decision" : {
       "outcome" : "ESCALATE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute is within the time limit. TXN-008091 (HARBOUR GADGETS, 3004.60 EUR) was posted on 2026-09-22 and the dispute was opened on 2026-10-26, 34 days later, inside the 120-day limit. Its authorisation AUTH-008282 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set. That meets the card-not-present rule, so the payment counts as unauthorised and the rules would credit the full transaction amount of 300460 minor units. That is above the 3,000.00 EUR limit for provisional credit in the automated process, so policy says a specialist must decide. No action is proposed.",
+      "rationale" : "TXN-008091 (3004.60 EUR, HARBOUR GADGETS, MER-000023) is on card CRD-000195. It posted on 2026-09-22, and the dispute was opened on 2026-10-26. That is 34 days, well inside the 120-day time limit. Its authorisation AUTH-008282 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN, and the fraud flag set. The card was not present, the payment was not confirmed with 3-D Secure and the flag is set, so under unauthorised-card-not-present the payment counts as unauthorised and the rules would credit the full 3004.60 EUR. The card has no earlier transactions at this merchant: TXN-008091 is the only one. The credit would be above the 3,000.00 EUR limit for automated provisional credit, so policy requires a specialist to decide. The case is escalated with no action.",
       "cited_evidence_ids" : [ "TXN-008091", "AUTH-008282" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit", "escalation" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit", "escalation", "rule-order" ],
       "proposed_actions" : [ ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 11155,
-    "output_tokens" : 1065,
+    "input_tokens" : 13368,
+    "output_tokens" : 1333,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 68330,
+    "cost_micro_usd" : 82523,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_card"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -67,7 +75,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10708,
-    "model_call_ms" : [ 1596, 1973, 1856, 2052, 3165 ]
+    "wall_clock_ms" : 12809,
+    "model_call_ms" : [ 1651, 2001, 2741, 2400, 3837 ]
   }
 }

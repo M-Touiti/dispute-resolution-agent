@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000044",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "DECLINE",
-  "input_sha256": "294dd00e4ec5e698f07fb8ecaac1b968b1c7473bbc7f2bd7525c625248cf74dd",
+  "input_sha256": "c18afaef9f4e02c8d0e9d9f320261eaee5f292210c2ebe240481ce940be79f9e",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRscXgRSoV1JxrzRiisg",
+  "response_id": "msg_011ChS3d8c3geJuu7mH5P1xK",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact matches the inputs: \"posted on 2026-10-10\", \"opened on 2026-10-22, 12 days later\", \"expected delivery date of 2026-10-13\", \"opened 9 days after that date\" and \"ends on 2026-10-28\" all agree with the records and the arithmetic."
+      "reason": "The stated facts, including \"posted on 2026-10-10\", \"12 days later\", \"expected delivery date of 2026-10-13\", \"opened 9 days after that date\" and \"The waiting period ends on 2026-10-28\", all match the records, and the day counts are correct."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale addresses the time limit (\"well within the 120-day time limit\") and the expected delivery date from the order confirmation, then stops at the deciding waiting-period check, saying \"the waiting period had not ended and the dispute is declined\"."
+      "reason": "The rationale addresses the time limit (\"well within the 120-day time limit\") and the expected delivery date with the 15-day wait, then stops at that deciding check and says why: \"Delivery and refunds were not checked, because the waiting period decides the case first.\""
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 1981,
-    "output_tokens": 515,
+    "input_tokens": 1967,
+    "output_tokens": 451,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 18716,
+  "cost_micro_usd": 17380,
   "price_table": "2026-11-20"
 }

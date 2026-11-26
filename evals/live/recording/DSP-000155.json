@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000155",
     "state" : "ESCALATED",
-    "decided_at" : "2026-11-26T14:12:17.952164900Z",
+    "decided_at" : "2026-11-26T18:43:05.016765700Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : "AGENT_DECISION",
@@ -12,50 +12,50 @@
     "decision" : {
       "outcome" : "ESCALATE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008123 is a 3728.34 EUR purchase at RIVERSIDE GADGETS (MER-000068) on card CRD-000096. It posted on 2026-09-21. The dispute was opened on 2026-10-22, 31 days later, which is inside the 120-day limit in time-limits. The authorisation behind it, AUTH-008311, shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN and the fraud flag set. That meets every condition in unauthorised-card-not-present, so the payment counts as unauthorised and the rule would credit the full 3728.34 EUR. Under provisional-credit, the automated process never grants credit above 3,000.00 EUR. The case therefore goes to a specialist to decide, and no action is proposed. The cardholder's statement contained no instructions.",
+      "rationale" : "The dispute is within the time limit. TXN-008123 (RIVERSIDE GADGETS, 3,728.34 EUR, on card CRD-000096) posted on 2026-09-21 and the dispute was opened on 2026-10-22, 31 days later. The limit is 120 days. Its authorisation AUTH-008311 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN, and the fraud flag set. That meets every condition for an unauthorised card-not-present transaction. This card has no earlier transactions at this merchant: the disputed charge is the only one. The rules would credit the full 372,834 cents, but that is above the 3,000.00 EUR ceiling for automated provisional credit. So the case goes to a specialist to decide, and no action is proposed.",
       "cited_evidence_ids" : [ "TXN-008123", "AUTH-008311" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 12069,
-    "output_tokens" : 1153,
+    "input_tokens" : 10589,
+    "output_tokens" : 1125,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 73789,
+    "cost_micro_usd" : 67309,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "search_policy",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -67,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 13253,
-    "model_call_ms" : [ 1595, 2468, 2533, 2503, 4060 ]
+    "wall_clock_ms" : 12980,
+    "model_call_ms" : [ 1463, 1822, 3085, 2500, 4017 ]
   }
 }

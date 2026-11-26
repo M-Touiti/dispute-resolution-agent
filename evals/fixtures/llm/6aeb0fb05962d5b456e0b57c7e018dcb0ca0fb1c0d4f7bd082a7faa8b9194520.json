@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Harbour Media subscription yet were charged 18.18 EUR again on 2026-10-13, which is a recurring charge after cancellation.\"}",
+      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Harbour Media subscription yet were charged again on 2026-10-13, which is a recurring payment taken after cancellation.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChReRRnQ9Fa3umr3vkkGu",
+    "id" : "msg_011ChS11W6dCaP8XQ5soLDpY",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 101,
-      "output_tokens" : 83
+      "output_tokens" : 77
     }
   }
 }

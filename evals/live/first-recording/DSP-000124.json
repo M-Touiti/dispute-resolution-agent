@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000124",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000124",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:06:41.110731100Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm declining this dispute because it was opened after the time limit. TXN-008064 (711.89 EUR, RIVERSIDE GADGETS, card CRD-000189) posted on 2026-05-12, and the dispute was opened on 2026-10-26. That is 167 days after posting, and the policy allows 120 days. Section time-limits says a late dispute is declined even when the transaction carries fraud indicators. That applies here: authorisation AUTH-008258 was an online payment with no 3-D Secure check, no CVV and the fraud flag set. Those signals would otherwise support treating it as unauthorised, but the time limit is applied first and decides the case.",
+      "cited_evidence_ids" : [ "TXN-008064", "AUTH-008258" ],
+      "cited_policy_sections" : [ "time-limits" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The dispute was opened 167 days after the transaction posted on 2026-05-12. Disputes must be opened within 120 days of posting, and this limit applies even when a transaction shows signs of fraud.",
+        "policy_section_ids" : [ "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 4101,
+    "output_tokens" : 796,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 33511,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9661,
+    "model_call_ms" : [ 1560, 2397, 1835, 3806 ]
+  }
+}

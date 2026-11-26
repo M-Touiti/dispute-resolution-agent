@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says a 1281.15 EUR charge from ASHGROVE APPAREL was not made by them, they have never shopped there, and they did not share their card details.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says a charge from ASHGROVE APPAREL was not made by them, that they have never shopped there, and that they did not share their card details.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfwtPkXGDeMx1SK12Sz",
+    "id" : "msg_011ChS2bPdkCTC9RRtG8vT61",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 122,
-      "output_tokens" : 84
+      "output_tokens" : 77
     }
   }
 }

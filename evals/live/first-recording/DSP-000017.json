@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000017",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000017",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:50:03.386441800Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "REQUEST_MERCHANT_EVIDENCE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007865 is a purchase on card CRD-000025 at Riverside Journeys. It posted on 2026-07-27, and the dispute was opened on 2026-10-22. That is 87 days, within the 120-day limit in time-limits. The posted amount is 195243 minor units (1952.43 EUR). The authorised amount on AUTH-008077 is the same, 195243, so the difference is 0. AUTH-008077 was an ecommerce payment with 3-D Secure authenticated, a CVV match and no fraud flag. There is no receipt or quote: the cardholder says they do not have the quote, and no documents are attached. The quoted 1210.51 EUR and the claimed 741.92 EUR are the cardholder's claims, not a merchant receipt. The merchant is a TRAVEL merchant, not a restaurant, so the tip rule does not apply. Under amount-no-receipt, when there is no receipt and the posted amount equals the authorised amount, nothing in the records shows a different agreed amount. The merchant's receipt or order details are therefore requested, and no credit is proposed until they arrive.",
+      "cited_evidence_ids" : [ "TXN-007865", "AUTH-008077" ],
+      "cited_policy_sections" : [ "time-limits", "amount-no-receipt" ],
+      "proposed_actions" : [ {
+        "action" : "request_merchant_evidence",
+        "evidence" : [ "RECEIPT" ],
+        "note" : "Please send the receipt or order details for the purchase of 1952.43 EUR made on 2026-07-26 and posted on 2026-07-27. They should show the amount the cardholder agreed to, including any quote you gave."
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5059,
+    "output_tokens" : 1092,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 43591,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11895,
+    "model_call_ms" : [ 1488, 2441, 2151, 5724 ]
+  }
+}

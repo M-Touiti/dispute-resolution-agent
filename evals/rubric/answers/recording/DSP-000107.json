@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000107",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "a9c565091e7c44db49c627e61b1f299acecb34e4d187bf5b8e9d86a076758ebb",
+  "input_sha256": "bbd574b7df5eadd141aab33c1eb4e3854e196d1a1a2db2403c3d9960bd639d56",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsyAiwX9aBsbUqxA9Fc",
+  "response_id": "msg_011ChS3xRpAgxkCE8aSEaCuz",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact is supported by the records, including \"posted on 2026-05-26\", \"opened on 2026-10-23, 150 days later\" (the day count is correct), and \"an online payment with no 3-D Secure check and the fraud flag set\", which matches ECOMMERCE, NOT_PERFORMED and fraud_flag true."
+      "reason": "The statements \"opened on 2026-10-23, 150 days later\" (26 May to 23 Oct is 150 days), \"e-commerce payment with 3-D Secure not performed, no CVV and the fraud flag set\" and \"no earlier transactions at this merchant\" all match the ledger records."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale stops at the deciding check and says why: \"the time limit is checked first and decides the case\"."
+      "reason": "The rationale stops at the deciding check (\"the time limit is applied first, so the dispute is declined\") and still covers entry mode, 3-D Secure, the fraud flag and earlier transactions."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 1642,
-    "output_tokens": 442,
+    "input_tokens": 2813,
+    "output_tokens": 531,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 15900,
+  "cost_micro_usd": 22364,
   "price_table": "2026-11-20"
 }

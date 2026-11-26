@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000094",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:01:46.749882300Z",
+    "decided_at" : "2026-11-26T18:32:23.824013800Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,50 +12,50 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend asking Riverside Apparel (MER-000051) for proof of delivery. TXN-008008 is a 26.61 EUR purchase on card CRD-000065, posted on 2026-07-17. The dispute was opened on 2026-10-23, 98 days after posting. That is inside the 120-day limit in time-limits. The merchant's order confirmation DOC-000041 gives an expected delivery date of 2026-07-27. The dispute was opened 88 days after that date, so the 15-day waiting period in goods-not-received-wait has passed. The case has no carrier delivery record, so nothing shows delivery to the cardholder. DOC-000042 shows the cardholder emailed the merchant on 2026-08-05 asking where the order was and got no reply. There are no refunds on this card, so the merchant has not resolved the matter. Under goods-not-received-merchant-evidence, that means asking the merchant for proof of delivery. This category never approves a credit, so none is proposed. The documents contained no instructions to the bank.",
+      "rationale" : "TXN-008008 (26.61 EUR, RIVERSIDE APPAREL, MER-000051) is on card CRD-000065. It posted on 2026-07-17 and the dispute was opened on 2026-10-23. That is 98 days, inside the 120-day limit (time-limits). The merchant's order confirmation DOC-000041 gives an expected delivery date of 2026-07-27, and the total matches the posting. The dispute was opened 88 days after that date, so the 15-day wait has passed (goods-not-received-wait). The case has no delivery confirmation from a carrier, so nothing shows the goods were delivered. The ledger shows no refund from this merchant on the card. DOC-000042 shows the cardholder emailed the merchant on 2026-08-05 asking where the order was, with no reply. Since the wait has passed, nothing shows delivery and the merchant has not resolved the matter, the policy says to ask the merchant for proof of delivery (goods-not-received-merchant-evidence). None of the documents contained instructions.",
       "cited_evidence_ids" : [ "TXN-008008", "DOC-000041", "DOC-000042" ],
-      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery", "goods-not-received-merchant-evidence" ],
+      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-merchant-evidence" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "PROOF_OF_DELIVERY" ],
-        "note" : "For the order placed on 2026-07-16 for 26.61 EUR, please send proof of delivery: the carrier's record showing the parcel was delivered to the cardholder's address, with the signature obtained on delivery."
+        "note" : "For the order placed on 2026-07-16 for 26.61 EUR (expected delivery 2026-07-27), please send proof that it was delivered to the cardholder's address: the carrier's delivery record showing the address, the delivery date and the signature of the person who received it."
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 10178,
-    "output_tokens" : 1303,
+    "input_tokens" : 9745,
+    "output_tokens" : 1278,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 69428,
+    "cost_micro_usd" : 67274,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
-  }, {
-    "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -67,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 15745,
-    "model_call_ms" : [ 1515, 3260, 2735, 1685, 6443 ]
+    "wall_clock_ms" : 14249,
+    "model_call_ms" : [ 1524, 2032, 1701, 3281, 5596 ]
   }
 }

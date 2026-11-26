@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000025",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000025",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:51:26.700741900Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The time limit is met. TXN-007878 posted on 2026-08-26 and the dispute was opened on 2026-10-31, 66 days later, inside the 120-day limit. The card's ledger at QUAYSIDE OUTFITTERS (MER-000006) shows two postings of 46.53 EUR made on 2026-08-25: TXN-007877 at 10:00:55Z and TXN-007878 at 10:03:55Z. Both posted on 2026-08-26 and both carry the same authorisation, AUTH-008088, so one authorisation was posted twice. However, the merchant already refunded the extra posting. Refund TXN-007879 for 46.53 EUR posted on 2026-08-28 and is linked to TXN-007878. Under duplicate-already-refunded, nothing remains in dispute, so the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-007878", "TXN-007877", "TXN-007879", "AUTH-008088" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "QUAYSIDE OUTFITTERS did charge you 46.53 EUR twice on 2026-08-25. It refunded the second charge in full: a refund of 46.53 EUR was posted to your card on 2026-08-28. You have only been charged once, so there is nothing left to dispute.",
+        "policy_section_ids" : [ "duplicate-already-refunded" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7399,
+    "output_tokens" : 979,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 51668,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11636,
+    "model_call_ms" : [ 1544, 2283, 1847, 1147, 4683 ]
+  }
+}

@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000167",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:14:08.964629100Z",
+    "decided_at" : "2026-11-26T18:44:52.498227900Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,13 +12,13 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "I'm asking the merchant for evidence. TXN-008150 is a charge of 59.13 EUR (5913 minor units) on card CRD-000202. Ashgrove Athletic Club (MER-000063), a fitness club that bills on a recurring basis, made the charge on 2026-09-14, and it posted on 2026-09-15. The dispute was opened on 2026-10-24, 39 days after posting, which is inside the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing, and no documents are attached. Without a cancellation confirmation from the merchant there is no effective cancellation date, so I can't tell whether the cancellation came before or after the charge. In this situation, recurring-no-proof says to ask the merchant for its cancellation records and the terms of the subscription.",
+      "rationale" : "TXN-008150 is a charge of 59.13 EUR on card CRD-000202 at Ashgrove Athletic Club (MER-000063), a merchant that bills on a recurring basis. The charge was made on 2026-09-14 and posted on 2026-09-15. The dispute was opened on 2026-10-24, 39 days after posting, which is within the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing, and no merchant cancellation confirmation is attached. There is therefore no effective cancellation date to compare with the 2026-09-14 charge date. Under recurring-no-proof, the merchant's cancellation records and terms for the subscription must be requested.",
       "cited_evidence_ids" : [ "TXN-008150" ],
       "cited_policy_sections" : [ "time-limits", "recurring-no-proof" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "CANCELLATION_POLICY" ],
-        "note" : "Regarding the subscription charge of 59.13 EUR made on 2026-09-14: please send your cancellation records for this cardholder's subscription, including any record of a phone cancellation request and when it took effect, and the cancellation terms that applied to the subscription."
+        "note" : "Please provide your cancellation records for this cardholder's subscription, including any phone cancellation requests and the dates they took effect, and the subscription terms that applied to the 59.13 EUR charge made on 2026-09-14."
       } ]
     },
     "guard_violations" : [ ]
@@ -26,28 +26,28 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 4421,
-    "output_tokens" : 895,
+    "output_tokens" : 856,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 37161,
+    "cost_micro_usd" : 36089,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist" ],
@@ -59,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 9206,
-    "model_call_ms" : [ 1552, 1301, 1654, 4627 ]
+    "wall_clock_ms" : 9848,
+    "model_call_ms" : [ 1554, 2579, 1799, 3873 ]
   }
 }

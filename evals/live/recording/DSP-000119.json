@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000119",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:06:09.145708500Z",
+    "decided_at" : "2026-11-26T18:36:50.685697800Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,13 +12,13 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008057 is on card CRD-000020 at Meadowlark Electronics (MER-000032). It posted on 2026-09-04 and the dispute was opened on 2026-10-22. That is 48 days, inside the 120-day limit in time-limits. The posted amount is 33513 cents and the authorised amount on AUTH-008251 is also 33513 cents. There is no receipt or quote: the cardholder says they do not have the quote, and no documents are attached. The quoted 217.84 EUR, and the 11729-cent difference from the posting, are only the cardholder's claim. Because there is no receipt and the posted amount equals the authorised amount, amount-no-receipt says to ask the merchant for the receipt or order details. No credit is proposed at this stage.",
+      "rationale" : "The dispute is within the time limit. TXN-008057 on card CRD-000020 posted on 2026-09-04 and the dispute was opened on 2026-10-22, which is 48 days later. The limit is 120 days (time-limits). The posted amount is 33513 cents, and the authorisation AUTH-008251 at Meadowlark Electronics (MER-000032, ELECTRONICS_ONLINE) is also for 33513 cents. Because the two match, there is no difference between the posted and authorised amounts. There is no receipt or quote: no documents are attached, and the cardholder says they do not have the quote. The quoted 217.84 EUR, and the 117.29 EUR claimed as the difference, are only the cardholder's word. Nothing in the records shows a different agreed amount. Under amount-no-receipt, the receipt or order details must be requested from the merchant.",
       "cited_evidence_ids" : [ "TXN-008057", "AUTH-008251" ],
       "cited_policy_sections" : [ "time-limits", "amount-no-receipt" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "RECEIPT" ],
-        "note" : "Please provide the receipt or order details for the purchase of 335.13 EUR made on 2026-09-03. They should show the amount the cardholder agreed to pay, including any quote given before the purchase."
+        "note" : "Please send the receipt or order details for the purchase of 335.13 EUR made on 2026-09-03, posted on 2026-09-04. They should show the amount the cardholder agreed to pay and the price quoted for the order."
       } ]
     },
     "guard_violations" : [ ]
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5071,
-    "output_tokens" : 975,
+    "output_tokens" : 1009,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 41338,
+    "cost_micro_usd" : 42057,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11321,
-    "model_call_ms" : [ 1484, 2366, 2423, 4976 ]
+    "wall_clock_ms" : 11575,
+    "model_call_ms" : [ 1566, 2293, 2196, 5394 ]
   }
 }

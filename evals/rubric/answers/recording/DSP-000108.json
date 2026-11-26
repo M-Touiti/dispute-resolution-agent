@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000108",
   "category": "DUPLICATE_CHARGE",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "3219a535dce46a8bc44cc45a965c8054fe118703b7342bcf78b2e9aed4606f7b",
+  "input_sha256": "6a8be894faa90eee6a1aaac080388576fc8b6e62ec4a0b4dca533a3788874695",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsyTuo8SAbc3kD2xRf7",
+  "response_id": "msg_011ChS3xnxA3m1DkFwh5AeE8",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact matches the records, including \"posted on 2026-08-24 ... opened on 2026-10-30, 67 days later\", \"Both carry the same authorisation, AUTH-008230\" and \"TXN-002867 for 45080 on 2026-09-07, uses a different authorisation (AUTH-002943)\"."
+      "reason": "Every stated fact matches the records: \"made 3 minutes after TXN-008033\" (10:27:18 versus 10:30:18), the shared \"AUTH-008230\", \"67 days after posting\" (2026-08-24 to 2026-10-30) and \"TXN-002867 (450.80 EUR, 2026-09-08)\" with its own authorisation."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers every required check: the time limit (\"within the 120-day limit\"), the shared authorisation (\"Both carry the same authorisation\"), the amounts and dates, refunds (\"The card has no refunds\") and the credit limit (\"below the 3,000.00 EUR limit\")."
+      "reason": "The rationale covers the time limit (\"within the 120-day time limit\"), the shared authorisation (\"carry the same authorisation, AUTH-008230\"), the amounts and dates, the refund (\"no refund of either posting\") and the credit limit (\"below the 3,000.00 EUR automated limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3418,
-    "output_tokens": 482,
+    "input_tokens": 3220,
+    "output_tokens": 574,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 23804,
+  "cost_micro_usd": 24852,
   "price_table": "2026-11-20"
 }

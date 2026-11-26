@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000024",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:51:15.062882Z",
+    "decided_at" : "2026-11-26T18:21:23.242810700Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The dispute was opened on 2026-10-23. The disputed posting TXN-007876 posted on 2026-08-07, 77 days earlier, so it is inside the 120-day limit in time-limits. The ledger shows two purchases at BRAMBLE ENERGY (MER-000021) on this card, both for 52.02 EUR. TXN-007875 was made on 2026-08-05 at 21:50 and posted on 2026-08-06 under AUTH-008086. TXN-007876 was made on 2026-08-06 at 06:50 and posted on 2026-08-07 under AUTH-008087. They do not share an authorisation. Each was approved separately, about nine hours apart, with the card inserted (CHIP) and the correct PIN entered, and neither was flagged as possible fraud. No refund exists for either posting. Under duplicate-separate-authorisations, two postings with their own authorisations made some time apart count as two purchases, even when the merchant and amount are the same. The claim of a duplicate charge is therefore declined.",
+      "rationale" : "The dispute is within the time limit. TXN-007876 posted on 2026-08-07 and the dispute was opened on 2026-10-23, which is 77 days later. The limit is 120 days. The card has two purchases at BRAMBLE ENERGY (MER-000021), each for 52.02 EUR. TXN-007875 was made on 2026-08-05 at 21:50 UTC and posted on 2026-08-06, under authorisation AUTH-008086. TXN-007876 was made on 2026-08-06 at 06:50 UTC and posted on 2026-08-07, under authorisation AUTH-008087. The two postings do not share an authorisation. Each has its own approved authorisation, both were chip payments with the PIN verified, neither carries a fraud flag, and they were made about 9 hours apart. The ledger shows no refund of either posting. Under the policy, two postings with their own authorisations made some time apart are two separate purchases, even when the merchant and amount are the same. That is not a duplicate charge, so the dispute is declined.",
       "cited_evidence_ids" : [ "TXN-007876", "TXN-007875", "AUTH-008087", "AUTH-008086" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Our records show two separate payments of 52.02 EUR to BRAMBLE ENERGY, on 5 August and 6 August 2026. Each was approved on its own, about nine hours apart, with your card inserted at the terminal and your PIN entered. These are two separate purchases, not one purchase charged twice, so we cannot treat this as a duplicate charge.",
+        "reason" : "There are two 52.02 EUR charges from BRAMBLE ENERGY, made on 5 and 6 August 2026 about 9 hours apart. Each was approved separately as a chip payment with your PIN. They are two separate purchases, not one purchase charged twice, so they do not count as a duplicate charge. If you think one of these payments is wrong for another reason, please contact us.",
         "policy_section_ids" : [ "duplicate-separate-authorisations" ]
       } ]
     },
@@ -25,36 +25,36 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 8345,
-    "output_tokens" : 1245,
+    "input_tokens" : 8085,
+    "output_tokens" : 1234,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 60924,
+    "cost_micro_usd" : 59567,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_policy"
   } ],
   "system_tool_calls" : 3,
-  "skills_loaded" : [ "duplicate-charge-checklist", "reading-an-authorisation-trail" ],
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
   "decision_rejections" : 0,
   "triage_fell_back" : false,
   "model_failures" : [ ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 14905,
-    "model_call_ms" : [ 1559, 2252, 2681, 2603, 5668 ]
+    "wall_clock_ms" : 15018,
+    "model_call_ms" : [ 1536, 2171, 2424, 2398, 6250 ]
   }
 }

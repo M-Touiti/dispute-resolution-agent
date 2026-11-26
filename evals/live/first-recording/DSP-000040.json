@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000040",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000040",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:53:21.354505900Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "The disputed posting TXN-007906 (156.74 EUR, transaction at 2026-08-17T18:33:38Z, posted 2026-08-18) and TXN-007905 (156.74 EUR, transaction at 2026-08-17T18:30:38Z, posted 2026-08-18) are both on card CRD-000107 at merchant MER-000005, BRAMBLE DEVICES. Both carry the same authorisation, AUTH-008114. That authorisation was approved once for 156.74 EUR. So one authorisation was posted twice. There is no refund at this merchant on the card. The dispute was opened on 2026-10-29, 72 days after posting, which is inside the 120-day time limit. Under duplicate-same-authorisation, provisional credit is due for the extra posting only: 156.74 EUR, the amount of one posting. That is below the 3,000.00 EUR provisional credit limit and does not exceed the amount the cardholder claims.",
+      "cited_evidence_ids" : [ "TXN-007906", "TXN-007905", "AUTH-008114" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 15674,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 8084,
+    "output_tokens" : 1097,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 56920,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12476,
+    "model_call_ms" : [ 1527, 2518, 1762, 2377, 4186 ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000068",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "REQUEST_MERCHANT_EVIDENCE",
+  "input_sha256": "1a342d5a600c3423af1c88dded676cc066b25d54a33473a95c382d770bb1acf5",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsjrPWceEBWiDScr9RF",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact is supported by the records and the arithmetic is correct, including \"posted on 2026-09-02\", \"opened on 2026-10-23, 51 days later\" and \"the difference 9044 cents\"; the quote is framed as \"The cardholder says\"."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale addresses the time limit (\"within the 120-day limit\"), the posted and authorised amounts (\"the two amounts agree\") and the missing receipt or quote (\"they have no quote and no receipt is attached\"); the tip tolerance does not apply because the merchant is \"a TRAVEL merchant\"."
+    },
+    "merchant_request_clear": {
+      "verdict": "pass",
+      "reason": "The note asks for \"the receipt or order details for the transaction of 258.41 EUR on 2026-09-01, showing the amount the cardholder agreed to pay\", which matches the RECEIPT evidence item and discloses nothing internal."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2267,
+    "output_tokens": 584,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 21240,
+  "price_table": "2026-11-20"
+}

@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they never made the 1466.90 EUR charge from BRAMBLE DEVICES, have never shopped there, and did not share their card details with anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they never made the 1466.90 EUR BRAMBLE DEVICES charge, have never shopped there, and did not share their card details with anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChReeq6iCmbydFSiUqifd",
+    "id" : "msg_011ChS1FWDTwMtqz3S86cRDa",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 122,
-      "output_tokens" : 84
+      "output_tokens" : 83
     }
   }
 }

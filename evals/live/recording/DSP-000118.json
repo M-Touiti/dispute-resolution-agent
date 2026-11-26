@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000118",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:05:57.819250500Z",
+    "decided_at" : "2026-11-26T18:36:39.108573400Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The time limit is met. TXN-008056 posted on 2026-08-23 and the dispute was opened on 2026-10-25, which is 63 days later and within the 120-day limit in time-limits. The posted amount is 2511 cents and the authorised amount on AUTH-008250 (contactless, approved, not flagged for fraud) is 2347 cents, so the difference is 164 cents. No merchant receipt is attached. The cardholder's figure of 23.47 EUR is a claim, not a receipt, and it equals the authorised amount. MER-000056 (Lumen Bistro) is a RESTAURANT. 20% of the authorised amount is 469.4 cents, and the 164-cent difference is within that. Under amount-restaurant-tip, a difference within this tolerance counts as an agreed tip, not a mismatch, so the dispute is declined.",
+      "rationale" : "I recommend declining this dispute. TXN-008056 posted on 2026-08-23 and the dispute was opened on 2026-10-25. That is 63 days, within the 120-day limit in time-limits. The posted amount is 2511 cents. The approved contactless authorisation AUTH-008250 was for 2347 cents. No merchant receipt is attached: the 23.47 EUR the cardholder gives is a claim, not a receipt, and it matches the authorised amount. Lumen Bistro (MER-000056) is a RESTAURANT. The posting is 164 cents above the authorisation. The tip tolerance is 20% of the authorised amount, which is 469.4 cents. Because 164 is within that, amount-restaurant-tip treats the difference as an agreed tip, not a mismatch.",
       "cited_evidence_ids" : [ "TXN-008056", "AUTH-008250" ],
       "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The restaurant authorised 23.47 EUR and posted 25.11 EUR. The 1.64 EUR difference is less than 20% of the authorised amount. Restaurants are allowed to add up to that much as a tip, so this is not a billing error, and we cannot refund it through a dispute.",
+        "reason" : "Your bill was authorised at 23.47 EUR and posted at 25.11 EUR. The extra 1.64 EUR is within the tip a restaurant may add, which is up to 20% of the authorised amount (4.69 EUR here). Under our policy that counts as an agreed tip, not a wrong amount.",
         "policy_section_ids" : [ "time-limits", "amount-restaurant-tip" ]
       } ]
     },
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5028,
-    "output_tokens" : 1034,
+    "output_tokens" : 1000,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 42412,
+    "cost_micro_usd" : 41713,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10232,
-    "model_call_ms" : [ 1459, 1512, 2144, 5080 ]
+    "wall_clock_ms" : 11280,
+    "model_call_ms" : [ 1534, 1386, 2859, 5372 ]
   }
 }

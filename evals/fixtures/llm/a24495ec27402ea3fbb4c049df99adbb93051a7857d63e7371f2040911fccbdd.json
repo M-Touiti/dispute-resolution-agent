@@ -327,30 +327,25 @@
   },
   "response" : {
     "content" : [ {
-      "id" : "toolu_01SP9SD6yqtwRB7RNFBxVCbP",
+      "id" : "toolu_01TBrAXu75fLMUUWMjbBxVdn",
       "input_json" : "{\"name\":\"unauthorised-transaction-checklist\"}",
       "name" : "load_skill",
       "type" : "tool_use"
     }, {
-      "id" : "toolu_011BSbSB464k8UZmY3N6qooq",
-      "input_json" : "{\"name\":\"reading-an-authorisation-trail\"}",
-      "name" : "load_skill",
-      "type" : "tool_use"
-    }, {
-      "id" : "toolu_01Rbs8hyeJANbF89ww8FVZ5V",
+      "id" : "toolu_012zWJibk7pafMEFUTRJykLG",
       "input_json" : "{\"transaction_id\":\"TXN-007835\"}",
       "name" : "get_transaction",
       "type" : "tool_use"
     } ],
-    "id" : "msg_011ChReL6CnE1zTahZPou9N6",
+    "id" : "msg_011ChRzuo5foyvGr5E9CFpVT",
     "model" : "claude-opus-5-5",
     "refusal_category" : null,
     "stop_reason" : "TOOL_USE",
     "usage" : {
-      "cache_creation_input_tokens" : 0,
-      "cache_read_input_tokens" : 5704,
+      "cache_creation_input_tokens" : 5704,
+      "cache_read_input_tokens" : 0,
       "input_tokens" : 311,
-      "output_tokens" : 171
+      "output_tokens" : 115
     }
   }
 }

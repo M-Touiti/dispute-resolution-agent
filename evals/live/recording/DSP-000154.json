@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000154",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:12:04.696081800Z",
+    "decided_at" : "2026-11-26T18:42:52.036183800Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,9 +12,9 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "I recommend provisional credit of 942.84 EUR for TXN-008122, a payment on card CRD-000023 to RIVERSIDE OUTFITTERS (MER-000060). Time limit: the payment posted on 2026-08-20 and the dispute was opened on 2026-10-27. That is 68 days, inside the 120-day limit in time-limits. Authorisation: AUTH-008310 shows an online payment (entry mode ECOMMERCE) where 3-D Secure was not performed, no security code was given (CVV NOT_PRESENT) and the bank's fraud flag was set. Under unauthorised-card-not-present, a payment counts as unauthorised when the card was not present, 3-D Secure was not used and the fraud flag is set. All three hold here. The credit limit does not block it: 942.84 EUR is below the 3,000.00 EUR cap for automated provisional credit in provisional-credit. The credit is exactly the posted amount, which is also what the cardholder claims.",
+      "rationale" : "I recommend provisional credit of 942.84 EUR. TXN-008122 is on card CRD-000023. It was a 942.84 EUR purchase at merchant MER-000060 (RIVERSIDE OUTFITTERS) on 2026-08-19 and posted on 2026-08-20. The dispute was opened on 2026-10-27, 68 days after posting, so it is inside the 120-day time limit. The payment's authorisation, AUTH-008310, was entry mode ECOMMERCE (card not present) with 3-D Secure NOT_PERFORMED, no security code given (CVV NOT_PRESENT), no PIN verified and the fraud flag set. These records meet every condition in unauthorised-card-not-present: card not present, no 3-D Secure, fraud flag set. The card shows no earlier purchases at this merchant; TXN-008122 is the only one. The credit equals the posted amount, the same as the claimed amount, and is below the 3,000.00 EUR limit for provisional credit. Nothing in the case contained instructions.",
       "cited_evidence_ids" : [ "TXN-008122", "AUTH-008310" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ {
         "action" : "issue_provisional_credit",
         "amount_minor" : 94284,
@@ -25,33 +25,41 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 8960,
-    "output_tokens" : 1039,
+    "input_tokens" : 10272,
+    "output_tokens" : 1208,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 58917,
+    "cost_micro_usd" : 67506,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 13592,
-    "model_call_ms" : [ 1558, 2695, 2272, 1593, 5391 ]
+    "wall_clock_ms" : 14425,
+    "model_call_ms" : [ 1743, 2246, 3218, 1960, 5201 ]
   }
 }

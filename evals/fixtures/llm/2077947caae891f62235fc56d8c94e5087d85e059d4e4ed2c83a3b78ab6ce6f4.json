@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they do not recognise the 3821.89 EUR payment to SILVERBIRCH TRAVEL and that the card has remained in their possession, so they did not make or allow it.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they do not recognise the 3821.89 EUR payment to SILVERBIRCH TRAVEL and that the card stayed in their possession, so they did not make or allow it.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRfiZki99cGYr891q51B",
+    "id" : "msg_011ChS2N2yfnmgy7812Nnc2k",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

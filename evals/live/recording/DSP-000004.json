@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000004",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:48:44.625491700Z",
+    "decided_at" : "2026-11-26T18:18:40.703994Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007839 (1201.38 EUR, SALTMARSH JOURNEYS, card CRD-000124) was posted on 2026-07-27. The dispute was opened on 2026-10-27, which is 92 days later. That is within the 120-day limit in time-limits. The authorisation behind it, AUTH-008054, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag, and it was approved. Under unauthorised-3ds-authenticated, an online payment confirmed by the cardholder with 3-D Secure and without the fraud flag counts as made by the cardholder, and the matching security code supports this. The cardholder's statement that the card stayed with them does not change this: an online payment does not need the physical card. The statement contained no instructions.",
-      "cited_evidence_ids" : [ "TXN-007839", "AUTH-008054" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "rationale" : "TXN-007839 (120138 minor units EUR, SALTMARSH JOURNEYS, MER-000043) is on card CRD-000124 and posted on 2026-07-27. The dispute was opened on 2026-10-27, 92 days later, so it is inside the 120-day limit in time-limits. Its authorisation, AUTH-008054, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag, and it was approved. Under unauthorised-3ds-authenticated, an online payment that was authenticated with 3-D Secure and has no fraud flag is treated as made by the cardholder, and a matching CVV supports this. The dispute is therefore declined. The card has no purchases at this merchant before the disputed one. The only other purchase there, TXN-003875 on 2026-09-01, came after it and is context only, not part of the decision. The cardholder's statement says they do not recognise the payment, but it does not outweigh the authentication on record.",
+      "cited_evidence_ids" : [ "TXN-007839", "AUTH-008054", "TXN-003875" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-3ds-authenticated" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The payment of 1201.38 EUR to SALTMARSH JOURNEYS was made online and confirmed with 3-D Secure authentication, the correct card security code was given, and our fraud screening did not flag it. Under our policy, a payment authenticated this way is treated as made by the cardholder, so we are closing the dispute.",
+        "reason" : "You confirmed this online payment with your bank through 3-D Secure, the card's security code was entered correctly, and our fraud checks did not flag it. Under our policy, a payment confirmed this way is treated as made by the cardholder, so we cannot treat it as unauthorised.",
         "policy_section_ids" : [ "unauthorised-3ds-authenticated" ]
       } ]
     },
@@ -25,29 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 9471,
-    "output_tokens" : 1071,
+    "input_tokens" : 10276,
+    "output_tokens" : 1316,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 61585,
+    "cost_micro_usd" : 69705,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "search_policy",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -59,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12121,
-    "model_call_ms" : [ 1662, 2385, 2164, 1289, 4490 ]
+    "wall_clock_ms" : 13686,
+    "model_call_ms" : [ 1582, 2077, 2534, 2232, 5116 ]
   }
 }

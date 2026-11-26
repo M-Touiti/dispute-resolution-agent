@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000101",
   "category": "AMOUNT_MISMATCH",
   "outcome": "DECLINE",
-  "input_sha256": "31434c16302da09d757276ef7873a9873ca2e23c75bb00181d1546d60d61e7ec",
+  "input_sha256": "76c2b352ab2e0385ab30bb7000688ee449ae1f6bab099b7cd8861f1bbe86d27e",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRswABdvVtjLRt9BTC4U",
+  "response_id": "msg_011ChS3vHVJnfR3nRncUW3zj",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact checks out against the records: \"66 days after posting\" (2026-08-18 to 2026-10-23), the 359-cent difference (2250 minus 1891) and \"20% of the authorised amount is 378.2 cents\" are all correct, and the 18.91 EUR is presented as \"the cardholder's claim, not a merchant receipt\"."
+      "reason": "The stated facts match the records and the arithmetic is right: \"posted on 2026-08-18\", \"That is 66 days later\", \"approved for 18.91 EUR (1891 cents)\", \"359 cents higher\" and \"20% of the authorised amount is 378.2 cents\"; the bill amount is correctly attributed: \"comes only from the cardholder's statement\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers each required check: the time limit (\"within the 120-day limit\"), the posted and authorised amounts (\"2250 cents\", \"approved for 1891 cents\"), the absence of a receipt (\"No receipt is attached\") and the tip tolerance (\"359 cents is within the restaurant tip tolerance\")."
+      "reason": "Every AMOUNT_MISMATCH check is addressed: the time limit (\"66 days later, within the 120-day time limit\"), the posted and authorised amounts, the missing receipt (\"No receipt is attached\") and the restaurant tip tolerance (\"within the 20% tip allowance\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2344,
-    "output_tokens": 547,
+    "input_tokens": 2368,
+    "output_tokens": 582,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 20808,
+  "cost_micro_usd": 21604,
   "price_table": "2026-11-20"
 }

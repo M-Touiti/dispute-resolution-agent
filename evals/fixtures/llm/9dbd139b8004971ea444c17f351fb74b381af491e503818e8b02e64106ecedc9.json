@@ -327,22 +327,22 @@
   },
   "response" : {
     "content" : [ {
-      "id" : "toolu_01LyjDMr35HtSZ6JqJ4uxHmC",
+      "id" : "toolu_01R5neok1ej4Baw7G4sgcNEX",
       "input_json" : "{\"name\":\"unauthorised-transaction-checklist\"}",
       "name" : "load_skill",
       "type" : "tool_use"
     }, {
-      "id" : "toolu_014HZtfmo3eF4t8251gWh8Kd",
-      "input_json" : "{\"name\":\"reading-an-authorisation-trail\"}",
-      "name" : "load_skill",
-      "type" : "tool_use"
-    }, {
-      "id" : "toolu_014aH44tJDgzPAJLmD9d7DVa",
+      "id" : "toolu_015A4vjRuv6m79GLYhK6LmZv",
       "input_json" : "{\"transaction_id\":\"TXN-007898\"}",
       "name" : "get_transaction",
       "type" : "tool_use"
+    }, {
+      "id" : "toolu_01LfUsAsGBSgbk6eLgCrfg3a",
+      "input_json" : "{\"name\":\"reading-an-authorisation-trail\"}",
+      "name" : "load_skill",
+      "type" : "tool_use"
     } ],
-    "id" : "msg_011ChReewdd81tz3RCd2DwLi",
+    "id" : "msg_011ChS1Fd9w2SLfqhpQydDVE",
     "model" : "claude-opus-5-5",
     "refusal_category" : null,
     "stop_reason" : "TOOL_USE",

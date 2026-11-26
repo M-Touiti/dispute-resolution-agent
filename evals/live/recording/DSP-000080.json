@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000080",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:59:14.042136100Z",
+    "decided_at" : "2026-11-26T18:29:39.478659500Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007982 is a recurring charge of 52.90 EUR from Ashgrove Athletic Club (MER-000063) on card CRD-000223. The charge was made on 2026-10-11 and posted on 2026-10-12. The dispute was opened on 2026-10-22, 10 days after posting, so it is within the 120-day limit in time-limits. The merchant issued a written cancellation confirmation, DOC-000038, which says the subscription was cancelled with effect from 2026-10-05. The cancellation took effect before the charge, so under recurring-cancelled-before-charge the charge should not have been made. Under provisional-credit, the credit is the disputed charge only, 52.90 EUR. That equals the amount claimed and is far below the 3,000.00 EUR limit.",
+      "rationale" : "TXN-007982 is a recurring charge of 52.90 EUR from Ashgrove Athletic Club (MER-000063) on card CRD-000223. The charge was made on 2026-10-11 and posted on 2026-10-12. The dispute was opened on 2026-10-22, 10 days after posting, which is well within the 120-day limit in time-limits. The merchant issued a written cancellation confirmation (DOC-000038) saying the subscription was cancelled with effect from 2026-10-05. The cancellation took effect six days before the charge, so the charge should not have been made under recurring-cancelled-before-charge. The credit is the disputed charge only: 52.90 EUR, which matches the claimed amount and is far below the 3,000.00 EUR provisional credit limit. Neither the cardholder's statement nor the document contained any instruction to the bank.",
       "cited_evidence_ids" : [ "TXN-007982", "DOC-000038" ],
       "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5944,
-    "output_tokens" : 895,
+    "output_tokens" : 919,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 42953,
+    "cost_micro_usd" : 43433,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10072,
-    "model_call_ms" : [ 1595, 2502, 2295, 3611 ]
+    "wall_clock_ms" : 10339,
+    "model_call_ms" : [ 1651, 2351, 2322, 3919 ]
   }
 }

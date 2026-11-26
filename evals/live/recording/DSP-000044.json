@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000044",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:54:05.700294800Z",
+    "decided_at" : "2026-11-26T18:24:25.853316100Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007913 is a payment of 541.68 EUR to Brightwater Gadgets (MER-000059) on card CRD-000115. It posted on 2026-10-10, and the dispute was opened on 2026-10-22, 12 days later. That is well within the 120-day time limit. The merchant's order confirmation DOC-000019 gives an expected delivery date of 2026-10-13. Policy requires the cardholder to wait 15 days after the expected delivery date before opening a dispute. This dispute was opened 9 days after that date, so the waiting period had not ended and the dispute is declined. The waiting period ends on 2026-10-28, and the cardholder may open a new dispute from then if the order still has not arrived. The documents contain no instructions addressed to the bank.",
+      "rationale" : "TXN-007913 (541.68 EUR, Brightwater Gadgets, card CRD-000115) posted on 2026-10-10. The dispute was opened on 2026-10-22, 12 days later, so it is well within the 120-day time limit. The merchant's order confirmation DOC-000019 gives an expected delivery date of 2026-10-13. The dispute was opened 9 days after that date. Policy requires the cardholder to wait 15 days after the expected delivery date before opening a dispute, so a late delivery can still arrive. A dispute opened before then is declined. The waiting period ends on 2026-10-28, and the cardholder may open a new dispute from that date if the goods still have not arrived. Delivery and refunds were not checked, because the waiting period decides the case first.",
       "cited_evidence_ids" : [ "TXN-007913", "DOC-000019" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Your order's expected delivery date was 2026-10-13. A dispute for goods not received can only be opened 15 days after that date, so that a late delivery can still arrive. This dispute was opened on 2026-10-22, only 9 days later. If the order has still not arrived, you may open a new dispute from 2026-10-28.",
+        "reason" : "Your dispute was opened 9 days after the expected delivery date of 2026-10-13. You need to wait 15 days after that date before opening a dispute, so a late delivery can still arrive. If your order still has not arrived, you can open a new dispute from 2026-10-28.",
         "policy_section_ids" : [ "goods-not-received-wait" ]
       } ]
     },
@@ -25,25 +25,25 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 5618,
-    "output_tokens" : 914,
+    "input_tokens" : 5616,
+    "output_tokens" : 902,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 42259,
+    "cost_micro_usd" : 42011,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -55,7 +55,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 9488,
-    "model_call_ms" : [ 1653, 1534, 2071, 4174 ]
+    "wall_clock_ms" : 10388,
+    "model_call_ms" : [ 1675, 2336, 2322, 3978 ]
   }
 }

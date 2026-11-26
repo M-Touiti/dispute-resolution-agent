@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000023",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:51:00.156272500Z",
+    "decided_at" : "2026-11-26T18:21:08.223764400Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "This is a duplicate charge, so I propose a provisional credit of one posting, 136.74 EUR. Two purchases at WILLOWMERE GADGETS (MER-000041) on card CRD-000154 have the same authorisation, AUTH-008085. TXN-007873 was made at 2026-07-29T20:48:09Z and the disputed TXN-007874 at 2026-07-29T20:51:09Z. Each is 13674 minor units (136.74 EUR) and each posted on 2026-07-30. AUTH-008085 is one approved e-commerce authorisation for 13674 minor units, so the same authorisation was posted twice. The ledger shows no refund of either posting at this merchant. The other purchase at this merchant, TXN-004855, is for a different amount and is not part of this dispute. Time limit: the posting date was 2026-07-30 and the dispute was opened on 2026-10-31. That is 93 days, inside the 120-day limit. Under duplicate-same-authorisation, the extra posting is credited. Its amount, 136.74 EUR, matches the amount claimed and is below the 3,000.00 EUR provisional credit limit.",
+      "rationale" : "The ledger shows that one authorisation was posted twice. TXN-007873 and TXN-007874 are both purchases at WILLOWMERE GADGETS (MER-000041) for 136.74 EUR. TXN-007873 was made at 2026-07-29T20:48:09Z and TXN-007874 at 20:51:09Z, and both posted on 2026-07-30. Both carry the same authorisation, AUTH-008085, which was approved once for 13674 cents at 20:48:09Z, the time of TXN-007873. That makes TXN-007874 the extra posting. No refund of either posting appears on the card at this merchant. The dispute was opened on 2026-10-31, 93 days after posting, which is within the 120-day limit in time-limits. Under duplicate-same-authorisation, the extra posting gets provisional credit. Its amount, 136.74 EUR, is below the 3,000.00 EUR automated limit in provisional-credit. The credit covers one posting only, which matches the cardholder's claim.",
       "cited_evidence_ids" : [ "TXN-007874", "TXN-007873", "AUTH-008085" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,37 +25,37 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7830,
-    "output_tokens" : 1188,
+    "input_tokens" : 7809,
+    "output_tokens" : 1164,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 57701,
+    "cost_micro_usd" : 57176,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +67,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11920,
-    "model_call_ms" : [ 1597, 1257, 1800, 2560, 4629 ]
+    "wall_clock_ms" : 12862,
+    "model_call_ms" : [ 1526, 2338, 1818, 2444, 4623 ]
   }
 }

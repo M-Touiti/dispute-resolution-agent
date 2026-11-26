@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000169",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:14:31.077102200Z",
+    "decided_at" : "2026-11-26T18:45:13.971887700Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,13 +12,13 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute. TXN-008152 is on card CRD-000243. It posted on 2026-09-04 and the dispute was opened on 2026-10-27, 53 days later. That is within the 120-day limit in time-limits. The posted amount is 9462 cents (94.62 EUR). Authorisation AUTH-008337 approved 8449 cents (84.49 EUR) for a contactless payment. The merchant, Meadowlark Bistro (MER-000011), is listed as a RESTAURANT. No receipt is attached, so the 84.49 EUR bill is only the cardholder's own figure. The difference is 9462 - 8449 = 1013 cents (10.13 EUR). The tip limit is 20% of the authorised amount, 0.20 x 8449 = 1689.8 cents. The difference is below that limit. Under amount-restaurant-tip, a restaurant may post up to 20% above the authorised amount for a tip, and that counts as an agreed tip rather than a mismatch.",
+      "rationale" : "The dispute is in time. TXN-008152 posted on 2026-09-04 and the dispute was opened on 2026-10-27, which is 53 days later and inside the 120-day limit (time-limits). The posted amount is 9462 cents. Authorisation AUTH-008337 was approved for 8449 cents. The difference is 1013 cents. No receipt is attached, and the cardholder's figure of 84.49 EUR is a claim, not a receipt. The merchant, MER-000011 (Meadowlark Bistro), is a RESTAURANT. 20% of the authorised amount is 1689.8 cents, and the 1013-cent difference is within that. Under amount-restaurant-tip, a difference within this limit counts as an agreed tip, not a mismatch, so the dispute is declined.",
       "cited_evidence_ids" : [ "TXN-008152", "AUTH-008337" ],
       "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Meadowlark Bistro, a restaurant, approved the payment for 84.49 EUR and charged 94.62 EUR. The extra 10.13 EUR is within the 20% allowed for a tip on restaurant payments, so under our policy it is treated as an agreed tip, not a wrong amount.",
-        "policy_section_ids" : [ "amount-restaurant-tip" ]
+        "reason" : "The restaurant charged 10.13 EUR more than the 84.49 EUR you approved at the time of payment. Restaurants may add a tip of up to 20% of the approved amount (16.90 EUR here). This difference is within that limit and no receipt shows a different agreed amount, so it is treated as a tip.",
+        "policy_section_ids" : [ "amount-restaurant-tip", "time-limits" ]
       } ]
     },
     "guard_violations" : [ ]
@@ -26,32 +26,32 @@
   "usage" : {
     "model_calls" : 4,
     "input_tokens" : 5052,
-    "output_tokens" : 1105,
+    "output_tokens" : 1050,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 43862,
+    "cost_micro_usd" : 42742,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 4,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11322,
-    "model_call_ms" : [ 1440, 2032, 2119, 5662 ]
+    "wall_clock_ms" : 11071,
+    "model_call_ms" : [ 1446, 2137, 2096, 5359 ]
   }
 }

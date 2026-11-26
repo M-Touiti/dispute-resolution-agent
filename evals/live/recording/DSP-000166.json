@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000166",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:13:59.756756300Z",
+    "decided_at" : "2026-11-26T18:44:42.645901900Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,38 +12,42 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "The disputed charge TXN-008146 is on card CRD-000152. It was made on 2026-08-30 and posted on 2026-08-31 for 56.69 EUR at Willowmere Athletic Club (MER-000072). The dispute was opened on 2026-10-28, which is 58 days after posting and within the 120-day limit in time-limits. The merchant's cancellation confirmation DOC-000079 says the subscription was cancelled with effect from 2026-09-06. That is after the charge on 2026-08-30, so the charge covers a period the cardholder had not yet cancelled. Under recurring-cancelled-after-charge, the dispute is declined.",
+      "rationale" : "The dispute is declined because the subscription was cancelled after this charge was made. TXN-008146 is a 56.69 EUR charge by Willowmere Athletic Club (MER-000072) on card CRD-000152. The charge was made on 2026-08-30 and posted on 2026-08-31. The dispute was opened on 2026-10-28, 58 days after posting, which is within the 120-day limit in time-limits. The merchant's cancellation confirmation, DOC-000079, says the subscription was cancelled with effect from 2026-09-06. That date is after the charge, so the charge covers a period the cardholder had not yet cancelled. Under recurring-cancelled-after-charge the dispute is declined. No document or record in this case contained an instruction.",
       "cited_evidence_ids" : [ "TXN-008146", "DOC-000079" ],
       "cited_policy_sections" : [ "time-limits", "recurring-cancelled-after-charge" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Willowmere Athletic Club charged you on 2026-08-30. Their own cancellation confirmation says your subscription was cancelled with effect from 2026-09-06, after that charge. The charge therefore covers a period before your cancellation took effect.",
-        "policy_section_ids" : [ "time-limits", "recurring-cancelled-after-charge" ]
+        "reason" : "The charge of 56.69 EUR was made on 2026-08-30. The merchant's confirmation shows your subscription was cancelled with effect from 2026-09-06, after that date. The charge therefore covers a period before your cancellation took effect.",
+        "policy_section_ids" : [ "recurring-cancelled-after-charge", "time-limits" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 5410,
-    "output_tokens" : 872,
+    "input_tokens" : 5703,
+    "output_tokens" : 1069,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 40380,
+    "cost_micro_usd" : 45512,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
@@ -55,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 9837,
-    "model_call_ms" : [ 1576, 2388, 2019, 3820 ]
+    "wall_clock_ms" : 10129,
+    "model_call_ms" : [ 1555, 1901, 1874, 4759 ]
   }
 }

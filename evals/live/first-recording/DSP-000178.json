@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000178",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000178",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:16:16.920034500Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend a provisional credit of 21.20 EUR for the disputed charge only. TXN-008169 is a 21.20 EUR charge from Kestrel Athletic Club on card CRD-000094, made on 2026-09-26 and posted on 2026-09-27. The dispute was opened on 2026-10-29, 32 days after posting, which is inside the 120-day time limit (time-limits). Kestrel Athletic Club's cancellation confirmation (DOC-000087) says the subscription was cancelled with effect from 2026-09-12. That is before the 2026-09-26 charge, so the charge should not have been made (recurring-cancelled-before-charge). The cardholder asked for 84.80 EUR, which covers four months of charges. Only TXN-008169 is in dispute, and the credit can never be more than the disputed charge (provisional-credit), so the larger claim does not change the amount. 21.20 EUR is well under the 3,000.00 EUR limit for automated credit.",
+      "cited_evidence_ids" : [ "TXN-008169", "DOC-000087" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 2120,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5816,
+    "output_tokens" : 1002,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 44507,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9712,
+    "model_call_ms" : [ 1555, 1316, 1916, 4868 ]
+  }
+}

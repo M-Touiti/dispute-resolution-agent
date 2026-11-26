@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000120",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:06:20.730443200Z",
+    "decided_at" : "2026-11-26T18:37:05.512297800Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,9 +12,9 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008058 is a 2,097.42 EUR purchase at ASHGROVE DEVICES (MER-000014) on card CRD-000140. It posted on 2026-07-25. The dispute was opened on 2026-10-25, 92 days later, which is within the 120-day time limit. Its authorisation, AUTH-008252, shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set. The card was not present, the payment was not confirmed with 3-D Secure and the fraud flag is set, so under unauthorised-card-not-present the payment counts as unauthorised. The credit of 2,097.42 EUR is the full posted amount, equal to the claim and below the 3,000.00 EUR limit for provisional credit.",
+      "rationale" : "TXN-008058 is on card CRD-000140, for 2,097.42 EUR at MER-000014 (ASHGROVE DEVICES). It posted on 2026-07-25. The dispute was opened on 2026-10-25, which is 92 days later and inside the 120-day limit in time-limits. Authorisation AUTH-008252 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, no PIN verified, and the fraud flag set. That means the card was not present, the payment was not confirmed with 3-D Secure, and fraud screening flagged it. Under unauthorised-card-not-present, the payment counts as unauthorised. There are no earlier transactions at this merchant on this card; TXN-008058 is the only one. The credit is the posted amount, 2,097.42 EUR, which matches the claim and is below the 3,000.00 EUR automated limit in provisional-credit. No instructions were found in the case content.",
       "cited_evidence_ids" : [ "TXN-008058", "AUTH-008252" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ {
         "action" : "issue_provisional_credit",
         "amount_minor" : 209742,
@@ -25,37 +25,49 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 10535,
-    "output_tokens" : 1032,
+    "input_tokens" : 12165,
+    "output_tokens" : 1314,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 65217,
+    "cost_micro_usd" : 77377,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_card"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -67,7 +79,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11584,
-    "model_call_ms" : [ 1507, 2764, 1936, 1320, 3939 ]
+    "wall_clock_ms" : 14828,
+    "model_call_ms" : [ 1613, 2932, 2650, 2837, 4600 ]
   }
 }

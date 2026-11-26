@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000114",
   "category": "CANCELLED_RECURRING",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "d902750e039bb4b69bfc75217de04beb9786af146987cb0d827e818c4b3a6db5",
+  "input_sha256": "300734ab510a3d61e4d62f55be4e13c9cc496abf314085cb39d8ed6c3164b07c",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRt1ziW9gpjePcCDvx7K",
+  "response_id": "msg_011ChS41453usNVNP6Ha7qfu",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact is supported by the inputs: \"43 days after posting\" is correct from 2026-09-11 to 2026-10-24, \"with effect from 2026-09-07, which is three days before the charge\" matches DOC-000054 and TXN-008046, and \"a merchant that bills on a recurring basis\" matches recurring_billing true."
+      "reason": "Every factual statement matches the inputs: \"posted on 2026-09-11\", \"opened on 2026-10-24, 43 days after posting\" (a correct count), and \"cancelled with effect from 2026-09-07. That is three days before the charge\" all agree with TXN-008046 and DOC-000054."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale addresses every required check: the time limit (\"within the 120-day time limit\"), the written confirmation (\"DOC-000054 is a cancellation confirmation issued by the merchant\"), the effective date against the charge (\"three days before the charge\") and the credit limit (\"well under the 3,000.00 EUR provisional credit limit\")."
+      "reason": "The rationale covers each required check: the time limit (\"within the 120-day time limit\"), the written confirmation (\"DOC-000054, issued by the merchant\"), its effective date against the charge (\"three days before the charge\") and the credit limit (\"well under the 3,000.00 EUR limit\")."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request, so there is no note to the merchant to grade."
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2611,
-    "output_tokens": 538,
+    "input_tokens": 2614,
+    "output_tokens": 463,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21696,
+  "cost_micro_usd": 20208,
   "price_table": "2026-11-20"
 }

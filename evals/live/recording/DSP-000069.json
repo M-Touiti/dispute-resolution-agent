@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000069",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:57:39.728540800Z",
+    "decided_at" : "2026-11-26T18:28:04.569244Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,9 +12,9 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007962 is a purchase of 2163.21 EUR at LARKSPUR GADGETS (MER-000077) on card CRD-000074. It posted on 2026-09-11. The dispute was opened on 2026-10-29, 48 days later, which is inside the 120-day limit in time-limits. The authorisation behind the charge, AUTH-008165, shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and fraud flag set. That means the card was not present, the payment was not confirmed with 3-D Secure and the fraud screening flagged it. All conditions of unauthorised-card-not-present are met, so the payment counts as unauthorised. The credit is the posted amount of 2163.21 EUR. This matches the cardholder's claim and is below the 3,000.00 EUR limit for automated credit in provisional-credit.",
+      "rationale" : "TXN-007962 is on card CRD-000074. It is a charge of 2163.21 EUR at LARKSPUR GADGETS (MER-000077), posted on 2026-09-11. The dispute was opened on 2026-10-29, 48 days later, which is within the 120-day time limit. Its authorisation, AUTH-008165, shows entry mode ECOMMERCE, so the card was not present. 3-D Secure was NOT_PERFORMED, CVV was NOT_PRESENT, no PIN was verified, and the fraud flag is set. The card has no earlier transactions at this merchant: the disputed charge is the only one. The payment was made without the card present, without 3-D Secure and with the fraud flag set, so under unauthorised-card-not-present it counts as unauthorised. The credit is the transaction amount, 216321 minor units. That equals the amount claimed and is below the 3,000.00 EUR provisional credit limit, so it can be approved. No instructions appeared in the cardholder statement or the records.",
       "cited_evidence_ids" : [ "TXN-007962", "AUTH-008165" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-card-not-present", "provisional-credit" ],
       "proposed_actions" : [ {
         "action" : "issue_provisional_credit",
         "amount_minor" : 216321,
@@ -24,34 +24,46 @@
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 6753,
-    "output_tokens" : 1011,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 12501,
+    "output_tokens" : 1238,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 48528,
+    "cost_micro_usd" : 77201,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_card"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +75,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11698,
-    "model_call_ms" : [ 1540, 2918, 2683, 4460 ]
+    "wall_clock_ms" : 13015,
+    "model_call_ms" : [ 1516, 2865, 2919, 1264, 4326 ]
   }
 }

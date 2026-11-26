@@ -327,27 +327,22 @@
   },
   "response" : {
     "content" : [ {
-      "id" : "toolu_01FgHYdEwQvkLagMMSszP74g",
+      "id" : "toolu_01GMu1Vwr5jhZZBaAa1TivFr",
       "input_json" : "{\"name\":\"unauthorised-transaction-checklist\"}",
       "name" : "load_skill",
       "type" : "tool_use"
     }, {
-      "id" : "toolu_013fdRpHFKk1GjCULZnEZUdS",
-      "input_json" : "{\"name\":\"reading-an-authorisation-trail\"}",
-      "name" : "load_skill",
-      "type" : "tool_use"
-    }, {
-      "id" : "toolu_012PcDCUDzzwxP9Tbyma5xiu",
+      "id" : "toolu_01T7eRhmQcuY7sunMNqA85LN",
       "input_json" : "{\"transaction_id\":\"TXN-008096\"}",
       "name" : "get_transaction",
       "type" : "tool_use"
     }, {
-      "id" : "toolu_015VDB8ghoFYvnQ2ZAzj1qfy",
-      "input_json" : "{\"card_id\":\"CRD-000238\"}",
-      "name" : "get_card",
+      "id" : "toolu_01HiZ2sWC7DqhR4EYaQu5gx3",
+      "input_json" : "{\"name\":\"reading-an-authorisation-trail\"}",
+      "name" : "load_skill",
       "type" : "tool_use"
     } ],
-    "id" : "msg_011ChRfx1HyVn8ZG684iV5tP",
+    "id" : "msg_011ChS2bWNp7MTzHRxR3U3PU",
     "model" : "claude-opus-5-5",
     "refusal_category" : null,
     "stop_reason" : "TOOL_USE",
@@ -355,7 +350,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 5704,
       "input_tokens" : 309,
-      "output_tokens" : 222
+      "output_tokens" : 171
     }
   }
 }

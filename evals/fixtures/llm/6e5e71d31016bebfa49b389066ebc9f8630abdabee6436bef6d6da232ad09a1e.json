@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Meadowlark Fitness subscription yet were charged 66.28 EUR again on 2026-08-26, which is a recurring payment taken after cancellation.\"}",
+      "text" : "{\"category\":\"CANCELLED_RECURRING\",\"reason\":\"The cardholder says they cancelled their Meadowlark Fitness subscription yet were charged again on 2026-08-26, which is a recurring payment taken after cancellation.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChRg4BaXNBz111JTCabB4",
+    "id" : "msg_011ChS2hp7KjUKgp8Qt6aY9B",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 105,
-      "output_tokens" : 89
+      "output_tokens" : 81
     }
   }
 }

@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000087",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000087",
+    "state" : "ESCALATED",
+    "decided_at" : "2026-11-26T14:00:16.706931700Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : "AGENT_DECISION",
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "ESCALATE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-007995 is a charge of 4,146.81 EUR at COPPERLEAF JOURNEYS on card CRD-000162. It posted on 2026-09-27 and the dispute was opened on 2026-10-26, 29 days later. That is inside the 120-day limit in time-limits. The authorisation AUTH-008195 shows entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, PIN not verified and the fraud flag set. Under unauthorised-card-not-present, that means the payment counts as unauthorised and the rules would credit the full 414,681 cents. Under provisional-credit, the automated process never grants a credit above 3,000.00 EUR, so the case goes to a specialist to decide. No action is proposed.",
+      "cited_evidence_ids" : [ "TXN-007995", "AUTH-008195" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-card-not-present", "provisional-credit" ],
+      "proposed_actions" : [ ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 10314,
+    "output_tokens" : 1002,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 63593,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11631,
+    "model_call_ms" : [ 1569, 2767, 1815, 1999, 3403 ]
+  }
+}

@@ -3,19 +3,19 @@
   "dispute_id": "DSP-000032",
   "category": "AMOUNT_MISMATCH",
   "outcome": "APPROVE_PROVISIONAL_CREDIT",
-  "input_sha256": "cebc68858a3db15935ad95b7838d2c010ae37af0f10fca6204b02c40d401f7d3",
+  "input_sha256": "524faba8ba793d8ad53a670deedd945043de22f23a55e9ca8d789cf8a5f70add",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsYg2MdVsx1WQ2jGrZ9",
+  "response_id": "msg_011ChS3ZJE8bnYbwExtTfAsY",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every stated fact matches the records, including \"posted on 2026-09-30\", \"25 days later\", \"approved only 32.84 EUR (3284 cents)\", \"chip payment with PIN verified\" and the \"426-cent difference\" (3710 \u2212 3284)."
+      "reason": "Every fact in the rationale matches the records and the arithmetic is right, including \"posted on 2026-09-30\", \"25 days later\", \"AUTH-008104 was for 32.84 EUR (3284 cents): chip payment, PIN verified, approved\" and \"3710 \u2212 3284 = 426 cents\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"25 days later, which is inside the 120-day limit\"), the posted, authorised and receipt amounts, and the credit of the difference only (\"only that difference is credited\"); a tip tolerance check is not needed because Lumen Energy is not a restaurant."
+      "reason": "The rationale covers each required check: the time limit (\"25 days later, which is inside the 120-day limit\"), the posted, authorised and receipt amounts, and that \"only this difference is credited\"; the tip tolerance does not apply because the merchant is an energy company, not a restaurant."
     },
     "merchant_request_clear": {
       "verdict": "na",
@@ -24,11 +24,11 @@
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2713,
-    "output_tokens": 476,
+    "input_tokens": 2696,
+    "output_tokens": 483,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 20864,
+  "cost_micro_usd": 20936,
   "price_table": "2026-11-20"
 }

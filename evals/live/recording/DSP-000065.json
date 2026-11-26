@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000065",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:57:08.867602800Z",
+    "decided_at" : "2026-11-26T18:27:30.431552300Z",
     "reported_category" : "CANCELLED_RECURRING",
     "category" : "CANCELLED_RECURRING",
     "escalation_reason" : null,
@@ -12,42 +12,42 @@
     "decision" : {
       "outcome" : "REQUEST_MERCHANT_EVIDENCE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007958 is a charge of 16.79 EUR from Bramble Streaming (MER-000053, a merchant that bills on a recurring basis) on card CRD-000106. It was charged on 2026-09-16 and posted on 2026-09-17. The dispute was opened on 2026-10-30, 43 days after posting, which is within the 120-day limit in time-limits. The cardholder says the subscription was cancelled by phone but has nothing in writing. No cancellation confirmation from the merchant is attached, so there is no cancellation date to compare with the 2026-09-16 charge date. A cardholder's account of a phone call is a claim, not proof. Under recurring-no-proof, the next step is to ask the merchant for its cancellation records and the terms of the subscription. If those records show a cancellation that took effect before 2026-09-16, the credit would be limited to this one 16.79 EUR charge.",
+      "rationale" : "TXN-007958 is a charge of 1679 EUR cents (16.79 EUR) on card CRD-000106. The charge was made at Bramble Streaming (MER-000053), a merchant that bills on a recurring basis, on 2026-09-16 and posted on 2026-09-17. The dispute was opened on 2026-10-30, 43 days after posting. That is within the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing. No documents are attached, so there is no merchant cancellation confirmation and no effective date to compare with the charge date. Under recurring-no-proof, the next step is to ask the merchant for its cancellation records and the subscription terms.",
       "cited_evidence_ids" : [ "TXN-007958" ],
       "cited_policy_sections" : [ "time-limits", "recurring-no-proof" ],
       "proposed_actions" : [ {
         "action" : "request_merchant_evidence",
         "evidence" : [ "CANCELLATION_POLICY" ],
-        "note" : "Please provide your cancellation records for this card's subscription, including any cancellation request (for example by phone) and the date it took effect. Please also provide the subscription terms that applied to the 16.79 EUR charge made on 2026-09-16."
+        "note" : "Please send your cancellation records for this card's subscription, including any record of a phone cancellation request and when it took effect, and the subscription's cancellation terms that applied to the 16.79 EUR charge made on 2026-09-16."
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 4384,
-    "output_tokens" : 919,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 6562,
+    "output_tokens" : 869,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 37353,
+    "cost_micro_usd" : 46069,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "cancelled-recurring-checklist" ],
@@ -59,7 +59,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10406,
-    "model_call_ms" : [ 1622, 2391, 1587, 4723 ]
+    "wall_clock_ms" : 9844,
+    "model_call_ms" : [ 1772, 1359, 1281, 1426, 3876 ]
   }
 }

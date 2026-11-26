@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000021",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:50:39.490159400Z",
+    "decided_at" : "2026-11-26T18:20:45.141303900Z",
     "reported_category" : "UNAUTHORISED_TRANSACTION",
     "category" : "UNAUTHORISED_TRANSACTION",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-007871 (68,731 minor units EUR at LUMEN TRAVEL, MER-000070) is on card CRD-000182. It posted on 2026-10-13 and the dispute was opened on 2026-10-29. That is 16 days, well inside the 120-day limit in time-limits. The authorisation behind it, AUTH-008083, shows entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag. Under unauthorised-3ds-authenticated, an online payment the cardholder confirmed with 3-D Secure and that has no fraud flag is treated as made by the cardholder, and the matching security code supports this. The statement that the cardholder never shopped there does not outweigh that authentication, so the dispute is declined.",
+      "rationale" : "I recommend declining this dispute. The disputed transaction TXN-007871 (68731 EUR cents at LUMEN TRAVEL, MER-000070) is on card CRD-000182. It posted on 2026-10-13 and the dispute was opened on 2026-10-29. That is 16 days, well within the 120-day time limit. Its authorisation AUTH-008083 is an online payment (entry mode ECOMMERCE). The cardholder confirmed it with 3-D Secure (AUTHENTICATED), the card security code matched (CVV MATCH), the bank approved it and the fraud flag was not set. The policy treats an online payment confirmed with 3-D Secure and without the fraud flag as made by the cardholder, and a matching security code supports this. The card has no earlier transactions at this merchant: the disputed purchase is the only one. That is context only and does not change the outcome. The cardholder's statement that they never shopped there does not outweigh the authentication record.",
       "cited_evidence_ids" : [ "TXN-007871", "AUTH-008083" ],
-      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-evidence", "unauthorised-3ds-authenticated" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "We can't refund this payment as unauthorised. Our records show it was an online payment that was confirmed through your bank's 3-D Secure check, with the correct card security code, and our fraud screening didn't flag it. Under our policy, a payment confirmed this way counts as one you made.",
+        "reason" : "The bank's records show this online payment of 687.31 EUR was confirmed with 3-D Secure, the card's security code was correct and the payment was not flagged as suspicious. Under our policy, that makes it a payment made by the cardholder, so the dispute is declined.",
         "policy_section_ids" : [ "unauthorised-3ds-authenticated" ]
       } ]
     },
@@ -25,33 +25,45 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 9111,
-    "output_tokens" : 1001,
+    "input_tokens" : 12371,
+    "output_tokens" : 1284,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 59124,
+    "cost_micro_usd" : 77824,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_card"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "get_authorisations"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "policy",
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
@@ -63,7 +75,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10860,
-    "model_call_ms" : [ 1562, 1409, 2172, 963, 4600 ]
+    "wall_clock_ms" : 16256,
+    "model_call_ms" : [ 1784, 4974, 2643, 997, 5695 ]
   }
 }

@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000142",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:09:45.595445100Z",
+    "decided_at" : "2026-11-26T18:40:32.637907Z",
     "reported_category" : "DUPLICATE_CHARGE",
     "category" : "DUPLICATE_CHARGE",
     "escalation_reason" : null,
@@ -12,7 +12,7 @@
     "decision" : {
       "outcome" : "APPROVE_PROVISIONAL_CREDIT",
       "confidence" : "HIGH",
-      "rationale" : "The ledger shows two purchases at HARBOUR GADGETS (MER-000023) on card CRD-000116. TXN-008097 was made at 2026-08-02T08:30:28Z and TXN-008098 (the disputed one) at 2026-08-02T08:31:28Z. Both are for 37312 minor units (373.12 EUR), both posted on 2026-08-03, and both carry the same authorisation, AUTH-008288. That authorisation was approved once for 373.12 EUR. The ledger shows no refund at this merchant. The time limit is met: the dispute was opened on 2026-10-24, 82 days after posting, within the 120-day limit. Under duplicate-same-authorisation, one authorisation posted twice is a duplicate, and the extra posting is credited. The credit is one posting, TXN-008098 for 373.12 EUR, which is within the 3,000.00 EUR provisional credit limit and does not exceed the claimed amount.",
+      "rationale" : "I recommend a provisional credit of 373.12 EUR for one of the two postings. Time limit: TXN-008098 posted on 2026-08-03 and the dispute was opened on 2026-10-24. That is 82 days, inside the 120-day limit. The ledger shows two purchases at HARBOUR GADGETS (MER-000023) on card CRD-000116, both for 373.12 EUR (37312 minor units) and both posted on 2026-08-03. They are TXN-008097, made at 2026-08-02T08:30:28Z, and TXN-008098, made at 2026-08-02T08:31:28Z. Both carry the same authorisation, AUTH-008288. That authorisation was approved once for 37312, as an online payment with 3-D Secure authenticated and the CVV matching. So one authorisation was posted twice. The card has no refunds at all. Under duplicate-same-authorisation the extra posting is credited. TXN-008098 is that extra posting, and 373.12 EUR is below the 3,000.00 EUR provisional credit limit. The credit equals the amount the cardholder claims and covers only one posting.",
       "cited_evidence_ids" : [ "TXN-008098", "TXN-008097", "AUTH-008288" ],
       "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
       "proposed_actions" : [ {
@@ -25,37 +25,41 @@
   },
   "usage" : {
     "model_calls" : 5,
-    "input_tokens" : 7511,
-    "output_tokens" : 1147,
+    "input_tokens" : 7680,
+    "output_tokens" : 1268,
     "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 55632,
+    "cost_micro_usd" : 58650,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "search_transactions",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "search_transactions"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
+  }, {
+    "server" : "ledger",
+    "is_error" : false,
+    "tool" : "search_transactions"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "duplicate-charge-checklist" ],
@@ -67,7 +71,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 11287,
-    "model_call_ms" : [ 1535, 1390, 1823, 2401, 4092 ]
+    "wall_clock_ms" : 14739,
+    "model_call_ms" : [ 1556, 2064, 2023, 2969, 6000 ]
   }
 }

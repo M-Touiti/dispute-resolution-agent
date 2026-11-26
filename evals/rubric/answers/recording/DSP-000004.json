@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000004",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "6db94e50eae17a29cbfd30071e53e3555351a7960bcf4c4cc8dc2f9a908d8303",
+  "input_sha256": "0562e43110f36a33440e1cb132494c3e02e40b8ab8da9d6f42a9595f152c2190",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsRkQ5y5AU3GfgmfwtB",
+  "response_id": "msg_011ChS3SYnmt7JYqrzKJ2X4g",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The statements are supported by the records: \"posted on 2026-07-27\", \"92 days later\" (correct from 2026-07-27 to 2026-10-27), and \"entry mode ECOMMERCE, 3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag\" all match TXN-007839 and AUTH-008054, and the policy is paraphrased accurately."
+      "reason": "Every fact matches the records, including \"posted on 2026-07-27\", \"92 days later\" (correct from 2026-07-27 to 2026-10-27), \"3-D Secure AUTHENTICATED, CVV MATCH and no fraud flag\" and \"TXN-003875 on 2026-09-01\", and the policy is paraphrased accurately."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, entry mode, 3-D Secure result and fraud flag, but never addresses the cardholder's earlier transactions with SALTMARSH JOURNEYS, and it does not say it stopped at a deciding rule; it goes no further than \"counts as made by the cardholder\"."
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"inside the 120-day limit\"), the entry mode (\"ECOMMERCE\"), the 3-D Secure result (\"3-D Secure AUTHENTICATED\"), the fraud flag (\"no fraud flag\") and earlier transactions (\"no purchases at this merchant before the disputed one\"); the credit limit does not apply to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request, so there is no merchant note to judge."
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3103,
-    "output_tokens": 943,
+    "input_tokens": 3241,
+    "output_tokens": 587,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 31764,
+  "cost_micro_usd": 25196,
   "price_table": "2026-11-20"
 }

@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000147",
   "category": "GOODS_NOT_RECEIVED",
   "outcome": "DECLINE",
-  "input_sha256": "b65ce8ace47e198fcf80f2c24552b2069cb14dd5ab755465194c31edc870eeb4",
+  "input_sha256": "1cecb0843717dbf2424c16296af0112cbe0807f0f61cdffce427dd9b7b14b4b4",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtCGkwc15qrMErhqjxk",
+  "response_id": "msg_011ChS4AgEg4hYLzDJpKq635",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "The facts match the records, and the day counts are correct: \"posted on 2026-08-14 ... 72 days later\" and \"opened 69 days after that date\" both follow from the dates. The delivery details \"signed for by O. Quinn\" in Tampere match DOC-000069 and the cardholder record."
+      "reason": "Each fact checks out against the records: \"posted on 2026-08-14\", \"72 days later\" and \"69 days after that date\" are all correct, and \"signed for by O. Quinn\" matches DOC-000069."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"within the 120-day time limit\"), the waiting period (\"the 15-day waiting period has passed\") and the delivery record with its signer. It then stops at a deciding check and says why: \"Under the proof-of-delivery rule, the goods count as received and the dispute is declined.\""
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the expected delivery date and the wait (\"the 15-day wait ... has passed\"), and the delivery record and signer; it then stops at the deciding proof-of-delivery check, saying \"the goods are treated as received and the dispute is declined\"."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2675,
-    "output_tokens": 753,
+    "input_tokens": 2699,
+    "output_tokens": 684,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 26252,
+  "cost_micro_usd": 24968,
   "price_table": "2026-11-20"
 }

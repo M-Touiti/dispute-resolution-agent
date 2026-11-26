@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000097",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000097",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:02:21.820775800Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "The cardholder opened this dispute in time. TXN-008014 is a 64.84 EUR charge on card CRD-000037 by Meadowlark Fitness (MER-000045), a merchant that bills on a recurring basis. It was charged on 2026-08-31 and posted on 2026-09-01. The dispute was opened on 2026-10-30, 59 days after posting, so it falls within the 120-day limit in time-limits. The merchant issued a written cancellation confirmation, DOC-000046, which says the subscription was cancelled from 2026-08-23. That date is before the 2026-08-31 charge, so the charge should not have been made. Under recurring-cancelled-before-charge, provisional credit for the charge is approved. The credit is only for the disputed charge: 6484 minor units, the same as the claimed amount. It is well below the 3,000.00 EUR limit in provisional-credit. The document contained no instructions.",
+      "cited_evidence_ids" : [ "TXN-008014", "DOC-000046" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 6484,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5912,
+    "output_tokens" : 997,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 45029,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10602,
+    "model_call_ms" : [ 1555, 2416, 2345, 4205 ]
+  }
+}

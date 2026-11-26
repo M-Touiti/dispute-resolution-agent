@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000152",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:11:41.568636300Z",
+    "decided_at" : "2026-11-26T18:42:27.364522Z",
     "reported_category" : "AMOUNT_MISMATCH",
     "category" : "AMOUNT_MISMATCH",
     "escalation_reason" : null,
@@ -12,46 +12,46 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I'm declining this dispute because the extra amount falls within the restaurant tip allowance. TXN-008120 at Lumen Kitchen (MER-000065, category RESTAURANT) is on card CRD-000105. It posted on 2026-07-18 for 5519 cents. The dispute was opened on 2026-10-25, 99 days later, so it is within the 120-day limit in time-limits. The authorisation AUTH-008308 was approved by chip and PIN for 5018 cents. No receipt is attached. The cardholder's figure of 50.18 EUR is their own claim, not a receipt, and it matches the authorised amount. The posted amount is 501 cents above the authorised amount. The limit is 20% of 5018, which is 1003.6 cents. Under amount-restaurant-tip, a restaurant may post up to 20% above the authorised amount to add a tip, and a difference within that limit counts as an agreed tip, not a mismatch.",
+      "rationale" : "TXN-008120 is on card CRD-000105. It was posted on 2026-07-18 and the dispute was opened on 2026-10-25, 99 days later. That is within the 120-day limit in time-limits. The posted amount is 5519 cents. Authorisation AUTH-008308 was approved for 5018 cents by chip with PIN verified. The merchant, MER-000065 (Lumen Kitchen), is in the RESTAURANT category. No receipt is attached. The cardholder's statement that the bill was 50.18 EUR is a claim, not a receipt, and it matches the authorised amount. The posted amount is 501 cents above the authorised amount. 20% of the authorised amount is 1003.6 cents, so the difference is within the restaurant tip tolerance. Under amount-restaurant-tip, this counts as an agreed tip, not a mismatch, so the dispute is declined.",
       "cited_evidence_ids" : [ "TXN-008120", "AUTH-008308" ],
       "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Your Lumen Kitchen payment was authorised for 50.18 EUR and posted for 55.19 EUR. The extra 5.01 EUR is less than 20% of the authorised amount, the most a restaurant may add as a tip. Under our policy this counts as an agreed tip, not a charging error.",
-        "policy_section_ids" : [ "amount-restaurant-tip" ]
+        "reason" : "The restaurant authorised 50.18 EUR and posted 55.19 EUR. Restaurants may add a tip of up to 20% of the authorised amount (up to 10.03 EUR here). The 5.01 EUR difference is within that limit, so it is treated as an agreed tip rather than an incorrect amount.",
+        "policy_section_ids" : [ "amount-restaurant-tip", "time-limits" ]
       } ]
     },
     "guard_violations" : [ ]
   },
   "usage" : {
-    "model_calls" : 4,
-    "input_tokens" : 5067,
-    "output_tokens" : 1126,
-    "cache_read_input_tokens" : 17776,
+    "model_calls" : 5,
+    "input_tokens" : 7717,
+    "output_tokens" : 1095,
+    "cache_read_input_tokens" : 23480,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 44326,
+    "cost_micro_usd" : 55077,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "ledger",
-    "tool" : "get_authorisations",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_authorisations"
   }, {
     "server" : "ledger",
-    "tool" : "get_merchant",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_merchant"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "amount-mismatch-checklist" ],
@@ -63,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 12297,
-    "model_call_ms" : [ 1555, 1366, 2865, 6374 ]
+    "wall_clock_ms" : 10618,
+    "model_call_ms" : [ 1628, 1241, 1981, 1255, 4463 ]
   }
 }

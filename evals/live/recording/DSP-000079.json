@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000079",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T13:59:03.961897100Z",
+    "decided_at" : "2026-11-26T18:29:29.137297600Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "I recommend declining this dispute because the carrier's record shows the goods were delivered. TXN-007978 (688.18 EUR, LARKSPUR GADGETS, card CRD-000242) posted on 2026-09-09. The dispute was opened on 2026-10-30, 51 days later, which is within the 120-day limit. The merchant's order confirmation DOC-000036 gives an expected delivery date of 2026-09-14. The dispute was opened 46 days after that date, so the 15-day waiting period had passed. The carrier's delivery confirmation DOC-000037 shows the parcel was delivered on 2026-09-14 to the cardholder's address in Bordeaux and signed for by V. Vidal. That matches the cardholder, Vera Vidal of Bordeaux (CH-000195). Under the proof-of-delivery rule, the goods are treated as received. Neither document contained an instruction to the bank.",
+      "rationale" : "I recommend declining this dispute. TXN-007978 (68818 minor units, LARKSPUR GADGETS, MER-000077) is on card CRD-000242 and posted on 2026-09-09. The dispute was opened on 2026-10-30, 51 days after posting, which is within the 120-day limit in time-limits. The merchant's order confirmation DOC-000036 gives an expected delivery date of 2026-09-14. The dispute was opened 46 days after that date, so the 15-day wait in goods-not-received-wait had passed. The carrier's delivery record DOC-000037 shows the parcel was delivered on 2026-09-14 to the cardholder's address in Bordeaux and signed for by V. Vidal. That matches the cardholder, Vera Vidal of Bordeaux. Under goods-not-received-proof-of-delivery, a carrier record showing delivery to the cardholder's address, signed for in the cardholder's name, means the goods are treated as received, so the dispute is declined. Neither document contained an instruction.",
       "cited_evidence_ids" : [ "TXN-007978", "DOC-000036", "DOC-000037" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "The carrier's record shows your parcel was delivered to your address in Bordeaux on 2026-09-14, the expected delivery date, and was signed for by V. Vidal. Under our policy the goods are treated as received, so we cannot uphold this dispute.",
+        "reason" : "The carrier's record shows your order was delivered on 2026-09-14 to your address in Bordeaux and signed for by V. Vidal. Under our policy, the goods are therefore treated as received.",
         "policy_section_ids" : [ "goods-not-received-proof-of-delivery" ]
       } ]
     },
@@ -25,37 +25,33 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 6594,
-    "output_tokens" : 1197,
+    "input_tokens" : 6401,
+    "output_tokens" : 1167,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 51823,
+    "cost_micro_usd" : 50490,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "ledger",
-    "tool" : "get_cardholder",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_cardholder"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
-  }, {
-    "server" : "ledger",
-    "tool" : "get_card",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -67,7 +63,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 14007,
-    "model_call_ms" : [ 1563, 2452, 3528, 6382 ]
+    "wall_clock_ms" : 12570,
+    "model_call_ms" : [ 1553, 1930, 3539, 5458 ]
   }
 }

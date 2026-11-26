@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000025",
   "category": "DUPLICATE_CHARGE",
   "outcome": "DECLINE",
-  "input_sha256": "eebeb5afe819648fcbba12f748477a137438bb647213222a4357c13defeb8a18",
+  "input_sha256": "1c881060d7e6e8f615ff50ebdceb34a15cdb07bc329f9ca12ffacd0defe6c0d4",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsXGHKSeQ42KXBtPM2j",
+  "response_id": "msg_011ChS3Xg2jjsrZC2Y1hMfY1",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every stated fact matches the records: \"66 days later\" is correct from 2026-08-26 to 2026-10-31, both postings carry \"AUTH-008088\", and \"Refund TXN-007879 for 46.53 EUR posted on 2026-08-28 and is linked to TXN-007878\"; the cardholder reason restates only these facts."
+      "reason": "Every fact matches the records: \"66 days after posting\" is correct from 2026-08-26 to 2026-10-31, \"Both use authorisation AUTH-008088\" matches TXN-007877 and TXN-007878, and \"refund TXN-007879 for 46.53 EUR, and that refund is linked to TXN-007878\" matches the refund record, which was posted on 2026-08-28."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"inside the 120-day limit\"), the shared authorisation (\"both carry the same authorisation, AUTH-008088\"), the amounts and dates of both postings, and the refund (\"the merchant already refunded the extra posting\"); no credit is proposed, so the credit limit does not apply."
+      "reason": "The rationale covers each required check: the time limit (\"66 days after posting, which is within the 120-day limit\"), the shared authorisation (\"Both use authorisation AUTH-008088\"), the amounts and dates of both postings, and the refund (\"posted refund TXN-007879\"); no credit is proposed, so the credit limit does not apply."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2562,
-    "output_tokens": 553,
+    "input_tokens": 2532,
+    "output_tokens": 647,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21800,
+  "cost_micro_usd": 23560,
   "price_table": "2026-11-20"
 }

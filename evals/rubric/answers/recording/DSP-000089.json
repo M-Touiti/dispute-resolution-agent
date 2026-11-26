@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000089",
   "category": "UNAUTHORISED_TRANSACTION",
   "outcome": "DECLINE",
-  "input_sha256": "6005861a30ead2af219047823f1e7d599d655537ab47960790c25add0fcf2b7c",
+  "input_sha256": "c28295964972e6f1fcc356ff6731854f8f01daae3ec0e17bf7d439a74e32790d",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRsrc5yAnf3a6zyR4HQG",
+  "response_id": "msg_011ChS3rB4jcVsfexbU9SM1k",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
-      "verdict": "pass",
-      "reason": "Every fact is supported by the records. This covers \"posted on 2026-08-06\", \"84 days later\" (correct from 2026-08-06 to 2026-10-29), \"3-D Secure AUTHENTICATED, CVV MATCH, response APPROVED and no fraud flag\" and the paraphrase of unauthorised-3ds-authenticated."
+      "verdict": "fail",
+      "reason": "The rationale says the earlier purchase TXN-003972 \"was approved and has not been disputed\", but no tool result shows its authorisation or any dispute history for it."
     },
     "evidence_check_complete": {
-      "verdict": "fail",
-      "reason": "The rationale covers the time limit, \"entry mode ECOMMERCE\", \"3-D Secure AUTHENTICATED\" and \"no fraud flag\", but never addresses the cardholder's earlier transactions with SALTMARSH JOURNEYS, which the agent did not look up, and it does not say why it skipped that check."
+      "verdict": "pass",
+      "reason": "The rationale covers every required check: the time limit (\"84 days later. That is inside the 120-day time limit\"), the entry mode (\"ECOMMERCE\"), 3-D Secure (\"result AUTHENTICATED\"), the fraud flag (\"fraud flag was not set\") and earlier same-merchant history (\"TXN-003972\"); no credit limit applies to a decline."
     },
     "merchant_request_clear": {
       "verdict": "na",
-      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 3039,
-    "output_tokens": 936,
+    "input_tokens": 3292,
+    "output_tokens": 622,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 31368,
+  "cost_micro_usd": 26100,
   "price_table": "2026-11-20"
 }

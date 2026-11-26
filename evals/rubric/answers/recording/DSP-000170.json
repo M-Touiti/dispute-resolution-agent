@@ -3,32 +3,32 @@
   "dispute_id": "DSP-000170",
   "category": "AMOUNT_MISMATCH",
   "outcome": "REQUEST_MERCHANT_EVIDENCE",
-  "input_sha256": "8973442bfaf4fa2f1011822a07e85fef744c8ec4b1dcb7079f122acf2a284915",
+  "input_sha256": "4ca3c28ce1813be41452adb179c42df30f673758643679d6e247ec2c4fb786b6",
   "model": "claude-opus-5-5",
   "effort": "medium",
-  "response_id": "msg_011ChRtL9sRhi92Khfnb9RUP",
+  "response_id": "msg_011ChS4JTyx8ptsV9jgbiSGQ",
   "stop_reason": "end_turn",
   "scores": {
     "faithful": {
       "verdict": "pass",
-      "reason": "Every fact, including \"posted on 2026-09-04 for 34608 minor units (346.08 EUR)\", \"52 days after posting\" and \"AUTH-008338 was approved for 34608\", matches the records, and the cardholder's 304.56 EUR figure is correctly framed as \"a claim and not a receipt\"."
+      "reason": "Every fact can be traced to the inputs: \"posted on 2026-09-04\" to \"2026-10-26\" is correctly \"52 days\", \"the same 34608 minor units\" matches AUTH-008338, \"a difference of 4152 minor units\" is correct arithmetic, and the cardholder's quote is treated as \"a claim and not a receipt\"."
     },
     "evidence_check_complete": {
       "verdict": "pass",
-      "reason": "The rationale covers the time limit (\"52 days after posting and inside the 120-day limit\"), the posted and authorised amounts (\"the posted amount equals the authorised amount\") and the missing receipt (\"There is no receipt or quote\"); the tip-tolerance and credit checks do not apply to a non-restaurant merchant-evidence request."
+      "reason": "The rationale covers the time limit (\"52 days, inside the 120-day limit\"), the posted and authorised amounts (\"the two amounts match\") and the missing receipt (\"No receipt or quote is attached\"); the tip tolerance does not apply to an electronics merchant, and no credit is proposed."
     },
     "merchant_request_clear": {
       "verdict": "pass",
-      "reason": "The note asks for \"the receipt or order details for the card transaction of 346.08 EUR\" that \"should show the amount the customer agreed to pay and any quote given\", which matches the RECEIPT evidence item and discloses no internal reasoning or policy ids."
+      "reason": "The note says what is wanted and what it should show (\"the receipt, quote or order details for the purchase of 346.08 EUR on 2026-09-03 ... should show the amount the customer agreed to pay\"), which fits the RECEIPT evidence item, and it discloses no internal reasoning, flags or policy ids."
     }
   },
   "problem": null,
   "usage": {
-    "input_tokens": 2318,
-    "output_tokens": 584,
+    "input_tokens": 2308,
+    "output_tokens": 675,
     "cache_read_input_tokens": 2461,
     "cache_creation_input_tokens": 0
   },
-  "cost_micro_usd": 21444,
+  "cost_micro_usd": 23224,
   "price_table": "2026-11-20"
 }

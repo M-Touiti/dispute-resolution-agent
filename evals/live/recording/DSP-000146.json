@@ -4,7 +4,7 @@
     "version" : 1,
     "dispute_id" : "DSP-000146",
     "state" : "DECIDED",
-    "decided_at" : "2026-11-26T14:10:35.323186200Z",
+    "decided_at" : "2026-11-26T18:41:21.518210300Z",
     "reported_category" : "GOODS_NOT_RECEIVED",
     "category" : "GOODS_NOT_RECEIVED",
     "escalation_reason" : null,
@@ -12,12 +12,12 @@
     "decision" : {
       "outcome" : "DECLINE",
       "confidence" : "HIGH",
-      "rationale" : "TXN-008105 is a purchase of 66.34 EUR at Fernhill Clothing (MER-000078) on card CRD-000112. It posted on 2026-10-11, and the dispute was opened on 2026-10-24, 13 days later. That is well within the 120-day limit in time-limits. The merchant's order confirmation DOC-000067 gives an expected delivery date of 2026-10-14. The dispute was opened 10 days after that date, before the 15-day waiting period in goods-not-received-wait had ended. The policy says a dispute opened before the wait ends is declined, so I did not check proof of delivery or refunds. The cardholder may open a new dispute once the wait has passed, that is from 2026-10-29 (15 days after 2026-10-14). Neither the statement nor the document contained any instructions addressed to the bank.",
+      "rationale" : "TXN-008105 (66.34 EUR, FERNHILL CLOTHING, MER-000078) is on card CRD-000112. It posted on 2026-10-11 and the dispute was opened on 2026-10-24, 13 days later. That is well within the 120-day limit in time-limits. The merchant's order confirmation DOC-000067 gives an expected delivery date of 2026-10-14. The dispute was opened 10 days after that date. Under goods-not-received-wait, the cardholder must wait 15 days after the expected delivery date before opening a dispute, and a dispute opened earlier is declined. The waiting period ends on 2026-10-29. From that date the cardholder may open a new dispute if the order still has not arrived. Because the case is decided at the waiting-period step, proof of delivery and merchant refunds were not reviewed. No document or record in this case contained instructions.",
       "cited_evidence_ids" : [ "TXN-008105", "DOC-000067" ],
       "cited_policy_sections" : [ "time-limits", "goods-not-received-wait" ],
       "proposed_actions" : [ {
         "action" : "close_dispute",
-        "reason" : "Your order from Fernhill Clothing was due on 2026-10-14. You need to wait 15 days after the expected delivery date before opening a dispute, in case a late parcel still arrives. Your dispute was opened after only 10 days. If the order still has not arrived, you can open a new dispute from 2026-10-29.",
+        "reason" : "Your order's expected delivery date was 2026-10-14. You must wait 15 days after that date before opening a dispute, so a late delivery still has time to arrive. This dispute was opened on 2026-10-24, before the waiting period ended. If the order has still not arrived, you can open a new dispute from 2026-10-29.",
         "policy_section_ids" : [ "goods-not-received-wait" ]
       } ]
     },
@@ -25,25 +25,25 @@
   },
   "usage" : {
     "model_calls" : 4,
-    "input_tokens" : 5602,
-    "output_tokens" : 929,
+    "input_tokens" : 5583,
+    "output_tokens" : 965,
     "cache_read_input_tokens" : 17776,
     "cache_creation_input_tokens" : 0,
-    "cost_micro_usd" : 42518,
+    "cost_micro_usd" : 43162,
     "price_tables" : [ "2026-11-20" ]
   },
   "tool_calls" : [ {
     "server" : "ledger",
-    "tool" : "get_transaction",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_transaction"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   }, {
     "server" : "policy",
-    "tool" : "get_policy_section",
-    "is_error" : false
+    "is_error" : false,
+    "tool" : "get_policy_section"
   } ],
   "system_tool_calls" : 3,
   "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
@@ -55,7 +55,7 @@
     "StateChanged" : 4
   },
   "timing" : {
-    "wall_clock_ms" : 10877,
-    "model_call_ms" : [ 1685, 2220, 2191, 4730 ]
+    "wall_clock_ms" : 11614,
+    "model_call_ms" : [ 1525, 2339, 2124, 5477 ]
   }
 }
