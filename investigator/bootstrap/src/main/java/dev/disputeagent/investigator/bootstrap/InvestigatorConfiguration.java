@@ -139,7 +139,8 @@ class InvestigatorConfiguration {
                 llm.investigator().maxTokens(), llm.triage().model(), Effort.fromConfig(llm.triage().effort()),
                 llm.triage().maxTokens(),
                 new LoopBudget(b.maxModelCalls(), b.maxToolCalls(), b.maxTokens(), b.maxWallClock()),
-                new PolicyLimits(p.timeLimitDays(), Money.eur(p.provisionalCreditLimitMinor())), b.decisionRetries());
+                new PolicyLimits(p.timeLimitDays(), Money.eur(p.provisionalCreditLimitMinor()),
+                        p.goodsNotReceivedWaitDays()), b.decisionRetries());
     }
 
     /** Triage then investigation; the audit log is the service's (JDBC) or the evaluation's (in memory). */

@@ -15,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class JacksonJsonAdapterTest {
 
@@ -100,5 +102,26 @@ class JacksonJsonAdapterTest {
         members.put("card_id", "CRD-000042");
 
         assertThat(json.object(members)).isEqualTo("{\"card_id\":\"CRD-000042\",\"page_size\":50}");
+    }
+    @ParameterizedTest
+    @EnumSource(DisputeCategory.class)
+    void triageAcceptsEveryCategory(DisputeCategory category) {
+        Parsed<Triage> parsed = json.triage("{\"category\":\"" + category.name() + "\",\"reason\":\"r\"}");
+        assertThat(parsed.errors()).isEmpty();
+        assertThat(parsed.value().category()).isEqualTo(category);
+    }
+
+    @Test
+    void numberInReadsTheAmountOfTheObjectWithThatId() {
+        String page = """
+                {"items":[{"auth_id":"AUTH-1","amount_minor":1000},{"auth_id":"AUTH-2","amount_minor":2500,
+                "nested":{"auth_id":"AUTH-3","amount_minor":7}}],"next_page_token":null}""";
+
+        assertThat(json.numberIn(page, "auth_id", "AUTH-2", "amount_minor")).contains(2_500L);
+        assertThat(json.numberIn(page, "auth_id", "AUTH-3", "amount_minor")).contains(7L);
+        assertThat(json.numberIn(page, "auth_id", "AUTH-9", "amount_minor")).isEmpty();
+        assertThat(json.numberIn("{\"auth_id\":\"AUTH-1\",\"amount_minor\":\"10\"}", "auth_id", "AUTH-1",
+                "amount_minor")).as("a string is not a number").isEmpty();
+        assertThat(json.numberIn("not json", "auth_id", "AUTH-1", "amount_minor")).isEmpty();
     }
 }

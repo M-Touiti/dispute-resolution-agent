@@ -71,7 +71,7 @@ class ProcessDisputeOpenedTest {
         var mcp = new FakeMcp()
                 .tool(McpServer.LEDGER, "get_transaction", a -> new McpToolResult(
                         "{\"transaction_id\":\"TXN-000100\",\"card_id\":\"CRD-000042\",\"auth_id\":\"AUTH-000100\","
-                                + "\"posted_on\":\"2026-10-01\"}", false))
+                                + "\"posted_on\":\"2026-10-01\",\"amount_minor\":1000}", false))
                 .tool(McpServer.LEDGER, "search_transactions", a -> new McpToolResult(
                         "{\"items\":[{\"transaction_id\":\"TXN-000100\",\"auth_id\":\"AUTH-000100\"}]}", false))
                 .tool(McpServer.LEDGER, "get_authorisations", a -> new McpToolResult(

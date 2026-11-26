@@ -173,6 +173,24 @@ public final class Fakes {
         }
 
         @Override
+        public java.util.Optional<Long> numberIn(String json, String idField, String id, String numberField) {
+            Matcher objects = Pattern.compile("\\{[^{}]*\"" + Pattern.quote(idField) + "\"\\s*:\\s*\""
+                    + Pattern.quote(id) + "\"[^{}]*}").matcher(json);
+            while (objects.find()) {
+                Matcher number = Pattern.compile("\"" + Pattern.quote(numberField) + "\"\\s*:\\s*(\\d+)")
+                        .matcher(objects.group());
+                if (number.find()) {
+                    try {
+                        return java.util.Optional.of(Long.parseLong(number.group(1)));
+                    } catch (NumberFormatException tooLarge) {
+                        return java.util.Optional.empty(); // as the Jackson adapter: not a long, no amount
+                    }
+                }
+            }
+            return java.util.Optional.empty();
+        }
+
+        @Override
         public String object(Map<String, ?> members) {
             List<String> parts = new ArrayList<>();
             new java.util.TreeMap<>(members).forEach((k, v) -> parts.add("\"" + k + "\":"

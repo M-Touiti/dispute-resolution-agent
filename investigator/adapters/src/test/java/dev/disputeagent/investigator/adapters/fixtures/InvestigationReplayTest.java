@@ -103,7 +103,7 @@ class InvestigationReplayTest {
         public McpToolResult call(McpToolCall call) {
             return new McpToolResult(switch (call.toolName()) {
                 case "get_transaction" -> "{\"transaction_id\":\"TXN-000100\",\"card_id\":\"CRD-000042\","
-                        + "\"auth_id\":\"AUTH-000100\",\"posted_on\":\"" + postedOn + "\"}";
+                        + "\"auth_id\":\"AUTH-000100\",\"posted_on\":\"" + postedOn + "\",\"amount_minor\":42500}";
                 case "search_transactions" -> "{\"items\":[{\"transaction_id\":\"TXN-000100\",\"auth_id\":\"AUTH-000100\""
                         + ",\"posted_on\":\"" + postedOn + "\"}],\"next_page_token\":null}";
                 case "get_authorisations" -> "{\"items\":[{\"auth_id\":\"AUTH-000100\",\"fraud_flag\":" + fraudFlag
