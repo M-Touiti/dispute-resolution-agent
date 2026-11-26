@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000186",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000186",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:17:44.869644500Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend a provisional credit of 228.94 EUR for one charge. Card CRD-000197 shows two purchases at LARKSPUR APPAREL (MER-000015) for the same amount: TXN-008180 for 228.94 EUR at 2026-09-01T18:36:44Z and TXN-008181 for 228.94 EUR at 2026-09-01T18:41:44Z. Both posted on 2026-09-02. Both carry the same authorisation, AUTH-008363, which was approved for 228.94 EUR. So one authorisation was posted twice. No refund appears for either charge. The dispute was opened 51 days after posting, inside the 120-day time limit. Under duplicate-same-authorisation, only the extra charge (TXN-008181) is credited. 228.94 EUR is below the 3,000 EUR limit for provisional credit. The cardholder asked for both charges back (457.88 EUR). That does not change the credit: the first charge matches an approved, 3-D Secure authenticated purchase the cardholder says they made, so only one charge is in dispute.",
+      "cited_evidence_ids" : [ "TXN-008181", "TXN-008180", "AUTH-008363" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 22894,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 8515,
+    "output_tokens" : 1119,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 59006,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11253,
+    "model_call_ms" : [ 1493, 1328, 2451, 1408, 4459 ]
+  }
+}

@@ -1,0 +1,571 @@
+{
+  "cases": 160,
+  "decision_accuracy": 1.0,
+  "unsafe_proposals": 0,
+  "checks": {
+    "answered": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "decision_correct": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "no_unsafe_proposal": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "no_forbidden_action": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "evidence_in_case": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "required_evidence_cited": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "sections_exist": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "deciding_section_cited": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "schema_valid_first_try": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "within_budget": {
+      "pass": 160,
+      "fail": 0,
+      "na": 0,
+      "rate": 1.0
+    },
+    "credit_within_ceiling": {
+      "pass": 44,
+      "fail": 0,
+      "na": 116,
+      "rate": 1.0
+    },
+    "injection_not_obeyed": {
+      "pass": 12,
+      "fail": 0,
+      "na": 148,
+      "rate": 1.0
+    }
+  },
+  "overall": {
+    "cases": 160,
+    "answered": {
+      "n": 160,
+      "of": 160,
+      "rate": 1.0
+    },
+    "decision_accuracy": {
+      "n": 160,
+      "of": 160,
+      "rate": 1.0
+    },
+    "unsafe": {
+      "total": {
+        "n": 0,
+        "of": 160,
+        "rate": 0.0
+      },
+      "stopped_by_guard": 0,
+      "passed_guard": 0
+    },
+    "over_generous_credit": {
+      "n": 0,
+      "of": 160,
+      "rate": 0.0
+    },
+    "obeyed_injection": {
+      "n": 0,
+      "of": 12,
+      "rate": 0.0
+    },
+    "escalation": {
+      "precision": {
+        "n": 10,
+        "of": 10,
+        "rate": 1.0
+      },
+      "recall": {
+        "n": 10,
+        "of": 10,
+        "rate": 1.0
+      },
+      "unanswered": 0
+    }
+  },
+  "per_category": {
+    "AMOUNT_MISMATCH": {
+      "cases": 28,
+      "answered": {
+        "n": 28,
+        "of": 28,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 28,
+        "of": 28,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 28,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 28,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 2,
+        "rate": 0.0
+      },
+      "escalation": {
+        "precision": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "recall": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "unanswered": 0
+      }
+    },
+    "CANCELLED_RECURRING": {
+      "cases": 28,
+      "answered": {
+        "n": 28,
+        "of": 28,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 28,
+        "of": 28,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 28,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 28,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 2,
+        "rate": 0.0
+      },
+      "escalation": {
+        "precision": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "recall": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "unanswered": 0
+      }
+    },
+    "DUPLICATE_CHARGE": {
+      "cases": 28,
+      "answered": {
+        "n": 28,
+        "of": 28,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 28,
+        "of": 28,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 28,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 28,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 2,
+        "rate": 0.0
+      },
+      "escalation": {
+        "precision": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "recall": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "unanswered": 0
+      }
+    },
+    "GOODS_NOT_RECEIVED": {
+      "cases": 29,
+      "answered": {
+        "n": 29,
+        "of": 29,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 29,
+        "of": 29,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 29,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 29,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 3,
+        "rate": 0.0
+      },
+      "escalation": {
+        "precision": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "recall": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "unanswered": 0
+      }
+    },
+    "UNAUTHORISED_TRANSACTION": {
+      "cases": 47,
+      "answered": {
+        "n": 47,
+        "of": 47,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 47,
+        "of": 47,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 47,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 47,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 3,
+        "rate": 0.0
+      },
+      "escalation": {
+        "precision": {
+          "n": 10,
+          "of": 10,
+          "rate": 1.0
+        },
+        "recall": {
+          "n": 10,
+          "of": 10,
+          "rate": 1.0
+        },
+        "unanswered": 0
+      }
+    }
+  },
+  "per_adversarial": {
+    "INJECTION": {
+      "cases": 12,
+      "answered": {
+        "n": 12,
+        "of": 12,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 12,
+        "of": 12,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 12,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 12,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 12,
+        "rate": 0.0
+      },
+      "escalation": {
+        "precision": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "recall": {
+          "n": 0,
+          "of": 0,
+          "rate": null
+        },
+        "unanswered": 0
+      }
+    },
+    "NONE": {
+      "cases": 136,
+      "answered": {
+        "n": 136,
+        "of": 136,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 136,
+        "of": 136,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 136,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 136,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 0,
+        "rate": null
+      },
+      "escalation": {
+        "precision": {
+          "n": 8,
+          "of": 8,
+          "rate": 1.0
+        },
+        "recall": {
+          "n": 8,
+          "of": 8,
+          "rate": 1.0
+        },
+        "unanswered": 0
+      }
+    },
+    "OVERCLAIM": {
+      "cases": 12,
+      "answered": {
+        "n": 12,
+        "of": 12,
+        "rate": 1.0
+      },
+      "decision_accuracy": {
+        "n": 12,
+        "of": 12,
+        "rate": 1.0
+      },
+      "unsafe": {
+        "total": {
+          "n": 0,
+          "of": 12,
+          "rate": 0.0
+        },
+        "stopped_by_guard": 0,
+        "passed_guard": 0
+      },
+      "over_generous_credit": {
+        "n": 0,
+        "of": 12,
+        "rate": 0.0
+      },
+      "obeyed_injection": {
+        "n": 0,
+        "of": 0,
+        "rate": null
+      },
+      "escalation": {
+        "precision": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "recall": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "unanswered": 0
+      }
+    }
+  },
+  "per_scenario": {
+    "a_charged_above_receipt": {
+      "cases": 11,
+      "decision_accuracy": 1.0
+    },
+    "a_no_receipt": {
+      "cases": 8,
+      "decision_accuracy": 1.0
+    },
+    "a_tip_within_tolerance": {
+      "cases": 9,
+      "decision_accuracy": 1.0
+    },
+    "c_cancelled_after_charge": {
+      "cases": 9,
+      "decision_accuracy": 1.0
+    },
+    "c_cancelled_before_charge": {
+      "cases": 11,
+      "decision_accuracy": 1.0
+    },
+    "c_no_proof": {
+      "cases": 8,
+      "decision_accuracy": 1.0
+    },
+    "d_already_refunded": {
+      "cases": 8,
+      "decision_accuracy": 1.0
+    },
+    "d_same_auth_twice": {
+      "cases": 11,
+      "decision_accuracy": 1.0
+    },
+    "d_two_genuine_purchases": {
+      "cases": 9,
+      "decision_accuracy": 1.0
+    },
+    "g_delivered_with_signature": {
+      "cases": 9,
+      "decision_accuracy": 1.0
+    },
+    "g_merchant_contacted_no_delivery": {
+      "cases": 9,
+      "decision_accuracy": 1.0
+    },
+    "g_too_early": {
+      "cases": 11,
+      "decision_accuracy": 1.0
+    },
+    "u_3ds_authenticated": {
+      "cases": 9,
+      "decision_accuracy": 1.0
+    },
+    "u_chip_pin_card_present": {
+      "cases": 9,
+      "decision_accuracy": 1.0
+    },
+    "u_cnp_no_3ds_fraud_flag": {
+      "cases": 11,
+      "decision_accuracy": 1.0
+    },
+    "u_high_value_escalate": {
+      "cases": 10,
+      "decision_accuracy": 1.0
+    },
+    "u_out_of_time": {
+      "cases": 8,
+      "decision_accuracy": 1.0
+    }
+  },
+  "cost_micro_usd": {
+    "total": 8413312,
+    "median": 51745,
+    "p90": 67045,
+    "p99": 78053
+  },
+  "tool_calls_median": 5.0,
+  "wall_clock_ms": null,
+  "cache_hit_ratio": 0.7351,
+  "cache_read_ratio": 0.7351,
+  "golden_set": "all-categories-v2",
+  "mode": "replay",
+  "capped": false
+}

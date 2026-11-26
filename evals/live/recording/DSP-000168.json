@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000168",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000168",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:14:19.748479300Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008151 at Ashgrove Grocers on card CRD-000216 posted on 2026-08-11 for 95.50 EUR (9550). The dispute was opened on 2026-10-26, which is 76 days later and within the 120-day limit in time-limits. Authorisation AUTH-008336 was approved for 83.05 EUR (8305). The merchant-issued receipt DOC-000080 also shows 83.05 EUR (8305). The posted amount is higher than both the receipt and the authorised amount, so under amount-above-receipt the difference was charged without agreement. The difference is 9550 - 8305 = 1245 minor units (12.45 EUR). This matches the amount claimed and is well below the 3,000.00 EUR provisional credit limit in provisional-credit. Only the difference is credited, not the whole transaction. The documents contained no instructions.",
+      "cited_evidence_ids" : [ "TXN-008151", "AUTH-008336", "DOC-000080" ],
+      "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 1245,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 6315,
+    "output_tokens" : 972,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 46269,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10783,
+    "model_call_ms" : [ 1494, 2323, 2998, 3854 ]
+  }
+}

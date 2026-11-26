@@ -1,0 +1,61 @@
+{
+  "dispute_id" : "DSP-000081",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000081",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:59:23.943037600Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm declining this dispute. The charge TXN-007986 is for 6.48 EUR at Lumen Media on card CRD-000237. It was made on 2026-08-25 and posted on 2026-08-26. The dispute was opened on 2026-10-24, 59 days after posting, so it is within the 120-day time limit (time-limits). The only written cancellation is DOC-000039, a confirmation issued by the merchant. It says the cancellation took effect on 2026-08-27, two days after the charge. That means the charge came first and covers a period the cardholder had not yet cancelled, so the policy calls for a decline (recurring-cancelled-after-charge).",
+      "cited_evidence_ids" : [ "TXN-007986", "DOC-000039" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-after-charge" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The Lumen Media charge of 6.48 EUR was made on 2026-08-25. The merchant's cancellation confirmation shows your subscription was cancelled with effect from 2026-08-27, after that date. The charge therefore covers a period before your cancellation took effect.",
+        "policy_section_ids" : [ "recurring-cancelled-after-charge", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5299,
+    "output_tokens" : 871,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 40072,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9894,
+    "model_call_ms" : [ 1630, 2395, 1598, 4226 ]
+  }
+}

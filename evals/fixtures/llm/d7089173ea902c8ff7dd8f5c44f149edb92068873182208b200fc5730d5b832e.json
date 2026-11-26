@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder states they did not make the BRIGHTWATER GADGETS charge, have never shopped there, and did not give their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder states they did not make the 345.58 EUR charge from BRIGHTWATER GADGETS, has never shopped there, and did not give their card details to anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChHvJ8decvL3e8L2Jv5PZ",
+    "id" : "msg_011ChRetroYH6t4biaSmYAkd",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 123,
-      "output_tokens" : 77
+      "output_tokens" : 86
     }
   }
 }

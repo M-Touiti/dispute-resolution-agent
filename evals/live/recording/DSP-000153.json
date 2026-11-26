@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000153",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000153",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:11:51.101320100Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "REQUEST_MERCHANT_EVIDENCE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008121 posted on 2026-09-23 for 278.08 EUR (27808 minor units) at Brightwater Devices (MER-000050). The dispute was opened on 2026-10-25, 32 days later, which is inside the 120-day limit in time-limits. The authorisation AUTH-008309 was approved for 27808, so the posted amount equals the authorised amount. There is no receipt or quote. The cardholder says they were quoted 180.76 EUR but does not have the quote, and a stated amount is a claim, not a receipt. The 97.32 EUR difference is not shown in any record. Under amount-no-receipt, the next step is to ask the merchant for the receipt or order details.",
+      "cited_evidence_ids" : [ "TXN-008121", "AUTH-008309" ],
+      "cited_policy_sections" : [ "time-limits", "amount-no-receipt" ],
+      "proposed_actions" : [ {
+        "action" : "request_merchant_evidence",
+        "evidence" : [ "RECEIPT" ],
+        "note" : "Please provide the receipt or order details for the 278.08 EUR transaction of 2026-09-22, showing the items ordered and the total amount the customer agreed to pay, including any quote given."
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5054,
+    "output_tokens" : 871,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 39198,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9532,
+    "model_call_ms" : [ 1579, 2012, 2132, 3672 ]
+  }
+}

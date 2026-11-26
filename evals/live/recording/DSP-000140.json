@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000140",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000140",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:09:21.402888300Z",
+    "reported_category" : "UNAUTHORISED_TRANSACTION",
+    "category" : "UNAUTHORISED_TRANSACTION",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend declining this dispute. It was opened in time: TXN-008095 (43,776 cents, QUAYSIDE GETAWAYS, card CRD-000060) posted on 2026-07-27 and the dispute was opened on 2026-10-22, 87 days later, inside the 120-day limit. The authorisation behind it, AUTH-008286, shows an online payment (entry mode ECOMMERCE) that the cardholder confirmed with the bank's 3-D Secure check (result AUTHENTICATED). The security code from the back of the card was correct (CVV MATCH), the fraud flag was not set, and the payment was approved. Under the policy, an online payment confirmed with 3-D Secure and without a fraud flag counts as made by the cardholder, so it is declined. The statement that the card never left the cardholder does not change this, because no card needs to be present for an online payment.",
+      "cited_evidence_ids" : [ "TXN-008095", "AUTH-008286" ],
+      "cited_policy_sections" : [ "time-limits", "unauthorised-3ds-authenticated" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The payment of 437.76 EUR to QUAYSIDE GETAWAYS on 2026-07-26 was made online and confirmed through the bank's 3-D Secure check, with the correct card security code. Our records show nothing suspicious about it, so we treat it as a payment you made and cannot dispute it as unauthorised.",
+        "policy_section_ids" : [ "unauthorised-3ds-authenticated" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 9649,
+    "output_tokens" : 1122,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 63278,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "unauthorised-transaction-checklist", "reading-an-authorisation-trail" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11760,
+    "model_call_ms" : [ 1496, 1608, 2091, 1221, 5254 ]
+  }
+}

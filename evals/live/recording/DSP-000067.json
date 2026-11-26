@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000067",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000067",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:57:18.992081700Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute was opened on 2026-10-22, 15 days after TXN-007960 posted on 2026-10-07. That is within the 120-day limit in time-limits. TXN-007960 posted 4392 cents (43.92 EUR) at Meadowlark Bistro (MER-000011), which is in the RESTAURANT category. Its authorisation AUTH-008163 was approved for 4105 cents (41.05 EUR). No documents are attached, so there is no receipt. The 41.05 EUR bill is only the cardholder's claim, and it matches the authorised amount. The posted amount is 287 cents above the authorised amount. The tip tolerance is 20% of 4105, which is 821 cents. A 287-cent difference is inside that tolerance, so under amount-restaurant-tip it counts as an agreed tip, not an amount mismatch, and the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-007960", "AUTH-008163" ],
+      "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Meadowlark Bistro is a restaurant. The 2.87 EUR added on top of the 41.05 EUR authorised amount is within the 20% tip tolerance (up to 8.21 EUR), so it is treated as an agreed tip and not as an incorrect amount.",
+        "policy_section_ids" : [ "amount-restaurant-tip" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5049,
+    "output_tokens" : 1010,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 41950,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10121,
+    "model_call_ms" : [ 1587, 1271, 2146, 5055 ]
+  }
+}

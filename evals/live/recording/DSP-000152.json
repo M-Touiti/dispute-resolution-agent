@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000152",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000152",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:11:41.568636300Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm declining this dispute because the extra amount falls within the restaurant tip allowance. TXN-008120 at Lumen Kitchen (MER-000065, category RESTAURANT) is on card CRD-000105. It posted on 2026-07-18 for 5519 cents. The dispute was opened on 2026-10-25, 99 days later, so it is within the 120-day limit in time-limits. The authorisation AUTH-008308 was approved by chip and PIN for 5018 cents. No receipt is attached. The cardholder's figure of 50.18 EUR is their own claim, not a receipt, and it matches the authorised amount. The posted amount is 501 cents above the authorised amount. The limit is 20% of 5018, which is 1003.6 cents. Under amount-restaurant-tip, a restaurant may post up to 20% above the authorised amount to add a tip, and a difference within that limit counts as an agreed tip, not a mismatch.",
+      "cited_evidence_ids" : [ "TXN-008120", "AUTH-008308" ],
+      "cited_policy_sections" : [ "time-limits", "amount-restaurant-tip" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Your Lumen Kitchen payment was authorised for 50.18 EUR and posted for 55.19 EUR. The extra 5.01 EUR is less than 20% of the authorised amount, the most a restaurant may add as a tip. Under our policy this counts as an agreed tip, not a charging error.",
+        "policy_section_ids" : [ "amount-restaurant-tip" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5067,
+    "output_tokens" : 1126,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 44326,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12297,
+    "model_call_ms" : [ 1555, 1366, 2865, 6374 ]
+  }
+}

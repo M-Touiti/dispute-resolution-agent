@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000100",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000100",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:02:49.485819900Z",
+    "reported_category" : "AMOUNT_MISMATCH",
+    "category" : "AMOUNT_MISMATCH",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "The time limit is met. TXN-008023 on card CRD-000180 posted on 2026-08-30, and the dispute was opened on 2026-10-29, 60 days later. The limit is 120 days. The posted amount is 9748 cents (97.48 EUR). The authorisation AUTH-008220 (chip, PIN verified, approved) was for 6770 cents. The merchant's receipt DOC-000048 from Larkspur Fuel shows 6770 cents (67.70 EUR). The posting is higher than both the receipt and the authorisation, so under amount-above-receipt the difference was charged without agreement. Only that difference is credited: 9748 - 6770 = 2978 cents (29.78 EUR). This equals the amount claimed and is well below the 3,000.00 EUR automated limit in provisional-credit.",
+      "cited_evidence_ids" : [ "TXN-008023", "AUTH-008220", "DOC-000048" ],
+      "cited_policy_sections" : [ "time-limits", "amount-above-receipt", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 2978,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 5583,
+    "output_tokens" : 988,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 43275,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "amount-mismatch-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9447,
+    "model_call_ms" : [ 1662, 1249, 2440, 4010 ]
+  }
+}

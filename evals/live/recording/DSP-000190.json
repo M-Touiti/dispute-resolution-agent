@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000190",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000190",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:18:33.626875900Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend a provisional credit of 58.20 EUR for the disputed charge only. TXN-008191 is a 58.20 EUR (5820 minor units) charge from Kestrel Athletic Club (MER-000027) on card CRD-000019. It was made on 2026-10-02 and posted on 2026-10-03. The dispute was opened on 2026-10-30, 27 days after posting, which is within the 120-day limit (time-limits). DOC-000096 is a cancellation confirmation from the merchant. It says the subscription was cancelled with effect from 2026-09-15, which is before the 2026-10-02 charge. Under recurring-cancelled-before-charge, that charge should not have been made, so it qualifies for provisional credit. The cardholder claims 232.80 EUR, covering every charge of the last four months. Under provisional-credit, the credit is never more than the disputed charge, and this rule covers only charges made after the cancellation took effect. Earlier subscription charges are therefore not credited, and the larger claim does not change the amount. 58.20 EUR is well below the 3,000.00 EUR limit for automated provisional credit.",
+      "cited_evidence_ids" : [ "TXN-008191", "DOC-000096" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-cancelled-before-charge", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 5820,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 6029,
+    "output_tokens" : 1116,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 47658,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12725,
+    "model_call_ms" : [ 1741, 2476, 2593, 5839 ]
+  }
+}

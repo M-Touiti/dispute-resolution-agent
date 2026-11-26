@@ -215,6 +215,51 @@ def slices(golden: dict[str, Any], size: int = SLICE_SIZE) -> dict[str, Any]:
     }
 
 
+# The pilot of task 3.8: the cases that run live at each effort before the full recording.
+PILOT_PER_SCENARIO = 3
+PILOT_PER_KIND = 4
+PILOT_SALT = "pilot-v1"
+
+
+def pilot(golden: dict[str, Any]) -> dict[str, Any]:
+    """The pilot subset of a golden set: ``PILOT_PER_SCENARIO`` cases of each scenario outside the unauthorised
+    category (the one M1 recorded) and ``PILOT_PER_KIND`` of each adversarial kind, each kind's cases from as many
+    categories as it has, ranked by SHA-256 of ``pilot-v1:<dispute id>``. Same shape as the golden set, so the eval
+    runner and the graders take it unchanged."""
+    by_scenario: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    by_kind: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for case in golden["cases"]:
+        if case["adversarial"] != "NONE":
+            by_kind[case["adversarial"]].append(case)
+        elif case["category"] != "UNAUTHORISED_TRANSACTION":
+            by_scenario[case["scenario"]].append(case)
+    chosen = []
+    for scenario, cases in sorted(by_scenario.items()):
+        chosen.extend(_top(cases, PILOT_SALT, PILOT_PER_SCENARIO, scenario))
+    for kind, cases in sorted(by_kind.items()):
+        ranked = sorted(cases, key=lambda c: _rank(PILOT_SALT, c["dispute_id"]))
+        picked: list[dict[str, Any]] = []
+        while len(picked) < PILOT_PER_KIND:
+            seen = {c["category"] for c in picked}
+            fresh = [c for c in ranked if c not in picked and c["category"] not in seen]
+            rest = [c for c in ranked if c not in picked]
+            if not rest:
+                raise ValueError(f"{kind}: {len(cases)} cases, {PILOT_PER_KIND} needed")
+            picked.append((fresh or rest)[0])
+        chosen.extend(picked)
+    return {
+        "golden_set": f"{golden['golden_set']}-pilot",
+        "description": (
+            f"The pilot of task 3.8, a subset of {golden['golden_set']}: {PILOT_PER_SCENARIO} cases of each scenario "
+            f"outside the unauthorised category and {PILOT_PER_KIND} of each adversarial kind, from different "
+            "categories. It runs live at each effort before the full recording."
+        ),
+        "selection": {"per_scenario": PILOT_PER_SCENARIO, "per_kind": PILOT_PER_KIND, "salt": PILOT_SALT},
+        "dataset": golden["dataset"],
+        "cases": sorted(chosen, key=lambda c: c["dispute_id"]),
+    }
+
+
 def slice_of(day: dt.date, count: int) -> int:
     """The index of the slice the nightly run evaluates on ``day`` (UTC): no state to keep between runs."""
     return (day - EPOCH).days % count
@@ -232,6 +277,10 @@ def slices_path_for(selection: Selection) -> Path:
     return ROOT / "golden" / f"{selection.name}-slices.json"
 
 
+def pilot_path_for(selection: Selection) -> Path:
+    return ROOT / "golden" / f"{selection.name}-pilot.json"
+
+
 def outputs(data_dir: Path) -> dict[Path, str]:
     """Every committed golden file and the text it must have."""
     out = {}
@@ -240,6 +289,7 @@ def outputs(data_dir: Path) -> dict[Path, str]:
         out[path_for(selection)] = render(golden)
         if selection.version >= 2:
             out[slices_path_for(selection)] = render(slices(golden))
+            out[pilot_path_for(selection)] = render(pilot(golden))
     return out
 
 

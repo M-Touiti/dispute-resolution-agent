@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder states they did not make the 2163.21 EUR LARKSPUR GADGETS charge, have never shopped there, and did not give their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the 2163.21 EUR charge from LARKSPUR GADGETS, have never shopped there, and never gave their card details to anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChHvK6fNeeB9ev3rm4niG",
+    "id" : "msg_011ChRf3J9mA7ySYvr9wx4YS",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
@@ -48,7 +48,7 @@
       "cache_creation_input_tokens" : 0,
       "cache_read_input_tokens" : 664,
       "input_tokens" : 122,
-      "output_tokens" : 84
+      "output_tokens" : 85
     }
   }
 }

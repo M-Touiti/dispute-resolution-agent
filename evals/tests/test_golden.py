@@ -18,6 +18,7 @@ from evaltools import golden
 COMMITTED = golden.path_for(golden.V1)
 COMMITTED_V2 = golden.path_for(golden.V2)
 COMMITTED_SLICES = golden.slices_path_for(golden.V2)
+COMMITTED_PILOT = golden.pilot_path_for(golden.V2)
 
 
 @pytest.fixture(scope="module")
@@ -44,7 +45,7 @@ def v2_slices() -> dict:
 
 def test_committed_golden_files_match_the_selector_byte_for_byte(data_dir: Path) -> None:
     expected = golden.outputs(data_dir)
-    assert set(expected) == {COMMITTED, COMMITTED_V2, COMMITTED_SLICES}
+    assert set(expected) == {COMMITTED, COMMITTED_V2, COMMITTED_SLICES, COMMITTED_PILOT}
     for path, text in expected.items():
         assert path.read_text(encoding="utf-8") == text, (
             f"{path.name} is stale: run `uv run python -m evaltools.golden`, review the diff, and re-record fixtures"
@@ -177,3 +178,18 @@ def test_the_slice_of_a_day_rotates_through_every_slice() -> None:
     assert sorted(seen) == list(range(6))
     assert golden.slice_of(dt.date(1970, 1, 1), 6) == 0
     assert golden.slice_of(first, 6) == golden.slice_of(first + dt.timedelta(days=6), 6)
+
+
+def test_the_pilot_covers_every_new_scenario_and_each_kind_across_categories(v2: dict) -> None:
+    pilot = json.loads(COMMITTED_PILOT.read_text(encoding="utf-8"))
+    by_id = {c["dispute_id"]: c for c in v2["cases"]}
+    cases = pilot["cases"]
+    assert all(by_id[c["dispute_id"]] == c for c in cases)
+    plain = [c for c in cases if c["adversarial"] == "NONE"]
+    assert "UNAUTHORISED_TRANSACTION" not in {c["category"] for c in plain}
+    assert set(Counter(c["scenario"] for c in plain).values()) == {3}
+    assert len(Counter(c["scenario"] for c in plain)) == 12
+    for kind in ("INJECTION", "OVERCLAIM"):
+        of_kind = [c for c in cases if c["adversarial"] == kind]
+        assert len(of_kind) == 4
+        assert len({c["category"] for c in of_kind}) == 4

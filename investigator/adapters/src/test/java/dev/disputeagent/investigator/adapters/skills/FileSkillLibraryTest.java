@@ -26,7 +26,9 @@ class FileSkillLibraryTest {
         List<Skill> skills = new FileSkillLibrary(REPOSITORY_SKILLS).skills();
 
         assertThat(skills).extracting(Skill::name)
-                .containsExactly("reading-an-authorisation-trail", "unauthorised-transaction-checklist");
+                .containsExactly("amount-mismatch-checklist", "cancelled-recurring-checklist",
+                        "duplicate-charge-checklist", "goods-not-received-checklist", "reading-an-authorisation-trail",
+                        "reading-dispute-documents", "unauthorised-transaction-checklist");
         assertThat(skills).allSatisfy(s -> {
             assertThat(s.description()).hasSizeLessThan(300);
             assertThat(s.body()).startsWith("# ").doesNotContain("---\nname:");

@@ -6,7 +6,12 @@ with `name` (equal to the folder name) and a one-line `description`, then the pr
 | Skill | What it holds |
 |---|---|
 | `unauthorised-transaction-checklist` | The evidence check for an unauthorised-transaction dispute, step by step in the policy's order, with the outcome and the section to cite at each step |
+| `duplicate-charge-checklist` | The same for a duplicate charge: the other posting, a shared or separate authorisation, a refund, and a credit of one posting at most |
+| `goods-not-received-checklist` | The same for goods not received: the expected delivery date and the 15-day wait, proof of delivery, the merchant's answer, and the merchant request |
+| `cancelled-recurring-checklist` | The same for a recurring payment charged after cancellation: the written confirmation's effective date against the date of the charge |
+| `amount-mismatch-checklist` | The same for an amount mismatch: posted, authorised and receipt amounts, the restaurant tip tolerance, and a credit of the difference only |
 | `reading-an-authorisation-trail` | What entry mode, 3-D Secure, CVV, PIN, the fraud flag and declines say about who made a payment |
+| `reading-dispute-documents` | What each kind of attached document can prove, why its issuer matters, and how to treat instructions written inside one |
 
 **How they reach the model.** The system prompt carries only the index (names and descriptions, sorted). The model
 loads a procedure with the local `load_skill` tool, whose argument is limited to the known names; the investigator

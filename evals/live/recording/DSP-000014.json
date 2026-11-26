@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000014",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000014",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:49:51.490772300Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "REQUEST_MERCHANT_EVIDENCE",
+      "confidence" : "HIGH",
+      "rationale" : "The disputed charge TXN-007862 is for 21.44 EUR (2144 cents) at Larkspur Media (MER-000017), a merchant that bills on a recurring basis, on card CRD-000133. The charge was made on 2026-09-18 and posted on 2026-09-19. The dispute was opened on 2026-10-27, 38 days after posting, which is within the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing. No documents are attached, and no merchant cancellation confirmation exists. That means there is no effective cancellation date to compare with the 2026-09-18 charge date, and the cardholder's account of the call is only a claim. Under recurring-no-proof, the next step is to ask the merchant for its cancellation records and its terms for the subscription.",
+      "cited_evidence_ids" : [ "TXN-007862" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-no-proof" ],
+      "proposed_actions" : [ {
+        "action" : "request_merchant_evidence",
+        "evidence" : [ "CANCELLATION_POLICY" ],
+        "note" : "Regarding the subscription charge of 21.44 EUR made on 2026-09-18: please send your cancellation records for this subscription, including any record of a cancellation request by phone and the date it took effect. Please also send the subscription terms that applied when the charge was made."
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 4378,
+    "output_tokens" : 938,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 37791,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 9852,
+    "model_call_ms" : [ 1606, 1288, 1689, 5205 ]
+  }
+}

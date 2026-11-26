@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000041",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000041",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T13:53:33.320786200Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "The dispute was opened in time. TXN-007908 posted on 2026-08-29 and the dispute was opened on 2026-10-30, which is 62 days later and inside the 120-day limit in time-limits. The card shows two purchases at the same merchant (MER-000046), each for 13728 EUR minor units. TXN-007907 was made on 2026-08-27 at 20:51 and posted on 2026-08-28 under AUTH-008115. TXN-007908 was made on 2026-08-28 at 02:51 and posted on 2026-08-29 under AUTH-008116. They do not share an authorisation. Each has its own approved contactless authorisation, made six hours apart, with no fraud flag. There is no refund from this merchant on this card. Under duplicate-separate-authorisations, two postings with their own authorisations made some time apart are two separate purchases, even when the merchant and amount are the same, so the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-007908", "TXN-007907", "AUTH-008116", "AUTH-008115" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-separate-authorisations" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "Our records show two separate purchases at OAKHOLLOW PANTRY for 137.28 EUR, about six hours apart. Each one was approved separately with your contactless card. This means the second charge was not the same payment taken twice. If you did not make one of these purchases, you can open a dispute saying the payment was not made by you.",
+        "policy_section_ids" : [ "duplicate-separate-authorisations", "time-limits" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7312,
+    "output_tokens" : 1122,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 54363,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11965,
+    "model_call_ms" : [ 1498, 1349, 1794, 1628, 5625 ]
+  }
+}

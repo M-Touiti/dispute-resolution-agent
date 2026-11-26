@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000150",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000150",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:11:18.008546Z",
+    "reported_category" : "CANCELLED_RECURRING",
+    "category" : "CANCELLED_RECURRING",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "REQUEST_MERCHANT_EVIDENCE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008118 is a charge of 45.76 EUR from Kestrel Athletic Club (MER-000027) on card CRD-000190. The merchant bills on a recurring basis. The charge was made on 2026-08-27 and posted on 2026-08-28. The dispute was opened on 2026-10-22, 55 days after posting, so it is within the 120-day limit in time-limits. The cardholder says they cancelled by phone but has nothing in writing. No documents are attached, so there is no cancellation confirmation from the merchant and no effective date to compare with the charge date. Under recurring-no-proof, the next step is to ask the merchant for its cancellation records and its terms for the subscription.",
+      "cited_evidence_ids" : [ "TXN-008118" ],
+      "cited_policy_sections" : [ "time-limits", "recurring-no-proof" ],
+      "proposed_actions" : [ {
+        "action" : "request_merchant_evidence",
+        "evidence" : [ "CANCELLATION_POLICY" ],
+        "note" : "About the subscription charge of 45.76 EUR made on 2026-08-27: please send your cancellation records for this card's subscription, including any record of a cancellation request made by phone and its date, and the cancellation terms that applied to the subscription."
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 4444,
+    "output_tokens" : 848,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 36044,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_merchant",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "cancelled-recurring-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 10179,
+    "model_call_ms" : [ 1574, 2003, 2224, 4329 ]
+  }
+}

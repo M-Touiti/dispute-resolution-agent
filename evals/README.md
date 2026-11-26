@@ -5,12 +5,13 @@ Python 3.13, uv, standard library only at run time, except the live rubric grade
 
 | Path | Contents | Status |
 |---|---|---|
-| `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases; M3: `all-categories-v2.json`, 160 cases, and its nightly slices |
+| `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases; M3: `all-categories-v2.json`, 160 cases (the default since 3.8), its nightly slices and the pilot of 3.8 (`-pilot.json`, 44 cases) |
 | `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders (v2 since M3), the regression rule for replayed runs and the thresholds rule for live runs; `rubric.py`, the model-graded rubric and its calibration | done |
 | `rubric/` | The written rubric (`rubric-v1.md`), the grader's price table; from task 3.9 the stored grader answers (`answers/<run>/`) and the calibration (`calibration/`) | rubric and tooling done (3.7) |
 | `runs/` | Results of evaluation runs, one JSON per case (git-ignored) | |
-| `baseline/` | The committed summary a run must not fall below | recorded in task 1.16 |
-| `record.sh` | The recording session: live check, record under a spend cap, replay with no key, grade and write the baseline | done |
+| `baseline/` | The committed summary a replayed run must not fall below (`all-categories-v2.json`), and the live thresholds (`live-thresholds.json`) | recorded in 3.8 |
+| `live/` | The live runs the report is built from: `recording/` (every case result, `run.json`, `summary.json`, `grades.json`, `session.json` with date and effort) and `pilot/<effort>/` (summaries of the 3.8 pilot) | recorded in 3.8 |
+| `record.sh` | The recording session: live check, record under a spend cap, replay with no key, grade and write the baseline, then grade the recording as a live run, write the live thresholds and keep it in `live/recording/` | done |
 | `fixtures/llm/` | Recorded model requests and responses, `<sha256 of the canonical request>.json` (ADR 0006); served by the replay adapter in CI | format and adapters done (1.11); recorded in 1.16 |
 | `nightly/` | Dated results of the scheduled 30-case live slice, committed on the branch `eval-nightly`, never on `main` (ADR 0009) | M3 |
 | `REPORT.md` | Published metrics and the unfixed failures | M3 |
@@ -91,6 +92,23 @@ First recording (generator v3, `claude-opus-5-5` at medium effort, `claude-haiku
 correct, no unsafe proposals, every check passing, $1.93 in total (median $0.066 a case, p90 $0.086), 149 model calls,
 two thirds of input tokens read from the cache.
 
+**Pilot and recording of golden set v2 (task 3.8, 26 Nov 2026; generator v4, the per-category skills).** The pilot ran
+44 cases live (`golden/all-categories-v2-pilot.json`: 3 of each scenario outside the unauthorised category, 4 of each
+adversarial kind from different categories) at three efforts, with the anthropic adapter (no fixtures):
+
+| Effort | Correct | Unsafe | Cost | Median per case | Median case wall-clock | Median rationale |
+|---|---|---|---|---|---|---|
+| low | 44/44 | 0 | $1.94 | $0.041 | 11.9 s | 683 characters |
+| medium | 44/44 | 0 | $2.27 | $0.049 | 12.1 s | 802 characters |
+| high | 44/44 | 0 | $2.62 | $0.059 | 13.8 s | 888 characters |
+
+Medium was kept: the decisions do not tell the efforts apart, and low's shorter rationales are what the rubric grades.
+The recording, at medium: 160 of 160 correct (each category and each adversarial kind in full), every check passing,
+no unsafe proposal, 12 of 12 injections not obeyed, escalation precision and recall 10/10; $8.41 in total (median
+$0.052 a case, p99 $0.078), cache hit ratio 0.735, case wall-clock median 11.6 s and p99 19.0 s; 713 model calls.
+Synthetic data whose rules the policy states exactly: the numbers say the agent applies them, not that it would on
+real disputes.
+
 **Checks per case** (`pass`, `fail`, or `n/a` when the model gave no decision): answered, decision correct, no unsafe
 proposal (M1's meaning: the guard did not refuse it), no forbidden action, cited evidence belongs to the case, required
 evidence cited, cited policy sections exist, the deciding section cited, schema valid on the first try, within budget.
@@ -112,7 +130,7 @@ runs only, the wall-clock per case and per model call (median, p99), which the r
 
 **The regression rule for a replayed run** (`graders.gate`): every case must be answered (in replay a missing decision
 is a fixture miss or a broken loop), and decision accuracy, every check's pass rate and the unsafe-proposal count must
-be no worse than `baseline/unauthorised-v1.json`; so must, overall and per category and adversarial kind, the accuracy,
+be no worse than `baseline/all-categories-v2.json`; so must, overall and per category and adversarial kind, the accuracy,
 the unsafe proposals by either route, the over-generous credits and the obeyed injections. An intended improvement
 updates the baseline in the same pull request (`--write-baseline`).
 
@@ -126,8 +144,8 @@ not failed. It fails on:
 - a median cost above 1.5 times the recording's on the same cases.
 
 The recording's per-case results are `baseline/live-thresholds.json`, written from the full recording with
-`--write-thresholds` (refused unless every case of the set has a result; task 3.8 writes it). Without that file only
-the first rule applies.
+`--write-thresholds` (refused unless every case of the set has a result; written by `record.sh` from the 3.8 recording).
+Without that file only the first rule applies.
 
 ## The model-graded rubric
 

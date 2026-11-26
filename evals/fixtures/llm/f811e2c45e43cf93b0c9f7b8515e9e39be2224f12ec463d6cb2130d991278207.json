@@ -37,18 +37,18 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says a 4471.61 EUR charge from LARKSPUR GETAWAYS was not made by them, they have never shopped there, and they did not give their card details to anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the 4471.61 EUR LARKSPUR GETAWAYS charge, have never shopped there, and did not give their card details to anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChHv8x3AtxFtPbVruVR2q",
+    "id" : "msg_011ChReKw3rpNyb8ETdfM2qU",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",
     "usage" : {
-      "cache_creation_input_tokens" : 664,
-      "cache_read_input_tokens" : 0,
+      "cache_creation_input_tokens" : 0,
+      "cache_read_input_tokens" : 664,
       "input_tokens" : 124,
-      "output_tokens" : 90
+      "output_tokens" : 86
     }
   }
 }

@@ -37,10 +37,10 @@
   },
   "response" : {
     "content" : [ {
-      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the 1100.56 EUR charge from ASHGROVE DEVICES, have never shopped there, and did not share their card details with anyone.\"}",
+      "text" : "{\"category\":\"UNAUTHORISED_TRANSACTION\",\"reason\":\"The cardholder says they did not make the 1100.56 EUR charge from ASHGROVE DEVICES, have never shopped there, and never gave their card details to anyone.\"}",
       "type" : "text"
     } ],
-    "id" : "msg_011ChHvC7exSRsiehmx2szdc",
+    "id" : "msg_011ChReUX8Cqt4fwwYhNQHzD",
     "model" : "claude-haiku-5-5",
     "refusal_category" : null,
     "stop_reason" : "END_TURN",

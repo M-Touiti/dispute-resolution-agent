@@ -1,0 +1,69 @@
+{
+  "dispute_id" : "DSP-000147",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000147",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:10:46.876405Z",
+    "reported_category" : "GOODS_NOT_RECEIVED",
+    "category" : "GOODS_NOT_RECEIVED",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "TXN-008106 is a 173.32 EUR purchase at Ashgrove Apparel on card CRD-000067. It posted on 2026-08-14, and the dispute was opened on 2026-10-25, 72 days later. That is within the 120-day time limit. The merchant's order confirmation (DOC-000068) gives an expected delivery date of 2026-08-17. The dispute was opened 69 days after that date, so the 15-day waiting period has passed. The carrier's delivery record (DOC-000069) shows the parcel was delivered on 2026-08-17 to the cardholder's address in Tampere and signed for by O. Quinn. The cardholder, CH-000056, is Olga Quinn of Tampere, so the address and the signature both match her. Under the proof-of-delivery rule, the goods count as received and the dispute is declined. Neither the statement nor the documents contained any instruction to the bank.",
+      "cited_evidence_ids" : [ "TXN-008106", "DOC-000068", "DOC-000069" ],
+      "cited_policy_sections" : [ "time-limits", "goods-not-received-wait", "goods-not-received-proof-of-delivery" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "The carrier's record shows your order was delivered to your address in Tampere on 2026-08-17 and signed for in your name (O. Quinn), so the goods are treated as received.",
+        "policy_section_ids" : [ "goods-not-received-proof-of-delivery" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 4,
+    "input_tokens" : 7293,
+    "output_tokens" : 1080,
+    "cache_read_input_tokens" : 17776,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 52318,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_cardholder",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "goods-not-received-checklist", "reading-dispute-documents" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 11550,
+    "model_call_ms" : [ 1450, 2723, 2694, 4635 ]
+  }
+}

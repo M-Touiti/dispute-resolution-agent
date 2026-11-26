@@ -1,0 +1,73 @@
+{
+  "dispute_id" : "DSP-000159",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000159",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:12:59.782832Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "APPROVE_PROVISIONAL_CREDIT",
+      "confidence" : "HIGH",
+      "rationale" : "I recommend a provisional credit of 1,711.87 EUR, the amount of one posting. The card shows two purchases at SALTMARSH JOURNEYS (MER-000043), each for 1,711.87 EUR (171187 minor units) and both posted on 2026-10-14. TXN-008129 was made at 2026-10-13T08:44:29Z and TXN-008130, the disputed one, at 08:46:29Z. Both carry the same authorisation, AUTH-008317, which was approved once for 171187 at 08:44:29Z. So one authorisation was posted twice. Time limit: the dispute was opened on 2026-10-24, 10 days after posting, well within the 120-day limit. No refund from this merchant has posted to the card. Under the rule for one authorisation posted twice, the extra posting (TXN-008130) is credited. That is the whole claim and is below the 3,000 EUR limit for automatic provisional credit.",
+      "cited_evidence_ids" : [ "TXN-008130", "TXN-008129", "AUTH-008317" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-same-authorisation", "provisional-credit" ],
+      "proposed_actions" : [ {
+        "action" : "issue_provisional_credit",
+        "amount_minor" : 171187,
+        "currency" : "EUR"
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 10747,
+    "output_tokens" : 1188,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 69419,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "search_policy",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "search_policy",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "get_authorisations",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 14269,
+    "model_call_ms" : [ 1468, 1826, 2590, 2686, 5600 ]
+  }
+}

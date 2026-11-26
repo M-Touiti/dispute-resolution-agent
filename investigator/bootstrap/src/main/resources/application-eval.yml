@@ -19,7 +19,7 @@ spring:
 
 investigator:
   eval:
-    golden: ${EVAL_GOLDEN:../evals/golden/unauthorised-v1.json}
+    golden: ${EVAL_GOLDEN:../evals/golden/all-categories-v2.json}
     data-dir: ${EVAL_DATA_DIR:../data/generated}
     out: ${EVAL_OUT:../evals/runs/latest}
     # Live runs only: stop before the next case once this much has been spent (micro-dollars); 0 = no cap.

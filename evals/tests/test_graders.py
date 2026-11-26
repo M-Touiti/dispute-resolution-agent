@@ -227,9 +227,10 @@ def test_the_cli_grades_a_run_directory_and_writes_the_summary(tmp_path: Path, e
     for c in GOLDEN["cases"]:
         (tmp_path / f"{c['dispute_id']}.json").write_text(json.dumps(perfect(c)), encoding="utf-8")
     baseline = tmp_path / "baseline" / "unauthorised-v1.json"
+    args = ["--results", str(tmp_path), "--golden", str(golden.path_for(golden.V1)), "--baseline", str(baseline)]
 
-    assert cli.main(["--results", str(tmp_path), "--baseline", str(baseline), "--write-baseline"]) == 0
-    assert cli.main(["--results", str(tmp_path), "--baseline", str(baseline)]) == 0
+    assert cli.main([*args, "--write-baseline"]) == 0
+    assert cli.main(args) == 0
     assert json.loads((tmp_path / "summary.json").read_text())["decision_accuracy"] == 1.0
 
 

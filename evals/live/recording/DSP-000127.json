@@ -1,0 +1,65 @@
+{
+  "dispute_id" : "DSP-000127",
+  "outcome" : {
+    "version" : 1,
+    "dispute_id" : "DSP-000127",
+    "state" : "DECIDED",
+    "decided_at" : "2026-11-26T14:07:19.719528800Z",
+    "reported_category" : "DUPLICATE_CHARGE",
+    "category" : "DUPLICATE_CHARGE",
+    "escalation_reason" : null,
+    "unsafe_proposal" : false,
+    "decision" : {
+      "outcome" : "DECLINE",
+      "confidence" : "HIGH",
+      "rationale" : "I'm declining this dispute because the merchant has already refunded the duplicate charge, so nothing is left to dispute. The dispute was opened on 2026-10-25, which is 44 days after the charge posted on 2026-09-11. That is within the 120-day limit in time-limits. The card shows two purchases at QUAYSIDE OUTFITTERS (MER-000006), each for 15955 EUR minor units (159.55 EUR) and both posted on 2026-09-11: TXN-008069, made at 21:22:56Z on 2026-09-10, and TXN-008070, made at 21:26:56Z. Both carry the same authorisation, AUTH-008262, so one authorisation was posted twice. The merchant then posted refund TXN-008071 for 15955 on 2026-09-15, and it is linked to the disputed posting, TXN-008070. Under duplicate-already-refunded, a duplicate that has already been refunded leaves nothing in dispute, so the dispute is declined.",
+      "cited_evidence_ids" : [ "TXN-008070", "TXN-008069", "TXN-008071", "AUTH-008262" ],
+      "cited_policy_sections" : [ "time-limits", "duplicate-already-refunded" ],
+      "proposed_actions" : [ {
+        "action" : "close_dispute",
+        "reason" : "You were charged twice for 159.55 EUR at QUAYSIDE OUTFITTERS on 2026-09-10, but the merchant has already refunded the duplicate charge in full. The refund of 159.55 EUR posted on 2026-09-15. Nothing remains to dispute.",
+        "policy_section_ids" : [ "duplicate-already-refunded" ]
+      } ]
+    },
+    "guard_violations" : [ ]
+  },
+  "usage" : {
+    "model_calls" : 5,
+    "input_tokens" : 7092,
+    "output_tokens" : 1043,
+    "cache_read_input_tokens" : 23480,
+    "cache_creation_input_tokens" : 0,
+    "cost_micro_usd" : 51876,
+    "price_tables" : [ "2026-11-20" ]
+  },
+  "tool_calls" : [ {
+    "server" : "ledger",
+    "tool" : "get_transaction",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  }, {
+    "server" : "ledger",
+    "tool" : "search_transactions",
+    "is_error" : false
+  }, {
+    "server" : "policy",
+    "tool" : "get_policy_section",
+    "is_error" : false
+  } ],
+  "system_tool_calls" : 3,
+  "skills_loaded" : [ "duplicate-charge-checklist" ],
+  "decision_rejections" : 0,
+  "triage_fell_back" : false,
+  "model_failures" : [ ],
+  "other_events" : {
+    "DecisionChecked" : 1,
+    "StateChanged" : 4
+  },
+  "timing" : {
+    "wall_clock_ms" : 12406,
+    "model_call_ms" : [ 1491, 1975, 1838, 2268, 4765 ]
+  }
+}
