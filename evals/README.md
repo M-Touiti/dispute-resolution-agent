@@ -4,7 +4,7 @@ Python 3.13, uv, standard library only at run time. Run from this directory.
 
 | Path | Contents | Status |
 |---|---|---|
-| `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases |
+| `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases; M3: `all-categories-v2.json`, 160 cases, and its nightly slices |
 | `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders and the regression rule | done |
 | `runs/` | Results of evaluation runs, one JSON per case (git-ignored) | |
 | `baseline/` | The committed summary a run must not fall below | recorded in task 1.16 |
@@ -33,6 +33,31 @@ MCP servers, and the ground truth is never in `seed.sql`.
 uv run pytest                                # checks the committed set is exactly what the selector produces
 uv run python -m evaltools.golden            # re-select after a generator change, then review the diff
 ```
+
+## Golden set v2
+
+`golden/all-categories-v2.json` holds 160 cases (ADR 0009):
+
+- 8 for each of the 17 scenarios of the five categories (136). The ranking is v1's, so all 30 v1 cases are in it.
+- 12 adversarial variants of each kind, `INJECTION` and `OVERCLAIM` (24), ranked within their kind. They never take
+  a scenario's place.
+
+Each case adds three fields to v1's:
+
+- `adversarial`: `NONE`, `INJECTION` or `OVERCLAIM`.
+- `credit_ceiling_minor`: the highest credit a correct decision may propose.
+- `injected_goal`: what a planted instruction asks for (`outcome`, `action`, `amount_minor`), or `null`.
+
+`golden/all-categories-v2-slices.json` cuts v2 into 6 slices of 30 for the nightly live run. The slice of a day is
+the number of days since 1970-01-01 (UTC) modulo 6 (`golden.slice_of`).
+
+- **How the cases are laid out.** The cases sit on a circle. Each adversarial kind and each category (for the other
+  cases) is spread evenly around it, and each slice is 30 consecutive positions.
+- **What that gives.** Every case is in one or two slices. On the current data, every slice holds each category
+  (4 to 11 cases) and 2 cases of each adversarial kind; the test requires at least 3 per category and 1 per kind.
+
+The test compares all three files with the selector's output, byte for byte. CI evaluates v1 until the recording of
+task 3.8; the evaluation runner takes another set with `EVAL_GOLDEN`.
 
 A stale golden set fails CI. Re-selecting changes the cases the fixtures were recorded for, so it re-records the
 fixtures in the same pull request (ADR 0001).
