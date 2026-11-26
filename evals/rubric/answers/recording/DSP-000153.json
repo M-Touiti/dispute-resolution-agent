@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000153",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "REQUEST_MERCHANT_EVIDENCE",
+  "input_sha256": "5f82979780b69e454f86b42a03ed402e223387ac92c4e593a685550b0f9b8cd5",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtEZeju39oMpaVjehA4",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact can be traced to the records: \"posted on 2026-09-23 for 278.08 EUR\", \"opened on 2026-10-25, 32 days later\", \"AUTH-008309 was approved for 27808\" and the \"97.32 EUR difference\" all match the inputs, and the arithmetic is correct."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"inside the 120-day limit\"), the posted and authorised amounts (\"the posted amount equals the authorised amount\") and the missing receipt (\"There is no receipt or quote\"); the tip tolerance does not apply because the merchant is an electronics retailer."
+    },
+    "merchant_request_clear": {
+      "verdict": "pass",
+      "reason": "The note asks for \"the receipt or order details for the 278.08 EUR transaction of 2026-09-22, showing the items ordered and the total amount the customer agreed to pay\", which matches the RECEIPT evidence item and discloses nothing internal."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2257,
+    "output_tokens": 579,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 21100,
+  "price_table": "2026-11-20"
+}

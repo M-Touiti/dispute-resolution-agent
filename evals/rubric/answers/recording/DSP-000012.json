@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000012",
+  "category": "CANCELLED_RECURRING",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "84db68e9bb9e51f7052f44279088287f6a00d56e9d602f29ad474b88ee287171",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsTYEuX4cD33oFoPh8R",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact checks out against the records, including \"posted on 2026-10-14\", \"opened on 2026-10-28, 14 days after posting\" and \"cancelled with effect from 2026-10-10\" being \"three days before the charge\" of 2026-10-13."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"within the 120-day limit\"), the written confirmation (\"DOC-000006 is a cancellation confirmation issued by the merchant\"), the effective date against the charge (\"took effect three days before the charge was made\") and the credit limit (\"well below the 3,000.00 EUR provisional credit limit\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2555,
+    "output_tokens": 425,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 19212,
+  "price_table": "2026-11-20"
+}

@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000145",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "REQUEST_MERCHANT_EVIDENCE",
+  "input_sha256": "7a0f5b0d0aecdbd5ae6176aca17bdd73a6afcbe2920eee62c86ce39988e8c864",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtBMvUDMZZ37WHa17p3",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "fail",
+      "reason": "The rationale states \"Under the policy, this dispute category does not lead to a provisional credit,\" but none of the policy sections or tool results the agent received say anything about provisional credit, so this claim about policy is unsupported (the day counts \"77 days\" and \"70 days\" are correct)."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"77 days after posting, which is within the 120-day limit\"), the expected delivery date and wait (\"expected delivery date of 2026-08-22 ... the 15-day wait has passed\"), the missing delivery record (\"no delivery confirmation from the carrier\") and merchant resolution (\"no refund\" and \"got no reply\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "pass",
+      "reason": "The note asks for \"the carrier's delivery record showing delivery to the cardholder's address and the signature of the person who received it,\" which matches the PROOF_OF_DELIVERY evidence item and discloses no internal flags, policy ids or speculation about the cardholder."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2759,
+    "output_tokens": 793,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 27388,
+  "price_table": "2026-11-20"
+}

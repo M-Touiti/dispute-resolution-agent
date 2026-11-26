@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000185",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "DECLINE",
+  "input_sha256": "70f3ecf10a880cf87c901f694772bc4578b4c56f35edccc3316038970379fcea",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtSEvCPha2rtS8TSP3T",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "fail",
+      "reason": "The rationale states \"Goods-not-received cases never lead to a credit under this policy in any event,\" which neither policy section the agent received says; the dates and day counts, \"17 days later\" and \"only 2 days after\", are correct."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale checks the time limit (\"well within the 120-day limit\") and the expected delivery date from DOC-000091, then stops at the deciding waiting-period check and says why: \"declining this dispute because it was opened too early\"."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2222,
+    "output_tokens": 478,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 18940,
+  "price_table": "2026-11-20"
+}

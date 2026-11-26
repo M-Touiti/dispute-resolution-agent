@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000135",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "DECLINE",
+  "input_sha256": "e7e6251a63c90554db20e0996967270bd5a4f51f7739e0afafe101dcd33cdace",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRt7U7AysX6fYM13m3ry",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every stated fact matches the records and the arithmetic is right, including \"posted on 2026-07-31 and the dispute was opened on 2026-10-31, which is 92 days later\" and \"20% of 11956 cents is 2391.20 cents\"."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale addresses the time limit, the posted and authorised amounts, the missing receipt (\"No receipt is attached\") and the restaurant tip tolerance (\"the 1912-cent difference is within that\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2383,
+    "output_tokens": 424,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 18504,
+  "price_table": "2026-11-20"
+}

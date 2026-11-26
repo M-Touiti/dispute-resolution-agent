@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000078",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "DECLINE",
+  "input_sha256": "4337cd61684ea1b34f5929b832df83f8d829f135f971b387a80a0f50cd9f0126",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsnpxmCjVddQWUsN8Cg",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "The statements \"posted on 2026-10-08, and the dispute was opened on 2026-10-24. That is 16 days later\" and \"opened only 3 days after that date\" of \"2026-10-21\" match the transaction record and DOC-000035, and both policy sections are paraphrased accurately."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale addresses the time limit (\"well inside the 120-day limit\") and the expected delivery date and wait, then stops at that deciding check and says so: \"the case is declined at this step, and delivery evidence and merchant refunds were not checked.\""
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 1985,
+    "output_tokens": 487,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 18172,
+  "price_table": "2026-11-20"
+}

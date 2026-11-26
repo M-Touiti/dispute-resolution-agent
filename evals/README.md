@@ -7,7 +7,7 @@ Python 3.13, uv, standard library only at run time, except the live rubric grade
 |---|---|---|
 | `golden/` | Golden sets selected from the generated ground truth, committed | M1: `unauthorised-v1.json`, 30 cases; M3: `all-categories-v2.json`, 160 cases (the default since 3.8), its nightly slices and the pilot of 3.8 (`-pilot.json`, 44 cases) |
 | `evaltools/` | `golden.py` selector; `graders.py` and `grade.py`, the deterministic graders (v2 since M3), the regression rule for replayed runs and the thresholds rule for live runs; `rubric.py`, the model-graded rubric and its calibration | done |
-| `rubric/` | The written rubric (`rubric-v1.md`), the grader's price table; from task 3.9 the stored grader answers (`answers/<run>/`) and the calibration (`calibration/`) | rubric and tooling done (3.7) |
+| `rubric/` | The written rubric (`rubric-v1.md`), the grader's price table, the stored grader answers (`answers/recording/`, 160) and the calibration (`calibration/`: sheet, labels, agreement) | run and calibrated in 3.9 (labels by a person) |
 | `runs/` | Results of evaluation runs, one JSON per case (git-ignored) | |
 | `baseline/` | The committed summary a replayed run must not fall below (`all-categories-v2.json`), and the live thresholds (`live-thresholds.json`) | recorded in 3.8 |
 | `live/` | The live runs the report is built from: `recording/` (every case result, `run.json`, `summary.json`, `grades.json`, `session.json` with date and effort) and `pilot/<effort>/` (summaries of the 3.8 pilot) | recorded in 3.8 |
@@ -206,6 +206,37 @@ about $6 for the 160 of v2.
 uv run python -m evaltools.rubric pick --results runs/recording
 uv run python -m evaltools.rubric agree --answers rubric/answers/recording
 ```
+
+`agree` copies the labels' `labelled_by` (who made them) into `agreement.json`; the table's `human_*` cells name
+the labeller, whoever that was.
+
+**The run of task 3.9 (26 Nov 2026), on the v2 recording** (`--results live/recording`): 160 cases graded, none
+refused, $3.62. Grader verdicts:
+
+| Criterion | Pass | Fail | n/a | Calibrated |
+|---|---|---|---|---|
+| faithful | 149 | 11 | 0 | no (kappa 0: the labels are all pass) |
+| evidence_check_complete | 136 | 24 | 0 | yes: agreement 0.967, kappa 0.839 |
+| merchant_request_clear | 17 | 8 | 135 | no (kappa 0: the labels are all pass) |
+
+The 30 calibration labels were made from `sheet.md` and the rubric, before any grader answer was opened (SHA-256 of
+`labels.json` taken before `agree` ran: `14042bebdee8f6ccb09fcbc9102b0289993aba236bc56a34e8ba2daa841c20e5`). The
+grader is the same model, so the agreement measures one model's consistency with itself, not the human calibration
+ADR 0009 describes; the report says so. The labels agree with the grader on 86 of 90 verdicts. The grader was
+stricter in all four disagreements: a statement with no source in the inputs (DSP-000043: "This category does not
+allow a provisional credit."), a policy paraphrase it counts as a misquote (DSP-000190: "disputed charge" for
+"disputed amount"), the earlier-transactions check on a 3-D Secure decline (DSP-000106), and a merchant note that
+asks for more than the evidence list names (DSP-000150).
+
+What the run shows about the agent (for the report's analysis, task 3.10):
+
+- **Unauthorised transactions, evidence check: 24 of 47 fail.** The rationale rarely addresses the cardholder's
+  earlier transactions at the merchant. The policy's `unauthorised-evidence` section lists them for every case; the
+  `unauthorised-transaction-checklist` skill asks for them only on the chip-and-PIN branch.
+- **Goods not received, faithful: 9 of 29 fail**, mostly on "this category does not allow a provisional credit": the
+  `goods-not-received-checklist` skill says so, but no policy text the grader sees does.
+- **Cancelled recurring, merchant request: 8 of 8 fail.** The note asks for the merchant's cancellation records and
+  terms; the tool's evidence list has only `CANCELLATION_POLICY` for both.
 
 The tests run offline: a fake grader stands in for the model, and stored answers stand in for a run. One test drives
 the real SDK through a mock transport; it is skipped where the `rubric` group is not installed, as in CI.

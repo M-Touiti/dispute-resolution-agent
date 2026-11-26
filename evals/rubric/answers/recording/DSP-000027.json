@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000027",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "DECLINE",
+  "input_sha256": "0a8798b24178b150120e01cb9d62f1475f976e52e46696ac394af6d8d35ce0cb",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsXe6ze4kFQYG5XQXip",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact matches the records: \"posted on 2026-10-15\", \"opened on 2026-10-31, 16 days after posting\", \"expected delivery date as 2026-10-28\" and \"opened only 3 days after that date\" are all correct, as is the 2026-11-12 reopening date."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"within the 120-day time limit\") and the expected delivery date and wait, then stops at that deciding check and says why: \"the waiting-period rule decides the case before either is considered.\""
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no note to the merchant to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2020,
+    "output_tokens": 475,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 18072,
+  "price_table": "2026-11-20"
+}

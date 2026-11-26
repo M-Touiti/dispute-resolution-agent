@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000035",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "dfd6b9cb30d5deb1fc7e36d030d42d724c9b3374b85f378e6e791e28050d0f46",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsZMfaz9nqzLo78BCJ3",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every stated fact is in the records, including \"posted on 2026-08-27\", \"63 days later\" (correct from 2026-08-27 to 2026-10-29), \"3-D Secure NOT_PERFORMED, CVV NOT_PRESENT, and the fraud flag set\" and the \"3,000.00 EUR automated limit in provisional-credit\"."
+    },
+    "evidence_check_complete": {
+      "verdict": "fail",
+      "reason": "The rationale covers the time limit, entry mode, 3-D Secure, fraud flag and credit limit, but it never addresses the cardholder's earlier transactions with BRAMBLE DEVICES; it moves from \"the fraud screening flagged it\" straight to the credit without saying whether any prior history with MER-000005 exists."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2659,
+    "output_tokens": 530,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 21728,
+  "price_table": "2026-11-20"
+}

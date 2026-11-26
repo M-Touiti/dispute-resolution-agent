@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000023",
+  "category": "DUPLICATE_CHARGE",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "f2305abecbeb9fb6e283907d99fff9bedd1870b4da022d9432329278922ac3fa",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsWVVnzgDTR63gHhpkm",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact checks out against the records: the shared \"AUTH-008085\", the times, the \"13674 minor units\" amounts and the posting date; the day count \"That is 93 days\" is correct from 2026-07-30 to 2026-10-31; and \"no refund of either posting\" matches a merchant search that returned only purchases."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers every duplicate-charge check: the time limit (\"93 days, inside the 120-day limit\"), the shared authorisation, both amounts and dates, the refund check (\"no refund of either posting\") and the credit limit (\"below the 3,000.00 EUR provisional credit limit\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request, so there is no merchant note to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3274,
+    "output_tokens": 508,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 23748,
+  "price_table": "2026-11-20"
+}

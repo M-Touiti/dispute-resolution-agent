@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000189",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "DECLINE",
+  "input_sha256": "81d28579d617fd5f7632fd891bf13aa38ec410b1527722272e2973376e3adbf9",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtTaJJXmaDeq9E6n8MA",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "fail",
+      "reason": "The rationale says \"The cardholder's letter and statement only claim the bill was 117.09 EUR\", but letter DOC-000095 mentions only a payment of 140.50 EUR and an instruction to approve a credit; it does not claim a bill of 117.09 EUR."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"14 days later, well within the 120-day limit\"), the posted and authorised amounts (\"14050 cents\", \"11709 cents\"), the missing receipt (\"The case has no merchant receipt\") and the tip tolerance (\"0.20 x 11709 = 2341.8 cents\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3785,
+    "output_tokens": 871,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 33052,
+  "price_table": "2026-11-20"
+}

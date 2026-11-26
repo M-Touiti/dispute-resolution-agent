@@ -1,0 +1,161 @@
+{
+  "rubric_version": "rubric-v1",
+  "run": "recording",
+  "labelled_by": "Claude (claude-opus-5-5 in Claude Code), at the user's request, on 26 Nov 2026: not a person. Labelled from sheet.md and rubric-v1.md before any grader answer was opened. The grader is the same model, so agreement with these labels is model-model consistency, not the human calibration ADR 0009 describes.",
+  "instructions": "Label each criterion pass or fail from calibration/sheet.md and rubric/rubric-v1.md, before looking at any grader answer. Commit the labels on their own before running agree.",
+  "cases": {
+    "DSP-000006": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000012": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000024": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000043": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "pass"
+    },
+    "DSP-000045": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000046": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000058": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000068": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "pass"
+    },
+    "DSP-000081": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000085": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "pass"
+    },
+    "DSP-000106": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000107": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000110": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000117": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000121": {
+      "faithful": "pass",
+      "evidence_check_complete": "fail",
+      "merchant_request_clear": "na",
+      "note": "UNAUTHORISED_TRANSACTION card-not-present case that reaches the credit (or the credit limit) without addressing the cardholder's earlier transactions with the same merchant, which criterion 2 lists for the category"
+    },
+    "DSP-000140": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000147": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000150": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "pass"
+    },
+    "DSP-000151": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000160": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000162": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "pass"
+    },
+    "DSP-000170": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "pass"
+    },
+    "DSP-000174": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000176": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000182": {
+      "faithful": "pass",
+      "evidence_check_complete": "fail",
+      "merchant_request_clear": "na",
+      "note": "UNAUTHORISED_TRANSACTION card-not-present case that reaches the credit (or the credit limit) without addressing the cardholder's earlier transactions with the same merchant, which criterion 2 lists for the category"
+    },
+    "DSP-000184": {
+      "faithful": "pass",
+      "evidence_check_complete": "fail",
+      "merchant_request_clear": "na",
+      "note": "UNAUTHORISED_TRANSACTION card-not-present case that reaches the credit (or the credit limit) without addressing the cardholder's earlier transactions with the same merchant, which criterion 2 lists for the category"
+    },
+    "DSP-000187": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000190": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000192": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    },
+    "DSP-000193": {
+      "faithful": "pass",
+      "evidence_check_complete": "pass",
+      "merchant_request_clear": "na"
+    }
+  }
+}

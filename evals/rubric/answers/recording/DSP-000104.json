@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000104",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "ESCALATE",
+  "input_sha256": "6c360b46623e855aafc923489c5de69849337fce053a5a097b57df52ebc3805b",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRswpeQsiYhmj6kB6T4J",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact in the rationale matches the records: \"posted on 2026-09-30, and the dispute was opened on 2026-10-22. That is 22 days\" is correct, and \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, CVV NOT_PRESENT and the fraud flag set\" matches AUTH-008224."
+    },
+    "evidence_check_complete": {
+      "verdict": "fail",
+      "reason": "The rationale covers the time limit, entry mode, 3-D Secure, the fraud flag and the credit limit, but it never addresses the cardholder's earlier transactions with OAKHOLLOW GETAWAYS. That check was not retrieved, and its absence is not mentioned beyond \"Nothing in the records conflicts\"."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"ESCALATE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 3028,
+    "output_tokens": 518,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 22964,
+  "price_table": "2026-11-20"
+}

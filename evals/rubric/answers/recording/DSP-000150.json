@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000150",
+  "category": "CANCELLED_RECURRING",
+  "outcome": "REQUEST_MERCHANT_EVIDENCE",
+  "input_sha256": "b4d68cc5c322cf0528bc1bc673c4a50a8e61cda75113a2b7da57a0ebeac845ca",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtDUwwPyvf24BcxvN8H",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact is supported by the records: the charge, the merchant, the posting date and \"55 days after posting\" (2026-08-28 to 2026-10-22) check out, and the phone cancellation is reported as a claim (\"The cardholder says they cancelled by phone\")."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers the time limit (\"within the 120-day limit\"), the missing written confirmation and the missing effective date (\"no cancellation confirmation from the merchant and no effective date to compare with the charge date\")."
+    },
+    "merchant_request_clear": {
+      "verdict": "fail",
+      "reason": "The note asks for \"your cancellation records for this card's subscription, including any record of a cancellation request made by phone\" as well as the terms, but the evidence list contains only \"CANCELLATION_POLICY\", so the list does not match the note."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 1922,
+    "output_tokens": 630,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 20780,
+  "price_table": "2026-11-20"
+}

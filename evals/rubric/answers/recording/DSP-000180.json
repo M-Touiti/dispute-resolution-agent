@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000180",
+  "category": "AMOUNT_MISMATCH",
+  "outcome": "APPROVE_PROVISIONAL_CREDIT",
+  "input_sha256": "98d6070f707e75c009bfdcdc0f1e197f74a26794d9d86bf5c09a6bd8e4262bf6",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtQCaW6dFj769wKH13N",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact matches the records: \"posted on 2026-09-12\", \"44 days later\", \"approved for 25267 cents\", \"receipt DOC-000089 shows a total of 252.67 EUR\", and the arithmetic \"37142 - 25267 = 11875 cents\" is correct."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"44 days later, which is within the 120-day limit\"), the posted, authorised and receipt amounts, and that \"only the difference is credited\". The restaurant tip tolerance does not apply to this merchant."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"APPROVE_PROVISIONAL_CREDIT\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2699,
+    "output_tokens": 493,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 21148,
+  "price_table": "2026-11-20"
+}

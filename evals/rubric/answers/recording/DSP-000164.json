@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000164",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "DECLINE",
+  "input_sha256": "ac6bbd73314c1e1d63d7d97c6241fe802b083ac03579cc5b100bf896eb5b215e",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRtJ7bSea8V4dZrCL7ik",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "The facts check out against the records: \"posted on 2026-09-10\" and \"opened on 2026-10-22, which is 42 days later\" are correct, \"opened 37 days after\" the 2026-09-15 expected date is correct, and \"signed for by Z. Kowalski\" matching \"Zeno Kowalski of Leipzig\" agrees with DOC-000077 and the cardholder profile."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale addresses the time limit (\"within the 120-day limit\"), the expected delivery and 15-day wait (\"the 15-day wait had passed\") and the delivery record and signer (\"signed for by Z. Kowalski\"), then stops at a deciding check (\"that decides the case\") and explains why the refund check was not completed."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not REQUEST_MERCHANT_EVIDENCE, so there is no merchant note to grade."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2973,
+    "output_tokens": 702,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 26424,
+  "price_table": "2026-11-20"
+}

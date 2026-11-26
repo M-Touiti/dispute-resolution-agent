@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000065",
+  "category": "CANCELLED_RECURRING",
+  "outcome": "REQUEST_MERCHANT_EVIDENCE",
+  "input_sha256": "5e75a698b49a2caac2af04eacb579a571c26111a1ad399dd97caf978773e283d",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsiyAGYpCWkF7mCaHbr",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact checks out against the records: \"posted on 2026-09-17\" and \"opened on 2026-10-30, 43 days after posting\" are correct, \"a merchant that bills on a recurring basis\" matches recurring_billing true, and the phone cancellation is framed as \"a claim, not proof.\""
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale covers each required check: the time limit (\"within the 120-day limit\"), the missing written confirmation (\"No cancellation confirmation from the merchant is attached\") and the effective date (\"no cancellation date to compare with the 2026-09-16 charge date\"); no credit is proposed, so the credit limit check does not arise."
+    },
+    "merchant_request_clear": {
+      "verdict": "fail",
+      "reason": "The note asks for two things, \"your cancellation records ... including any cancellation request (for example by phone) and the date it took effect\" and \"the subscription terms\", but the evidence list contains only \"CANCELLATION_POLICY\", so it does not match the note's request for cancellation records."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 1979,
+    "output_tokens": 825,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 24908,
+  "price_table": "2026-11-20"
+}

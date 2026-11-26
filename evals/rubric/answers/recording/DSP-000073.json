@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000073",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "DECLINE",
+  "input_sha256": "fa2ab40e979345a9850afd19ab1fc1a5f5763826c13fa05c03d62e00c3e50b99",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsmcpk6hzTQCtDZTJXm",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "The statements \"posted on 2026-06-19\", \"opened on 2026-10-26, which is 129 days later\", \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED, no security code given and the fraud flag set\" all match the records, the day count is correct, and the policy is quoted accurately."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale stops at the deciding time-limit check, \"opened on 2026-10-26, which is 129 days later\", and says why it stopped: \"Policy applies the time limit first, so these signals do not change the outcome.\""
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 1851,
+    "output_tokens": 477,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 17436,
+  "price_table": "2026-11-20"
+}

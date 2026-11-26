@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000087",
+  "category": "UNAUTHORISED_TRANSACTION",
+  "outcome": "ESCALATE",
+  "input_sha256": "250f0d2bdbac7992d8f515c577e568e0d72a3fa49d9d02298a4985c74dd2fdd3",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRsqjA6RRsCVMgvekf5z",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "pass",
+      "reason": "Every fact is supported by the records, including \"posted on 2026-09-27 and the dispute was opened on 2026-10-26, 29 days later\" (a correct day count), \"3-D Secure NOT_PERFORMED\", \"the fraud flag set\" and \"the full 414,681 cents\", which matches the 414681 minor units."
+    },
+    "evidence_check_complete": {
+      "verdict": "fail",
+      "reason": "The rationale covers the time limit, \"entry mode ECOMMERCE, 3-D Secure NOT_PERFORMED\", the fraud flag and the \"3,000.00 EUR\" credit limit, but it never addresses the cardholder's earlier transactions with COPPERLEAF JOURNEYS. That check was not made and is not mentioned as missing."
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"ESCALATE\" and \"No action is proposed\", so there is no merchant note to judge."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2578,
+    "output_tokens": 573,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 22264,
+  "price_table": "2026-11-20"
+}

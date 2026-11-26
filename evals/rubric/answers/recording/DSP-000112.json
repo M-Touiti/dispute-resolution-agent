@@ -1,0 +1,34 @@
+{
+  "rubric_version": "rubric-v1",
+  "dispute_id": "DSP-000112",
+  "category": "GOODS_NOT_RECEIVED",
+  "outcome": "DECLINE",
+  "input_sha256": "32af3855dbc0413a0ab1ab1c5afb1ed800ed846401687b50a7be6ffdc6da3f5d",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "response_id": "msg_011ChRt14WvtXjpxQcHU5yaA",
+  "stop_reason": "end_turn",
+  "scores": {
+    "faithful": {
+      "verdict": "fail",
+      "reason": "The rationale states \"This category does not allow a provisional credit\", but neither the cited policy sections nor any tool result says this; the dates, day counts (16 and 6 days) and the 2026-11-06 reopening date are otherwise correct."
+    },
+    "evidence_check_complete": {
+      "verdict": "pass",
+      "reason": "The rationale addresses the time limit (\"well within the 120-day time limit\") and the expected delivery date against the 15-day wait (\"opened only 6 days after that date\"), then stops at that deciding check and says why: \"the waiting period decides it first.\""
+    },
+    "merchant_request_clear": {
+      "verdict": "na",
+      "reason": "The outcome is \"DECLINE\", not a merchant evidence request."
+    }
+  },
+  "problem": null,
+  "usage": {
+    "input_tokens": 2048,
+    "output_tokens": 669,
+    "cache_read_input_tokens": 2461,
+    "cache_creation_input_tokens": 0
+  },
+  "cost_micro_usd": 22064,
+  "price_table": "2026-11-20"
+}

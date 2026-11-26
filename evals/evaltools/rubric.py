@@ -509,6 +509,9 @@ def agreement(labels: dict[str, Any], answers: list[dict[str, Any]]) -> dict[str
     if absent:
         raise ValueError(f"no grader answer for: {absent}")
     out: dict[str, Any] = {"rubric_version": RUBRIC_VERSION, "run": labels["run"], "criteria": {}}
+    # Who made the labels travels with the agreement: "human" in the table names means the labeller.
+    if "labelled_by" in labels:
+        out["labelled_by"] = labels["labelled_by"]
     for c in CRITERIA:
         table = dict.fromkeys(("both_pass", "human_pass_grader_fail", "human_fail_grader_pass", "both_fail"), 0)
         excluded = 0
