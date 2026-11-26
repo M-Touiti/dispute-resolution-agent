@@ -23,7 +23,9 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,6 +166,7 @@ public final class EvalRunner implements ApplicationRunner {
 
         long modelCalls = 0, inputTokens = 0, outputTokens = 0, cacheRead = 0, cacheWrite = 0, costMicroUsd = 0;
         List<String> priceTables = new ArrayList<>();
+        Set<String> models = new TreeSet<>();
         List<String> modelFailures = new ArrayList<>();
         List<Long> modelCallMillis = new ArrayList<>();
         List<Map<String, Object>> toolCalls = new ArrayList<>();
@@ -186,6 +189,7 @@ public final class EvalRunner implements ApplicationRunner {
                     cacheWrite += m.usage().cacheCreationInputTokens();
                     costMicroUsd += m.cost().microUsd();
                     modelCallMillis.add(m.latency().toMillis());
+                    models.add(m.answeredModel() != null ? m.answeredModel() : m.configuredModel());
                     if (!priceTables.contains(m.cost().priceTableVersion())) {
                         priceTables.add(m.cost().priceTableVersion());
                     }
@@ -231,6 +235,7 @@ public final class EvalRunner implements ApplicationRunner {
         usage.put("cache_creation_input_tokens", cacheWrite);
         usage.put("cost_micro_usd", costMicroUsd);
         usage.put("price_tables", priceTables);
+        usage.put("models", List.copyOf(models));
         r.put("usage", usage);
         r.put("tool_calls", toolCalls);
         r.put("system_tool_calls", systemToolCalls);
