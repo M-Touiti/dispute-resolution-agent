@@ -28,10 +28,21 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--cardholders", type=int, default=defaults.cardholders)
     p.add_argument("--merchants", type=int, default=defaults.merchants)
     p.add_argument("--disputes", type=int, default=defaults.disputes)
+    p.add_argument(
+        "--adversarial",
+        type=int,
+        default=defaults.adversarial,
+        help="adversarial disputes of each kind, appended after the others (default: %(default)s)",
+    )
     args = p.parse_args(argv)
 
     config = Config(
-        seed=args.seed, as_of=args.as_of, cardholders=args.cardholders, merchants=args.merchants, disputes=args.disputes
+        seed=args.seed,
+        as_of=args.as_of,
+        cardholders=args.cardholders,
+        merchants=args.merchants,
+        disputes=args.disputes,
+        adversarial=args.adversarial,
     )
     manifest = write_dataset(generate(config), config, args.out)
     counts = ", ".join(f"{k}={v}" for k, v in manifest["counts"].items())

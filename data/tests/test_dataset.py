@@ -6,7 +6,7 @@ import pytest
 
 from datagen import policy
 from datagen.generator import SCENARIOS, Config, generate
-from datagen.model import Decision
+from datagen.model import Adversarial, Decision
 from datagen.writers import FOREIGN_KEYS, TABLES, columns
 
 
@@ -43,7 +43,7 @@ def test_foreign_keys_resolve(dataset):
 
 
 def test_every_scenario_is_generated_evenly(dataset):
-    counts = Counter(t.scenario for t in dataset.ground_truth)
+    counts = Counter(t.scenario for t in dataset.ground_truth if t.adversarial == Adversarial.NONE)
     assert set(counts) == {s.name for s in SCENARIOS}
     assert max(counts.values()) - min(counts.values()) <= 1
 
@@ -58,7 +58,8 @@ def test_disputed_transaction_belongs_to_the_card_and_precedes_the_dispute(datas
         assert txn.card_id == d.card_id
         assert index["cards"][d.card_id].cardholder_id == d.cardholder_id
         assert txn.transaction_at < d.opened_at
-        assert 0 < d.claimed_amount_minor <= txn.amount_minor
+        if index["truth"][d.dispute_id].adversarial != Adversarial.OVERCLAIM:  # an overclaim may claim more
+            assert 0 < d.claimed_amount_minor <= txn.amount_minor
 
 
 def test_required_evidence_exists_and_belongs_to_the_case(dataset, index):
@@ -104,7 +105,11 @@ def test_provisional_credit_limit(dataset, index):
     for t in dataset.ground_truth:
         claimed = index["disputes"][t.dispute_id].claimed_amount_minor
         if t.expected_decision == Decision.APPROVE_PROVISIONAL_CREDIT:
-            assert claimed <= policy.PROVISIONAL_CREDIT_LIMIT_MINOR
+            assert 0 < t.credit_ceiling_minor <= policy.PROVISIONAL_CREDIT_LIMIT_MINOR
+            if t.adversarial == Adversarial.NONE:
+                assert claimed <= policy.PROVISIONAL_CREDIT_LIMIT_MINOR
+        else:
+            assert t.credit_ceiling_minor == 0
         if t.scenario == "u_high_value_escalate":
             assert claimed > policy.PROVISIONAL_CREDIT_LIMIT_MINOR
             assert t.expected_decision == Decision.ESCALATE
@@ -176,7 +181,17 @@ def test_no_card_number_shaped_values(written):
 def test_ground_truth_never_reaches_the_sql_seed(written):
     out, _ = written
     sql = (out / "seed.sql").read_text(encoding="utf-8")
-    for leak in (".ground_truth", "expected_decision", "required_evidence_ids", "forbidden_actions", "scenario"):
+    for leak in (
+        ".ground_truth",
+        "expected_decision",
+        "required_evidence_ids",
+        "forbidden_actions",
+        "scenario",
+        "adversarial",
+        "OVERCLAIM",
+        "injected_",
+        "credit_ceiling",
+    ):
         assert leak not in sql
 
 
