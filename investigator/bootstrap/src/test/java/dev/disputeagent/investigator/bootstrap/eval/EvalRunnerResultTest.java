@@ -66,5 +66,6 @@ class EvalRunnerResultTest {
         Map<String, Object> result = EvalRunner.result(dispute, finished, events, Duration.ofMillis(2345));
 
         assertThat(result.get("timing")).isEqualTo(Map.of("wall_clock_ms", 2345L, "model_call_ms", List.of(420L, 95L)));
+        assertThat(((Map<?, ?>) result.get("usage")).get("models")).isEqualTo(List.of("haiku"));
     }
 }
