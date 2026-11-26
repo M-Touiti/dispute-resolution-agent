@@ -18,6 +18,7 @@ import dev.disputeagent.investigator.domain.decision.ProposedAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
 import tools.jackson.core.JacksonException;
@@ -59,6 +60,17 @@ public final class JacksonJsonAdapter implements JsonPort {
         List<String> out = new ArrayList<>();
         collect(root, field, out);
         return out;
+    }
+
+    @Override
+    public Optional<Long> numberIn(String json, String idField, String id, String numberField) {
+        JsonNode root;
+        try {
+            root = JSON.readTree(json);
+        } catch (JacksonException e) {
+            return Optional.empty();
+        }
+        return find(root, idField, id, numberField);
     }
 
     @Override
@@ -111,6 +123,31 @@ public final class JacksonJsonAdapter implements JsonPort {
         List<String> out = new ArrayList<>();
         array.forEach(n -> out.add(n.asString()));
         return out;
+    }
+
+    private static Optional<Long> find(JsonNode node, String idField, String id, String numberField) {
+        if (node.isObject()) {
+            JsonNode key = node.get(idField);
+            JsonNode number = node.get(numberField);
+            if (key != null && key.isString() && key.asString().equals(id) && number != null
+                    && number.isIntegralNumber()) {
+                return Optional.of(number.asLong());
+            }
+            for (Map.Entry<String, JsonNode> e : node.properties()) {
+                Optional<Long> found = find(e.getValue(), idField, id, numberField);
+                if (found.isPresent()) {
+                    return found;
+                }
+            }
+        } else if (node.isArray()) {
+            for (JsonNode child : node) {
+                Optional<Long> found = find(child, idField, id, numberField);
+                if (found.isPresent()) {
+                    return found;
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private static void collect(JsonNode node, String field, List<String> out) {

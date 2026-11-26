@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class TriageDisputeTest {
 
@@ -61,6 +63,40 @@ class TriageDisputeTest {
         llm.then(StopReason.END_TURN, new Text("garbage"));
         assertThat(triage.triage(DISPUTE)).isEqualTo(DisputeCategory.DUPLICATE_CHARGE);
         assertThat(audit.of(AuditEvent.TriageFellBack.class)).hasSize(1);
+    }
+
+    /** The schema offers the model every category, and nothing else. */
+    @Test
+    void theSchemaNamesEveryCategory() {
+        for (DisputeCategory category : DisputeCategory.values()) {
+            assertThat(TriageDispute.schema()).contains("\"" + category.name() + "\"");
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(DisputeCategory.class)
+    void theModelsCategoryIsTakenWhateverWasRecorded(DisputeCategory answered) {
+        for (DisputeCategory recorded : DisputeCategory.values()) {
+            var dispute = new DisputeOpened(new CaseId("DSP-000009"), "CH-1", "CRD-1", "TXN-1", recorded,
+                    Instant.parse("2026-10-30T10:00:00Z"), Money.eur(1_000), "Something is wrong.", List.of());
+            var model = new ScriptedLlm().then(StopReason.END_TURN, new Text(answered.name()));
+            var answers = new FakeJson().triage(answered.name(), new Triage(answered, "the statement says so"));
+            var triage = new TriageDispute(model, answers, new RecordingAudit(), new TickingClock(Instant.EPOCH),
+                    Fakes.settings(new LoopBudget(8, 20, 200_000, Duration.ofMinutes(5))));
+
+            assertThat(triage.triage(dispute)).as(recorded + " answered " + answered).isEqualTo(answered);
+            assertThat(((Text) model.requests.getFirst().messages().getFirst().content().getFirst()).text())
+                    .contains(recorded.name());
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(DisputeCategory.class)
+    void aFallBackKeepsTheRecordedCategory(DisputeCategory recorded) {
+        var dispute = new DisputeOpened(new CaseId("DSP-000009"), "CH-1", "CRD-1", "TXN-1", recorded,
+                Instant.parse("2026-10-30T10:00:00Z"), Money.eur(1_000), "Something is wrong.", List.of());
+        llm.then(StopReason.END_TURN, new Text("garbage"));
+        assertThat(triage.triage(dispute)).isEqualTo(recorded);
     }
 
     @Test

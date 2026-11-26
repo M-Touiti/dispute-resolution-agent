@@ -86,6 +86,6 @@ public record InvestigatorProperties(Llm llm, Mcp mcp, Kafka kafka, Budget budge
     }
 
     /** Must match data/datagen/policy.py and the policy corpus. */
-    public record Policy(int timeLimitDays, long provisionalCreditLimitMinor) {
+    public record Policy(int timeLimitDays, long provisionalCreditLimitMinor, int goodsNotReceivedWaitDays) {
     }
 }

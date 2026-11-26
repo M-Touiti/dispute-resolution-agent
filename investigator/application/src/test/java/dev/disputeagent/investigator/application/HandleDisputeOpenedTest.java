@@ -42,7 +42,8 @@ class HandleDisputeOpenedTest {
                 new Triage(DisputeCategory.UNAUTHORISED_TRANSACTION, "the cardholder did not make it"));
         var mcp = new FakeMcp()
                 .tool(McpServer.LEDGER, "get_transaction", a -> new McpToolResult(
-                        "{\"card_id\":\"CRD-000042\",\"posted_on\":\"2026-10-01\"}", false))
+                        "{\"transaction_id\":\"TXN-000100\",\"card_id\":\"CRD-000042\",\"posted_on\":\"2026-10-01\","
+                                + "\"amount_minor\":1000}", false))
                 .tool(McpServer.LEDGER, "search_transactions", a -> new McpToolResult("{\"items\":[]}", false))
                 .tool(McpServer.LEDGER, "get_authorisations", a -> new McpToolResult("{\"items\":[]}", false))
                 .tool(McpServer.POLICY, "search_policy", a -> new McpToolResult("{}", false));

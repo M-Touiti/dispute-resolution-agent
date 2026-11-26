@@ -32,10 +32,18 @@ The bootstrap tests need Docker (Testcontainers).
   actions) and `decision.schema.json`, the structured-output schema the model answers in. `DecisionSchemaTest`
   keeps the schema inside the structured-output subset and checks its enums and action names against the Java
   types and against the actions-mcp tool schemas.
-- `guard`: `PolicyGuard` checks every decision deterministically and reports every broken rule: a credit above
-  the disputed amount or above the provisional credit limit, a non-decline outside the time limit, evidence that
-  is not the case's, unknown or missing policy sections, an action the outcome does not allow, invalid action
-  arguments. Limits come from `PolicyLimits` (120 days, 3,000.00 EUR by default, as in the policy corpus).
+- `guard`: `PolicyGuard` checks every decision deterministically and reports every broken rule. A credit is refused
+  above the claim, above the provisional credit limit, or above what the ledger supports (`CaseFacts.creditCeiling`:
+  the disputed posting, or for an amount mismatch the posted amount above the authorised one), whatever the claim
+  says. Other refusals:
+  - a non-decline outside the time limit;
+  - an outcome the category's policy never reaches (no credit for goods not received, no merchant evidence for an
+    unauthorised transaction or a duplicate);
+  - merchant evidence for goods not received before the 15-day wait after the expected delivery date has passed;
+  - evidence that is not the case's, and unknown or missing policy sections;
+  - an action the outcome does not allow, and invalid action arguments.
+
+  Limits come from `PolicyLimits` (120 days, 3,000.00 EUR and 15 days by default, as in the policy corpus).
 - `investigation`: `DisputeCase` (received, triaged, investigating, decided or escalated; only legal transitions,
   each recorded), `EscalationReason` (a guard failure counts as an unsafe proposal), `LoopBudget` and `LoopUsage`
   (caps on model calls, tool calls, tokens and wall clock).
@@ -49,8 +57,10 @@ Pure Java, no clock: time is passed in. Parsing the model's JSON into a `Decisio
   or an unreachable model, the recorded category is used and the fallback audited. A disagreement reaches the
   investigator as both categories.
 - `InvestigateDispute`: the loop (ADR 0002). Before the loop the investigator itself, not the model, collects the
-  records of the dispute's card (`CaseEvidence`); the guard accepts citations from that set and policy sections the
-  model actually retrieved. The model sees only the ledger and policy tools (`Toolbox`), strict and sorted, with a
+  records of the dispute's card (`CaseEvidence`): every posting and refund on the card, its authorisations and the
+  dispute's documents. The guard accepts citations from that set and policy sections the model actually retrieved.
+  `CaseEvidence` also reads, for the guard only, the posted and authorised amounts of the disputed transaction and the
+  expected delivery date of the merchant's order confirmation (a date the cardholder wrote does not count). The model sees only the ledger and policy tools (`Toolbox`), strict and sorted, with a
   stable cached system prompt (`system-prompt.md`) and the case in the user turn. Stop reason first: `refusal`,
   truncation and anything unexpected escalate; a turn's tool calls run concurrently and return in one message,
   wrapped as untrusted, failures as `is_error`. An answer that fails the decision schema is sent back once with

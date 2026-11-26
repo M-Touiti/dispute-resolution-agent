@@ -175,4 +175,5 @@ investigator:
   policy:
     time-limit-days: 120
     provisional-credit-limit-minor: 300000
+    goods-not-received-wait-days: 15
   skills-dir: ${INVESTIGATOR_SKILLS_DIR:../skills}

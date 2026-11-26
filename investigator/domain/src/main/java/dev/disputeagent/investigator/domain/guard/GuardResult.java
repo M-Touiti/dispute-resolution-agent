@@ -30,10 +30,19 @@ public record GuardResult(List<Violation> violations) {
     public enum Rule {
         /** A credit larger than the amount in dispute, or not positive. */
         CREDIT_ABOVE_DISPUTED_AMOUNT,
+        /**
+         * A credit above what the ledger supports, whatever the claim: the disputed posting, or for an amount mismatch
+         * the posted amount above the authorised one.
+         */
+        CREDIT_ABOVE_LEDGER_AMOUNT,
         /** A credit above the provisional credit limit: the case must escalate instead. */
         CREDIT_ABOVE_LIMIT,
         /** The dispute was opened after the time limit and the outcome is not a decline. */
         OUTSIDE_TIME_LIMIT,
+        /** An outcome the category's policy never reaches (for example a credit for goods not received). */
+        OUTCOME_NOT_IN_CATEGORY,
+        /** Goods not received: merchant evidence requested before the wait after the expected delivery date. */
+        BEFORE_GOODS_NOT_RECEIVED_WAIT,
         /** No evidence cited for an outcome that must rest on records. */
         NO_EVIDENCE_CITED,
         /** An evidence id that does not belong to this case. */

@@ -76,7 +76,7 @@ class InvestigateDisputeTest {
         return new FakeMcp()
                 .tool(McpServer.LEDGER, "get_transaction", args -> ok("""
                         {"transaction_id":"TXN-000100","card_id":"CRD-000042","auth_id":"AUTH-000100",\
-                        "merchant_id":"MER-000007","posted_on":"2026-10-01"}"""))
+                        "merchant_id":"MER-000007","posted_on":"2026-10-01","amount_minor":42500}"""))
                 .tool(McpServer.LEDGER, "search_transactions", args -> args.contains("page_token")
                         ? ok("{\"items\":[{\"transaction_id\":\"TXN-000098\",\"auth_id\":\"AUTH-000098\"}],"
                                 + "\"next_page_token\":null}")
@@ -84,7 +84,7 @@ class InvestigateDisputeTest {
                                 + "{\"transaction_id\":\"TXN-000099\",\"auth_id\":\"AUTH-000099\"}],"
                                 + "\"next_page_token\":\"p2\"}"))
                 .tool(McpServer.LEDGER, "get_authorisations", args -> ok("""
-                        {"items":[{"auth_id":"AUTH-000100","fraud_flag":true},{"auth_id":"AUTH-000097",\
+                        {"items":[{"auth_id":"AUTH-000100","amount_minor":42500,"fraud_flag":true},{"auth_id":"AUTH-000097",\
                         "response":"DECLINED"}],"next_page_token":null}"""))
                 .tool(McpServer.POLICY, "search_policy", args -> ok("""
                         {"results":[{"section_id":"unauthorised-card-not-present"},{"section_id":"time-limits"}]}"""))
