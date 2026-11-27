@@ -7,15 +7,47 @@
 A production-shaped agent that investigates card disputes through MCP tool servers, cites its evidence, cannot
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
-> **Status: M2 (the production half) complete; M3 (evidence) in progress.** The agent investigates all five dispute
-> categories end to end, and every pull request replays 160 golden cases (including 24 adversarial ones) and grades
-> them; the full live recording of 26 Nov 2026 decided 160 of 160 correctly, with no unsafe proposal. Nothing it
-> decides is carried out without a person: a decided case waits for a reviewer, and an approved action runs on the
-> write server only with a signed, single-use token that server verifies itself. A model outage parks cases and
-> replays them; every event leaves through an outbox; each case is traced and metered; the stack has been load-tested,
-> fault-injected and run on Kubernetes. The numbers below come from M1's one category, 30 cases and one laptop;
-> the full results table, with the model-graded rubric and its caveats, replaces this notice at the end of M3.
-> Progress: [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status: M3 (evidence) complete; `v0.1.0` releases it. M4 (the write-up) is next.** Progress:
+> [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Results
+
+Golden set v2, 160 cases across the five dispute categories, 24 of them adversarial (instructions planted in a
+merchant name, a receipt or a letter; claims above what the policy allows), run once in full against the live API on
+26 Nov 2026 and replayed on every pull request since. Definitions are fixed in [ADR 0009](docs/adr/0009-evaluation-design.md);
+every number comes from committed run files through a generator, with every failure explained:
+[evals/REPORT.md](evals/REPORT.md).
+
+| Metric | Result |
+|---|---|
+| Decision accuracy | 160/160, and every case in each of the five categories (28 to 47 cases each) |
+| Unsafe proposals (guard refused, or a wrong credit or closure that passed it) | 0/160 |
+| Over-generous credits | 0/160; on the 12 overclaims 0/12 |
+| Obeyed injections | 0/12 |
+| Escalation precision and recall | 10/10 and 10/10 |
+| Cost per case | median $0.055, p99 $0.083 (total $9.04; `claude-opus-5-5` at medium effort, `claude-haiku-5-5` triage) |
+| Wall-clock per case | median 12.1 s, p99 16.3 s |
+| Cache hit ratio | 0.72 of input tokens read from the cache (writes in the denominator) |
+| Rubric, evidence check complete (calibrated: agreement 0.97, kappa 0.84) | 160/160 |
+| Rubric, faithful to the evidence; merchant request clear (not calibrated) | grader verdicts 157/160; 17/25 |
+
+Read these with their caveats:
+
+- **Synthetic data.** The disputes come from a seeded generator whose rules the policy corpus states exactly. The
+  numbers say the agent applies those rules through its tools, not how it would do on real disputes.
+- **Nothing is held out.** The prompt and the skills were written with these 17 scenarios in view.
+- **One model version, one dated run.** A live run varies; this is one. Groups are small: adversarial robustness
+  rests on 24 cases and escalation on 10, enough to show a failure, not to estimate a rate.
+- **The rubric's labels are a model's.** The 30 calibration labels were made by Claude, the same model as the
+  grader, not by a person, so the agreement is model-model consistency. Only the evidence check passed the publish
+  rule; the other two criteria are shown as the grader's verdicts.
+- **The decisions did not fail; the prose did.** All 11 failures left are rubric findings: 8 cancelled-recurring
+  merchant requests that ask for cancellation records the tool's evidence list has no item for (a tool-contract
+  change deferred past M3), 2 rationales calling earlier transactions "not disputed" and 1 slip in a correct decline.
+  Two faults the first recording showed were fixed in the skills and the set re-recorded.
+
+A 44-case pilot of the set at low, medium and high effort decided every case correctly at each; medium was kept,
+at $2.27 against $1.94 for low and $2.62 for high. How the evaluation is built: [the evaluation](docs/diagrams/evaluation.md).
 
 ## What it is
 
@@ -39,29 +71,9 @@ flowchart LR
     I --> O[(Kafka<br/>decision event)]
 ```
 
-## First results (M1, unauthorised transactions)
-
-30 golden cases, 6 per scenario, recorded once against the live API and replayed in CI on every pull request
-([evals/](evals/README.md)). The graders are deterministic; the ground truth comes from the data generator's rules.
-
-| Scenario | Expected | Correct |
-|---|---|---|
-| Chip and PIN, card present | decline | 6/6 |
-| 3-D Secure authenticated | decline | 6/6 |
-| Card not present, no 3-D Secure, fraud flag | provisional credit | 6/6 |
-| Above the provisional credit limit | escalate | 6/6 |
-| Outside the time limit | decline | 6/6 |
-
-Unsafe proposals: 0. Forbidden actions: 0. Every decision cited only records of its own case and the deciding
-policy section, and passed the schema on the first try. Cost per case, as recorded: median $0.066, p90 $0.086
-(`claude-opus-5-5` at medium effort, `claude-haiku-5-5` triage), about two thirds of input tokens read from the
-cache.
-
-Read this as a working loop, not as accuracy. These five scenarios have one clear answer each. The first recording
-scored 28/30, and both misses were the model correctly escalating contradictions the synthetic data generator had
-introduced by mistake; the generator was fixed and the set re-recorded. Ambiguous and adversarial cases arrive in M3.
-
-How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md).
+How one case runs: [the investigation loop](docs/diagrams/investigation-loop.md). M1 proved the loop on one category
+(30 cases, the first recording scoring 28/30 because the data generator had introduced two contradictions, which the
+model rightly escalated); those cases are part of golden set v2.
 
 ## Around the model (M2)
 
@@ -81,24 +93,6 @@ No decision was lost or made twice in any run. The approval path is checked by `
 approved credit recorded once by actions-mcp, a second approval refused with 409, a rejection that writes nothing) and
 inside a kind cluster by `deploy/k8s/kind/check.sh`.
 
-## What exists today (M2)
-
-| Part | State | Tests |
-|---|---|---|
-| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine with its approval, action and parked states, and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with seven Agent Skills loaded on demand (a checklist per category, and how to read an authorisation trail and dispute documents); the approval gate's use cases (a decided case waits for a person; approve signs a token and carries the action out once; reject); tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, Resilience4j around every model call (a case the model cannot serve is parked and replayed, not escalated), a dead-letter topic, a trace per case and Prometheus metrics from decorators around the ports, JSON logs with card numbers masked, recording and replay of model calls, the MCP client, JSON and schema validation, approval tokens signed with Ed25519 as a compact JWS (JDK only, pinned by shared test vectors), the reviewer API (queue, approve, reject) and the action port on actions-mcp, Kafka in, and out through a transactional outbox, cases and audit in PostgreSQL; tested end to end on Testcontainers | 277 |
-| `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, plus 24 adversarial variants (planted instructions, overclaims), with ground truth kept apart for evaluation; the policy corpus, checked against the generator's rules. Same seed, same bytes | 61 |
-| `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
-| `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI; Prometheus metrics | 33 |
-| `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token` it verifies itself: an Ed25519 signature from the investigator's key, bound to the dispute, the tool and the exact arguments; each approved action carried out once (the token id is the idempotency key), within limits read from its own data, as a role that owns only its schema | 29 |
-| `evals/` | Golden set v1 (30 cases, M1) and v2 (160 cases across the five categories and two adversarial kinds, evaluated in CI since M3, with six 30-case nightly slices and the 44-case pilot); an evaluation run mode of the investigator that records each case's wall-clock and model-call latencies; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals as ADR 0009 defines them, credit ceiling, obeyed injections, schema, budget) reporting per category and adversarial kind with escalation precision and recall, cost and cache hit ratio; a regression rule against a committed baseline for replayed runs and per-case thresholds for live runs; a model-graded rubric for the rationale, run over the recording ($3.62; evidence check calibrated at kappa 0.84, the other two criteria not; the calibration labels); the live recording of v2 (160/160, $9.04) kept in `evals/live/` with the run it replaced, 727 recorded model calls and the live thresholds written from it; [`evals/REPORT.md`](evals/REPORT.md), generated from those files, with every failure explained; `record.sh` for re-recording | 71 (1 skipped) |
-| `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.4 (KRaft), the three MCP servers and the investigator, Prometheus, Tempo and Grafana with a provisioned dashboard; `smoke.sh` checks each, runs disputes end to end through the approval gate, and finds a case's trace in Tempo | smoke |
-| `performance/` | k6 at a constant arrival rate through a shim that publishes `disputes.opened` and awaits `disputes.decided`, on the replay adapter: one investigator replica saturates at 12.6 cases/s (p99 4.1 s at 20/s offered), three carry 20/s at p99 0.77 s ([report](performance/README.md)); failure injection under load (the model overloaded, policy-mcp stalled, malformed events): no decision lost, parked cases replayed and decided within 25 s of the fault's end | 10 |
-| `deploy/k8s/` | Kustomize base (the four services with probes, limits, an HPA on the investigator, network policies that let only the investigator reach the ledger and the write server) and a `local` overlay with PostgreSQL and Kafka; ServiceMonitors and an optional Argo CD application; applied on kind with `up.sh` and checked with `check.sh` (a dispute decided and approved inside the cluster) | kind check |
-| CI | Build and tests per module, lint, the golden set replayed and graded against the baseline, compose smoke test, Kubernetes manifests validated, the four images scanned with Trivy (a fixable HIGH or CRITICAL finding fails the pull request), images pushed to GitHub Container Registry on a version tag, CodeQL (Java, Python, workflows), Dependabot; a nightly live run of a 30-case slice (by hand, or scheduled once enabled) committing its results to the branch `eval-nightly` | |
-
-Every tool's input schema stays inside the JSON Schema subset that strict tool use accepts, and a test in each
-server enforces it. The schemas can be passed to Claude unchanged.
-
 ## Run it
 
 Prerequisites: JDK 21, [uv](https://docs.astral.sh/uv/), Docker. No API key is needed: model calls are replayed from
@@ -117,15 +111,8 @@ docker compose down -v
 
 The same services on a local Kubernetes cluster (Docker and [kind](https://kind.sigs.k8s.io/); replay only):
 `bash deploy/k8s/kind/up.sh`, then `bash deploy/k8s/kind/check.sh` ([deploy/k8s](deploy/k8s/README.md)). Released
-images: `ghcr.io/m-touiti/dispute-agent-<investigator|ledger-mcp|policy-mcp|actions-mcp>`, from `v0.0.1`.
-
-Replay and grade the golden set, as CI does (stack up, no key):
-
-```sh
-cd investigator && ./mvnw -q -pl bootstrap -am package -DskipTests
-java -jar bootstrap/target/investigator-bootstrap-*.jar --spring.profiles.active=eval
-cd ../evals && uv run python -m evaltools.grade      # exit 1 on a regression against evals/baseline
-```
+images: `ghcr.io/m-touiti/dispute-agent-<investigator|ledger-mcp|policy-mcp|actions-mcp>`, from `v0.0.1`;
+`v0.1.0` is the M3 release.
 
 Each module builds and tests on its own. CI runs the same commands:
 
@@ -137,6 +124,43 @@ cd data && uv run pytest && uv run ruff check .        # also mcp-servers/policy
 The MCP servers listen on `localhost:8081` (ledger), `8082` (policy) and `8083` (actions) at `/mcp`. Live model
 runs need `ANTHROPIC_API_KEY` in `.env` (see [.env.example](.env.example)); CI replays recorded responses
 and never calls the API.
+
+## Evaluation
+
+Replay and grade the golden set, as CI does on every pull request (stack up, no key):
+
+```sh
+cd investigator && ./mvnw -q -pl bootstrap -am package -DskipTests
+java -jar bootstrap/target/investigator-bootstrap-*.jar --spring.profiles.active=eval
+cd ../evals && uv run python -m evaltools.grade      # exit 1 on a regression against evals/baseline
+uv run python -m evaltools.report --check            # exit 1 when REPORT.md is stale
+```
+
+A replayed request whose hash has no recorded fixture fails the run; it never falls through to the API. Anything
+that changes what the model sees (prompt, skills, tool schemas, model, effort, SDK major, generated data) misses
+every fixture, so it is re-recorded live in the same pull request with `bash evals/record.sh` (about $9 for the 160
+cases, under a spend cap). A workflow runs a rotating 30-case slice live (by hand, or nightly once a repository
+variable turns the schedule on; about $2 a run, $5 cap), grades it on thresholds written from the recording and
+commits its results to the branch `eval-nightly`, never to `main`. Golden sets, graders, rubric and report:
+[evals/](evals/README.md).
+
+## What exists today (M3)
+
+| Part | State | Tests |
+|---|---|---|
+| `investigator/` | Hexagonal Maven modules. `domain`: the `Decision` and its structured-output schema, a deterministic `PolicyGuard`, the case state machine with its approval, action and parked states, and loop caps. `application`: triage and the hand-written investigation loop over `LlmPort` and `McpToolPort`, with seven Agent Skills loaded on demand (a checklist per category, and how to read an authorisation trail and dispute documents); the approval gate's use cases (a decided case waits for a person; approve signs a token and carries the action out once; reject); tested with fake ports. `adapters`: the Anthropic SDK adapter with cost per call, Resilience4j around every model call (a case the model cannot serve is parked and replayed, not escalated), a dead-letter topic, a trace per case and Prometheus metrics from decorators around the ports, JSON logs with card numbers masked, recording and replay of model calls, the MCP client, JSON and schema validation, approval tokens signed with Ed25519 as a compact JWS (JDK only, pinned by shared test vectors), the reviewer API (queue, approve, reject) and the action port on actions-mcp, Kafka in, and out through a transactional outbox, cases and audit in PostgreSQL; tested end to end on Testcontainers | 277 |
+| `data/` | Seeded synthetic data generator: cardholders, cards, merchants, authorisations, transactions and disputes across 5 categories and 17 scenarios, plus 24 adversarial variants (planted instructions, overclaims), with ground truth kept apart for evaluation; the policy corpus, checked against the generator's rules. Same seed, same bytes | 61 |
+| `mcp-servers/ledger-mcp` | Six read-only tools over Streamable HTTP, answering from PostgreSQL as a role that can only read the ledger; bounded, paginated results; `tools/list` pinned by a contract test | 37 |
+| `mcp-servers/policy-mcp` | Two read-only tools (`mcp` 2.3.0 in FastAPI) over the policy corpus in PostgreSQL: hybrid full-text and vector retrieval with a local model, a retrieval-quality floor in CI; Prometheus metrics | 33 |
+| `mcp-servers/actions-mcp` | Three write tools, each requiring an `approval_token` it verifies itself: an Ed25519 signature from the investigator's key, bound to the dispute, the tool and the exact arguments; each approved action carried out once (the token id is the idempotency key), within limits read from its own data, as a role that owns only its schema | 29 |
+| `evals/` | Golden set v1 (30 cases, M1) and v2 (160 cases across the five categories and two adversarial kinds, evaluated in CI since M3, with six 30-case nightly slices and the 44-case pilot); an evaluation run mode of the investigator that records each case's wall-clock and model-call latencies; deterministic graders (decision, evidence, policy citations, forbidden actions, unsafe proposals as ADR 0009 defines them, credit ceiling, obeyed injections, schema, budget) reporting per category and adversarial kind with escalation precision and recall, cost and cache hit ratio; a regression rule against a committed baseline for replayed runs and per-case thresholds for live runs; a model-graded rubric for the rationale, run over the recording ($3.62; evidence check calibrated at kappa 0.84, the other two criteria not); the live recording of v2 (160/160, $9.04) kept in `evals/live/` with the run it replaced, 727 recorded model calls and the live thresholds written from it; [`evals/REPORT.md`](evals/REPORT.md), generated from those files, with every failure explained; `record.sh` for re-recording | 71 (1 skipped) |
+| `deploy/compose/` | PostgreSQL 18 + pgvector loaded with the seed, Kafka 4.4 (KRaft), the three MCP servers and the investigator, Prometheus, Tempo and Grafana with a provisioned dashboard; `smoke.sh` checks each, runs disputes end to end through the approval gate, and finds a case's trace in Tempo | smoke |
+| `performance/` | k6 at a constant arrival rate through a shim that publishes `disputes.opened` and awaits `disputes.decided`, on the replay adapter: one investigator replica saturates at 12.6 cases/s (p99 4.1 s at 20/s offered), three carry 20/s at p99 0.77 s ([report](performance/README.md)); failure injection under load (the model overloaded, policy-mcp stalled, malformed events): no decision lost, parked cases replayed and decided within 25 s of the fault's end | 10 |
+| `deploy/k8s/` | Kustomize base (the four services with probes, limits, an HPA on the investigator, network policies that let only the investigator reach the ledger and the write server) and a `local` overlay with PostgreSQL and Kafka; ServiceMonitors and an optional Argo CD application; applied on kind with `up.sh` and checked with `check.sh` (a dispute decided and approved inside the cluster) | kind check |
+| CI | Build and tests per module, lint, the golden set replayed and graded against the baseline, compose smoke test, Kubernetes manifests validated, the four images scanned with Trivy (a fixable HIGH or CRITICAL finding fails the pull request), images pushed to GitHub Container Registry on a version tag, CodeQL (Java, Python, workflows), Dependabot; a live run of a 30-case slice (by hand, or nightly once enabled) committing its results to the branch `eval-nightly` | |
+
+Every tool's input schema stays inside the JSON Schema subset that strict tool use accepts, and a test in each
+server enforces it. The schemas can be passed to Claude unchanged.
 
 ## Layout
 
@@ -168,6 +192,24 @@ docs/                roadmap, architecture decision records, diagrams
 The index with full titles is in [docs/adr](docs/adr/README.md); pinned versions are in the
 [roadmap](docs/ROADMAP.md#pinned-versions-verified-against-maven-central-and-pypi-on-1-nov-2026).
 
+## Limits
+
+What is known and left, with where it was measured:
+
+- **A stalled tool server holds its replica.** Each investigator replica consumes on one listener thread, so a
+  case waiting on a stalled MCP server (bounded by the 30 s request timeout) queues every case behind it on that
+  replica ([performance](performance/README.md), task 2.14).
+- **A replayed tool error has no recording.** A tool error goes back to the model (ADR 0008), but on replay the
+  model's answer to an error it never saw live is not in the fixtures, so the case escalates where the live model
+  could have retried (2.14).
+- **Throughput is capped by partitions.** `disputes.opened` has 3 partitions, so a fourth replica idles; the HPA
+  was applied but never driven to scale out (2.13, 2.15).
+- **The merchant evidence list has no item for cancellation records.** `request_merchant_evidence` offers only
+  `CANCELLATION_POLICY`, so 8 of 8 cancelled-recurring requests fail the rubric's clarity criterion; the fix changes
+  actions-mcp's tool contract and is deferred ([REPORT.md](evals/REPORT.md)).
+- **The evaluation is one model, synthetic data and model-made calibration labels**, as the caveats under
+  [Results](#results) say. The reviewer is an API, not a page.
+
 ## Milestones
 
 | Milestone | Done means |
@@ -175,7 +217,7 @@ The index with full titles is in [docs/adr](docs/adr/README.md); pinned versions
 | **M0 Skeleton** (done) | Module layout, data generator, three MCP servers answering `tools/list`, compose, CI and CodeQL green |
 | **M1 Loop** (done) | One category end to end through both read servers, with a structured decision, guard and audit; 30 golden cases replayed in CI |
 | **M2 Production half** (done) | Approval gate and token verification, resilience, DLQ and outbox, traces and dashboards, load and failure tests, Kubernetes manifests |
-| M3 Evidence | All categories including two adversarial ones, 150+ golden cases, live evaluation, `evals/REPORT.md`, tag `v0.1.0` |
+| **M3 Evidence** (done) | All five categories and two adversarial kinds, 160 golden cases, a live run and a nightly live slice, `evals/REPORT.md`, tag `v0.1.0` |
 | M4 Write-up | What the evaluations found, the two hardest failures, what the approval gate caught |
 
 ## Out of scope
