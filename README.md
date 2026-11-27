@@ -7,7 +7,7 @@
 A production-shaped agent that investigates card disputes through MCP tool servers, cites its evidence, cannot
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
-> **Status: M3 (evidence) complete; `v0.1.0` releases it. M4 (the write-up) is next.** Progress:
+> **Status: M3 (evidence) complete; `v0.1.0` releases it. M4 (the write-up) in progress.** Progress:
 > [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Results
