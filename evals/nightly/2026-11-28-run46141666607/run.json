@@ -1,0 +1,11 @@
+{
+  "golden_set" : "all-categories-v2-slice-1",
+  "adapter" : "anthropic",
+  "cases" : 5,
+  "cases_run" : 5,
+  "cost_micro_usd" : 299362,
+  "max_cost_micro_usd" : 5000000,
+  "states" : {
+    "DECIDED" : 5
+  }
+}

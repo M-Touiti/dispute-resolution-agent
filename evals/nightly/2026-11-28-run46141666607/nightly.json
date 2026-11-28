@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-28",
+  "slice": 1,
+  "slices": 6,
+  "limit": 5,
+  "golden_set": "all-categories-v2",
+  "cases": [
+    "DSP-000020",
+    "DSP-000022",
+    "DSP-000041",
+    "DSP-000043",
+    "DSP-000060"
+  ],
+  "cases_run": 5,
+  "commit": "89aea6c443c044ac549ea9845c67d931f94fcf0a",
+  "models": [
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "gate": "pass"
+}
