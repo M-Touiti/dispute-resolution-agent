@@ -7,7 +7,8 @@
 A production-shaped agent that investigates card disputes through MCP tool servers, cites its evidence, cannot
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
-> **Status: M3 (evidence) complete; `v0.1.0` releases it. M4 (the write-up) in progress.** Progress:
+> **Status: M3 (evidence) complete; `v0.1.0` releases it. M4 (the write-up) in progress: dependencies refreshed
+> (4.1), the first nightly run next.** Progress:
 > [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Results
@@ -217,8 +218,8 @@ What is known and left, with where it was measured:
 | **M0 Skeleton** (done) | Module layout, data generator, three MCP servers answering `tools/list`, compose, CI and CodeQL green |
 | **M1 Loop** (done) | One category end to end through both read servers, with a structured decision, guard and audit; 30 golden cases replayed in CI |
 | **M2 Production half** (done) | Approval gate and token verification, resilience, DLQ and outbox, traces and dashboards, load and failure tests, Kubernetes manifests |
-| **M3 Evidence** (done) | All five categories and two adversarial kinds, 160 golden cases, a live run and a nightly live slice, `evals/REPORT.md`, tag `v0.1.0` |
-| M4 Write-up | What the evaluations found, the two hardest failures, what the approval gate caught |
+| **M3 Evidence** (done) | All five categories and two adversarial kinds, 160 golden cases, a live run, a nightly live slice (built; its first run is task 4.2), `evals/REPORT.md`, tag `v0.1.0` |
+| M4 Write-up (in progress) | What the evaluations found, the two hardest failures, what the approval gate caught, measured by a gate probe and a live counterfactual |
 
 ## Out of scope
 
