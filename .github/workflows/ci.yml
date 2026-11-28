@@ -38,7 +38,7 @@ jobs:
           cache-dependency-path: ${{ matrix.project }}/**/pom.xml
       # ledger-mcp's and actions-mcp's tests run PostgreSQL (Testcontainers) loaded with the generated seed; they fail
       # without it.
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         if: matrix.project == 'mcp-servers/ledger-mcp' || matrix.project == 'mcp-servers/actions-mcp'
         with:
           enable-cache: true
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           enable-cache: true
           cache-dependency-glob: ${{ matrix.project }}/uv.lock
@@ -165,7 +165,7 @@ jobs:
       # Code scanning on a private repository needs GitHub Code Security, and a fork's pull request cannot write it.
       - name: Upload to the Security tab
         if: ${{ always() && !github.event.repository.private && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles(format('trivy-{0}.sarif', matrix.image)) != '' }}
-        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           sarif_file: trivy-${{ matrix.image }}.sarif
           category: trivy-${{ matrix.image }}
@@ -185,7 +185,7 @@ jobs:
           java-version: "21"
           cache: maven
           cache-dependency-path: investigator/**/pom.xml
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           enable-cache: true
           cache-dependency-glob: "**/uv.lock"
@@ -234,7 +234,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           enable-cache: true
           cache-dependency-glob: data/uv.lock

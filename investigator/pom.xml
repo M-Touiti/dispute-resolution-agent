@@ -40,7 +40,7 @@
         <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
         <!-- kafka-clients' compression codecs, raised to the first patch that fixes a HIGH finding in the image scan
              (task 2.16); drop each override once kafka-clients brings that version or newer itself. -->
-        <lz4-java.version>1.11.4</lz4-java.version>
+        <lz4-java.version>1.14.1</lz4-java.version>
         <snappy-java.version>1.1.10.12</snappy-java.version>
     </properties>
 

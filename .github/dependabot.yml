@@ -14,6 +14,10 @@ updates:
     groups:
       maven-minor-and-patch:
         update-types: [minor, patch]
+    # Kept at the version mcp-json-jackson3 uses, so the client and the servers validate alike: bumped by hand with
+    # the MCP SDK (investigator/pom.xml, docs/ROADMAP.md pins table).
+    ignore:
+      - dependency-name: com.networknt:json-schema-validator
 
   - package-ecosystem: uv
     directories:
