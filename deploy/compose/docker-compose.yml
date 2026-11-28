@@ -224,7 +224,7 @@ services:
       - "127.0.0.1:3200:3200"
 
   grafana:
-    image: grafana/grafana:13.3.1
+    image: grafana/grafana:13.3.2
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
