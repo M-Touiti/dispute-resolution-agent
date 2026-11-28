@@ -8,7 +8,7 @@ A production-shaped agent that investigates card disputes through MCP tool serve
 touch money without a human, and is scored by an evaluation suite on every pull request.
 
 > **Status: M3 (evidence) complete; `v0.1.0` releases it. M4 (the write-up) in progress: dependencies refreshed
-> (4.1), the first nightly run next.** Progress:
+> (4.1), the first nightly run passed (4.2), the evidence ledger next.** Progress:
 > [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Results
@@ -140,8 +140,8 @@ uv run python -m evaltools.report --check            # exit 1 when REPORT.md is 
 A replayed request whose hash has no recorded fixture fails the run; it never falls through to the API. Anything
 that changes what the model sees (prompt, skills, tool schemas, model, effort, SDK major, generated data) misses
 every fixture, so it is re-recorded live in the same pull request with `bash evals/record.sh` (about $9 for the 160
-cases, under a spend cap). A workflow runs a rotating 30-case slice live (by hand, or nightly once a repository
-variable turns the schedule on; about $2 a run, $5 cap), grades it on thresholds written from the recording and
+cases, under a spend cap). A workflow runs a rotating 30-case slice live (by hand; a repository variable turns on a
+nightly schedule, left off; about $2 a run, $5 cap), grades it on thresholds written from the recording and
 commits its results to the branch `eval-nightly`, never to `main`. Golden sets, graders, rubric and report:
 [evals/](evals/README.md).
 
@@ -218,7 +218,7 @@ What is known and left, with where it was measured:
 | **M0 Skeleton** (done) | Module layout, data generator, three MCP servers answering `tools/list`, compose, CI and CodeQL green |
 | **M1 Loop** (done) | One category end to end through both read servers, with a structured decision, guard and audit; 30 golden cases replayed in CI |
 | **M2 Production half** (done) | Approval gate and token verification, resilience, DLQ and outbox, traces and dashboards, load and failure tests, Kubernetes manifests |
-| **M3 Evidence** (done) | All five categories and two adversarial kinds, 160 golden cases, a live run, a nightly live slice (built; its first run is task 4.2), `evals/REPORT.md`, tag `v0.1.0` |
+| **M3 Evidence** (done) | All five categories and two adversarial kinds, 160 golden cases, a live run, a nightly live slice (run by hand; first run 28 Nov 2026), `evals/REPORT.md`, tag `v0.1.0` |
 | M4 Write-up (in progress) | What the evaluations found, the two hardest failures, what the approval gate caught, measured by a gate probe and a live counterfactual |
 
 ## Out of scope
